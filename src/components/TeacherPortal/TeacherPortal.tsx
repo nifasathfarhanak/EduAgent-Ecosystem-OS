@@ -30,6 +30,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { MarkdownRenderer } from '../MarkdownRenderer';
+import { InsideRoboticTelemetryBar, RoboticEqualizer, RoboticAIPilotCard, RoboticRadarVisualizer, MechaCard } from '../CyberVisuals';
 
 interface Props {
   language: LanguageType;
@@ -145,17 +146,74 @@ export const TeacherPortal: React.FC<Props> = ({ language, onSetModality }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header Banner with Live Telemetry Status */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      {/* 1. Robotic Telemetry & Pilot HUD Banner */}
+      <InsideRoboticTelemetryBar
+        portalType="TEACHER"
+        activeEntityName="Prof. Sharma"
+        roleBadge="Lead Faculty & Microservices Director"
+        telemetryStatus="NEXUS COMMAND ONLINE // BIGQUERY TELEMETRY SYNCED"
+      />
+
+      {/* 2. Teacher Robotic AI Co-Pilot & Real-Time Radar HUD */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <RoboticAIPilotCard
+            mentorName="Nexus Command Co-Pilot"
+            mentorRole="Gemini 3.7 Classroom Telemetry & Risk Evaluator"
+            statusText={`Cohort Telemetry: ${students.length} Active Profiles | ${criticalCount} Critical | ${moderateCount} Moderate | ${onTrackCount} On-Track`}
+            neuralSyncPct={99.9}
+            speechBubble={`Professor Sharma, telemetry scan detected ${criticalCount} cadets requiring immediate STAR interview & CI/CD architecture remediation. Real-time BigQuery CDC synchronization is active.`}
+            themeColor="pink"
+            quickActions={[
+              { label: `Filter Critical (${criticalCount})`, onClick: () => setSelectedTier('CRITICAL') },
+              { label: `Filter Moderate (${moderateCount})`, onClick: () => setSelectedTier('MODERATE') },
+              { label: 'View All Cohort', onClick: () => setSelectedTier('ALL') },
+              { label: 'Sync BigQuery Telemetry', onClick: fetchTelemetry },
+            ]}
+          />
+        </div>
+
+        {/* BigQuery Radar Sonar Scan Card */}
+        <MechaCard
+          themeColor="pink"
+          title="BigQuery Risk Radar"
+          subTitle="Real-time multi-dimensional risk scanner"
+          badge="LIVE CDC SONAR"
+          icon={<Database className="w-5 h-5" />}
+          className="flex flex-col items-center justify-center text-center"
+        >
+          <div className="flex flex-col items-center justify-center py-2">
+            <RoboticRadarVisualizer
+              activeNodes={students.length}
+              criticalNodes={criticalCount}
+              moderateNodes={moderateCount}
+            />
+            <div className="mt-3 flex items-center justify-center gap-3 text-[11px] font-mono">
+              <span className="flex items-center gap-1 text-red-400 font-bold">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" /> {criticalCount} Critical
+              </span>
+              <span className="flex items-center gap-1 text-amber-400 font-bold">
+                <span className="w-2 h-2 rounded-full bg-amber-400" /> {moderateCount} Moderate
+              </span>
+              <span className="flex items-center gap-1 text-emerald-400 font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" /> {onTrackCount} On-Track
+              </span>
+            </div>
+          </div>
+        </MechaCard>
+      </div>
+
+      {/* 2. Header Banner with Live Telemetry Status & Robotic Chassis Frame */}
+      <div className="relative bg-slate-950/90 border-2 border-pink-500/30 rounded-2xl p-6 shadow-[0_0_25px_rgba(236,72,153,0.15)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 relative">
-            <Users className="w-6 h-6" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
+          <div className="p-2.5 rounded-xl bg-pink-950 border border-pink-500/50 text-pink-400 relative shadow-[0_0_15px_rgba(236,72,153,0.4)]">
+            <Database className="w-6 h-6" />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-pink-400 animate-ping" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2">
               <span>{t('liveTelemetryTitle', 'Classroom Live Telemetry & BigQuery Risk Radar')}</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-pink-950/80 text-pink-300 border border-pink-500/50 font-bold">
                 3-Way Data Binding Active
               </span>
             </h2>
@@ -169,21 +227,21 @@ export const TeacherPortal: React.FC<Props> = ({ language, onSetModality }) => {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={fetchTelemetry}
-            className="p-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all font-mono text-xs flex items-center gap-1.5"
+            className="p-2 rounded-xl bg-slate-950 border border-pink-500/40 text-pink-300 hover:text-white hover:border-pink-400 transition-all font-mono text-xs flex items-center gap-1.5 cursor-pointer shadow-inner"
             title="Refresh Live Telemetry Feed"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-cyan-400" />
+            <RefreshCw className="w-3.5 h-3.5 text-pink-400" />
             <span>{t('sync', 'Sync')}</span>
           </button>
-          <div className="bg-red-950/60 border border-red-800/80 text-red-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5">
+          <div className="bg-red-950/80 border border-red-800 text-red-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 shadow-[0_0_10px_rgba(239,68,68,0.3)]">
             <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
             <span>{criticalCount} {t('criticalIntervention', 'Critical')}</span>
           </div>
-          <div className="bg-amber-950/60 border border-amber-800/80 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5">
+          <div className="bg-amber-950/80 border border-amber-800 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 shadow-[0_0_10px_rgba(245,158,11,0.3)]">
             <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
             <span>{moderateCount} {t('moderateSupport', 'Moderate')}</span>
           </div>
-          <div className="bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5">
+          <div className="bg-emerald-950/80 border border-emerald-800 text-emerald-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.3)]">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             <span>{onTrackCount} {t('onTrack', 'On-Track')}</span>
           </div>

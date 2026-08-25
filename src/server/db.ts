@@ -85,7 +85,7 @@ export class DatabasePool {
       {
         id: 'st-101',
         studentName: 'Jordan Smith',
-        rollNo: '2022-CS-041',
+        rollNo: 'AST-2026-089',
         email: 'jordan.smith@eng.edu',
         targetRole: 'AI Cloud Architect',
         attendancePct: 96,
@@ -100,7 +100,7 @@ export class DatabasePool {
       {
         id: 'st-102',
         studentName: 'Rohan Sharma',
-        rollNo: '2022-CS-012',
+        rollNo: 'AST-2026-012',
         email: 'rohan.s@eng.edu',
         targetRole: 'AI Systems Engineer',
         attendancePct: 72,
@@ -115,7 +115,7 @@ export class DatabasePool {
       {
         id: 'st-103',
         studentName: 'Ananya Verma',
-        rollNo: '2022-CS-088',
+        rollNo: 'AST-2026-088',
         email: 'ananya.v@eng.edu',
         targetRole: 'Cybersecurity Lead',
         attendancePct: 68,
@@ -130,7 +130,7 @@ export class DatabasePool {
       {
         id: 'st-104',
         studentName: 'Karthik Raja',
-        rollNo: '2022-CS-095',
+        rollNo: 'AST-2026-095',
         email: 'karthik.r@eng.edu',
         targetRole: 'Database Systems Architect',
         attendancePct: 84,
@@ -144,9 +144,9 @@ export class DatabasePool {
       },
       {
         id: 'st-105',
-        studentName: 'Priya Sundaram',
-        rollNo: '2022-CS-112',
-        email: 'priya.s@eng.edu',
+        studentName: 'Priya Patel',
+        rollNo: 'AST-2026-215',
+        email: 'priya.p@eng.edu',
         targetRole: 'Full-Stack DevOps Lead',
         attendancePct: 99,
         projectScore: 95,

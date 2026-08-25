@@ -2,396 +2,451 @@ import React from 'react';
 import { PortalType, UserProfile } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import {
-  GraduationCap,
-  Users,
-  HeartHandshake,
+  VRStudentAvatar,
+  TeacherRobotAvatar,
+  ParentNetworkAvatar,
+  Crystal3DIcon,
+  CircuitWingLeft,
+  CircuitWingRight,
+  RoboticEqualizer,
+  RoboticBiometricScanner,
+} from './CyberVisuals';
+import {
+  BackgroundThemeId,
+  BACKGROUND_THEMES,
+} from './SmartEducationBackground';
+import { RoboticMasterConsole } from './RoboticMasterConsole';
+import {
   Sparkles,
-  ShieldCheck,
-  Cpu,
-  Terminal,
-  Zap,
+  Eye,
+  Search,
+  Globe,
+  Target,
   ArrowRight,
   Database,
-  Brain,
-  Code2,
+  Cpu,
+  Shield,
+  Zap,
+  Activity,
+  Terminal,
+  Radio,
+  Wifi,
   Lock,
-  Globe,
-  Flame,
-  Target,
+  Layers,
+  Bot,
+  Play,
+  CheckCircle2,
+  Sliders,
+  Wand2,
+  BookOpen,
+  Mic,
+  FileCode,
 } from 'lucide-react';
 
 interface Props {
   onLoginAs: (user: UserProfile) => void;
+  currentTheme?: BackgroundThemeId;
+  onSelectTheme?: (theme: BackgroundThemeId) => void;
 }
 
 export const demoUsers: UserProfile[] = [
   {
     name: 'Jordan Smith',
-    email: 'jordan.smith@eduagent.ai',
+    email: 'ASD-Jordan-Smith',
     role: 'Student',
     title: 'Final Year CS - Cloud & AI Specialist',
     avatar: 'JS',
   },
   {
     name: 'Prof. Sharma',
-    email: 'prof.sharma@eduagent.ai',
+    email: 'ASD-Prof-Sharma',
     role: 'Teacher',
     title: 'BigQuery Classroom Risk Radar Lead',
     avatar: 'PS',
   },
   {
     name: 'Lakshmi Parent',
-    email: 'parent.lakshmi@eduagent.ai',
+    email: 'ASD-Parent',
     role: 'Parent',
     title: 'Multilingual Voice Access Parent',
     avatar: 'LP',
   },
 ];
 
-export const LandingPage: React.FC<Props> = ({ onLoginAs }) => {
+export const LandingPage: React.FC<Props> = ({
+  onLoginAs,
+  currentTheme = 'robotics',
+  onSelectTheme,
+}) => {
   const { t } = useLanguage();
-  // Separate Login ID and Password States for 3 Roles
-  const [studentId, setStudentId] = React.useState('jordan.smith@eduagent.ai');
-  const [studentPass, setStudentPass] = React.useState('demo2026');
-  const [studentError, setStudentError] = React.useState('');
 
-  const [teacherId, setTeacherId] = React.useState('prof.sharma@eduagent.ai');
-  const [teacherPass, setTeacherPass] = React.useState('demo2026');
-  const [teacherError, setTeacherError] = React.useState('');
-
-  const [parentId, setParentId] = React.useState('parent.lakshmi@eduagent.ai');
-  const [parentPass, setParentPass] = React.useState('demo2026');
-  const [parentError, setParentError] = React.useState('');
-
-  const handleStudentLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStudentError('');
-    if (!studentId.trim()) {
-      setStudentError('Please enter a valid Student Login ID.');
-      return;
-    }
-    const user = { ...demoUsers[0], email: studentId.trim() };
-    onLoginAs(user);
+  const handleStudentLogin = (agentId?: string) => {
+    const id = agentId || 'ASD-Jordan-Smith';
+    onLoginAs({
+      ...demoUsers[0],
+      email: id,
+      name: id.replace('ASD-', '').replace('-', ' ') || 'Jordan Smith',
+    });
   };
 
-  const handleTeacherLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setTeacherError('');
-    if (!teacherId.trim()) {
-      setTeacherError('Please enter a valid Teacher Login ID.');
-      return;
-    }
-    const user = { ...demoUsers[1], email: teacherId.trim() };
-    onLoginAs(user);
+  const handleTeacherLogin = (agentId?: string) => {
+    const id = agentId || 'ASD-Prof-Sharma';
+    onLoginAs({
+      ...demoUsers[1],
+      email: id,
+      name: id.replace('ASD-', '').replace('-', ' ') || 'Prof. Sharma',
+    });
   };
 
-  const handleParentLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setParentError('');
-    if (!parentId.trim()) {
-      setParentError('Please enter a valid Parent Login ID.');
-      return;
-    }
-    const user = { ...demoUsers[2], email: parentId.trim() };
-    onLoginAs(user);
+  const handleParentLogin = (agentId?: string) => {
+    const id = agentId || 'ASD-Parent';
+    onLoginAs({
+      ...demoUsers[2],
+      email: id,
+      name: id.replace('ASD-', '').replace('-', ' ') || 'Lakshmi Parent',
+    });
   };
+
   return (
-    <div className="space-y-12 py-4">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border border-slate-800 p-8 md:p-12 shadow-2xl">
-        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="relative space-y-10 py-2 select-none overflow-hidden font-sans">
+      {/* 1. Hero Header Telemetry Ribbon */}
+      <div className="relative text-center space-y-3 max-w-5xl mx-auto pt-1">
+        {/* Top Autonomous Telemetry Badge */}
+        <div className="inline-flex items-center gap-2 bg-slate-950/80 border border-cyan-400/50 backdrop-blur-xl rounded-full px-4 py-1.5 shadow-[0_0_25px_rgba(6,182,212,0.4)] text-[11px] font-mono text-cyan-300">
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+          <span className="font-bold tracking-wider uppercase">Nexus Autonomous AI Galaxy</span>
+          <span className="text-slate-500">|</span>
+          <span className="text-slate-400">Gemini 3.7 Continuous Orbit</span>
+        </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-mono font-semibold">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span>{t('heroTag')}</span>
-          </div>
+        {/* Main Title with Cyber Circuit Wings */}
+        <div className="flex items-center justify-center gap-2 sm:gap-4">
+          <CircuitWingLeft className="hidden md:block w-14 lg:w-24 h-8 flex-shrink-0" />
 
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white font-mono leading-tight">
-            {t('heroTitle')}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black tracking-tight text-white font-mono leading-tight">
+            <span className="bg-gradient-to-r from-white via-cyan-100 to-indigo-200 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.7)]">
+              Next-Gen Autonomous EdTech Ecosystem
+            </span>
           </h1>
 
-          <p className="text-base md:text-lg text-slate-300 font-sans max-w-3xl mx-auto leading-relaxed">
-            {t('heroSubtitle')}
-          </p>
-
-          <div className="flex flex-wrap justify-center items-center gap-3 pt-2 text-xs font-mono text-slate-400">
-            <span className="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-cyan-300">Vertex AI</span>
-            <span>•</span>
-            <span className="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-indigo-300">Gemini 1.5 Pro</span>
-            <span>•</span>
-            <span className="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-purple-300">BigQuery Telemetry</span>
-            <span>•</span>
-            <span className="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-emerald-300">ADK & MCP</span>
-            <span>•</span>
-            <span className="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-amber-300">Cloud Run</span>
-          </div>
+          <CircuitWingRight className="hidden md:block w-14 lg:w-24 h-8 flex-shrink-0" />
         </div>
+
+        <p className="text-xs sm:text-sm text-slate-300 font-sans max-w-2xl mx-auto leading-relaxed opacity-95">
+          Enter the unified Robotic Command Space. Activate your Gemini 3.7 AI mentor, test the AI Galaxy Matrix, or launch BigQuery telemetry radar.
+        </p>
+
+        {/* AI Background Theme Switcher Bar */}
+        {onSelectTheme && (
+          <div className="pt-0.5">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 bg-slate-950/75 border border-cyan-500/40 p-1.5 sm:p-2 rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.3)] backdrop-blur-2xl">
+              <div className="flex items-center gap-1.5 px-2 text-[11px] font-mono font-bold text-cyan-300 border-r border-slate-800 pr-3">
+                <Wand2 className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
+                <span className="hidden sm:inline">Cosmic Theme:</span>
+              </div>
+              {(Object.keys(BACKGROUND_THEMES) as BackgroundThemeId[]).map((tId) => {
+                const theme = BACKGROUND_THEMES[tId];
+                const isSelected = currentTheme === tId;
+                return (
+                  <button
+                    key={tId}
+                    onClick={() => onSelectTheme(tId)}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black shadow-[0_0_15px_rgba(6,182,212,0.8)] scale-105'
+                        : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border border-slate-800/60'
+                    }`}
+                  >
+                    <span>{theme.icon}</span>
+                    <span>{theme.shortLabel}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* One-Click Demo Login Cards (3 Portals) */}
-      <div className="space-y-4">
-        <div className="text-center space-y-1">
-          <h2 className="text-xl font-bold text-white font-mono flex items-center justify-center gap-2">
-            <Zap className="w-5 h-5 text-amber-400" />
-            <span>{t('selectDemoLogin')}</span>
-          </h2>
-          <p className="text-xs text-slate-400">
-            {t('selectDemoSubtitle')}
-          </p>
+      {/* 2. GRAND ROBOTIC COMMAND CONSOLE (Housing the Login Page, Robot, AI Galaxy Matrix, and Telemetry directly in that space) */}
+      <div className="max-w-7xl mx-auto">
+        <RoboticMasterConsole
+          onLoginAs={onLoginAs}
+          currentTheme={currentTheme}
+          onSelectTheme={onSelectTheme}
+        />
+      </div>
+
+      {/* 4. Interactive "Try Next-Gen AI Feature" Showcase Launchpad */}
+      <div className="bg-gradient-to-b from-slate-950/90 to-slate-900/90 border-2 border-cyan-500/40 rounded-3xl p-6 sm:p-8 shadow-[0_0_40px_rgba(6,182,212,0.3)] backdrop-blur-2xl space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-cyan-500/30 pb-4">
+          <div className="space-y-1 text-left">
+            <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-4 h-4 text-cyan-400 animate-spin-slow" />
+              <span>Interactive Smart Education Launchpad</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-white font-mono">
+              Experience Trending AI Learning in Action
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400">
+              Select any capability below to immediately jump into a live, interactive test session.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              All AI Agents Ready
+            </span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1: Student Login Form */}
-          <div className="bg-slate-900/90 border border-indigo-500/30 hover:border-indigo-500 rounded-2xl p-6 shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6 group">
-            <div className="space-y-4">
+        {/* 4 Quick Launch Interactive Feature Pods */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+          {/* Pod 1: Robotic Mock Interview */}
+          <div
+            onClick={() => handleStudentLogin()}
+            className="group bg-slate-950/90 hover:bg-slate-900/90 border border-cyan-500/40 hover:border-cyan-300 rounded-2xl p-4 space-y-3 cursor-pointer shadow-[0_0_20px_rgba(6,182,212,0.2)] hover:shadow-[0_0_30px_rgba(6,182,212,0.45)] transition-all transform hover:-translate-y-1 flex flex-col justify-between"
+          >
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">
-                  <GraduationCap className="w-7 h-7" />
+                <div className="w-10 h-10 rounded-xl bg-cyan-950 border border-cyan-500/50 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                  <Mic className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono font-bold bg-indigo-950 text-indigo-300 px-2.5 py-1 rounded-md border border-indigo-800">
-                  {t('studentPortal')}
+                <span className="text-[10px] font-mono font-bold text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-500/30">
+                  STAR L6
                 </span>
               </div>
-
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold text-white font-mono group-hover:text-indigo-300 transition-colors">
-                  {t('studentLoginTitle')}
-                </h3>
-                <p className="text-xs text-indigo-300 font-mono font-medium">
-                  {t('studentDemoTitle', 'Jordan Smith (College CS - Cloud & AI)')}
-                </p>
-                <p className="text-xs text-slate-400 font-sans leading-relaxed">
-                  {t('studentLoginDesc')}
-                </p>
-              </div>
-
-              {/* Student Login Form */}
-              <form onSubmit={handleStudentLogin} className="space-y-3 pt-2 border-t border-slate-800/80">
-                {studentError && (
-                  <div className="p-2 text-[11px] bg-red-950/80 border border-red-800 text-red-300 rounded-lg font-mono">
-                    {studentError}
-                  </div>
-                )}
-                <div>
-                  <label className="block text-[11px] font-mono font-semibold text-slate-300 mb-1">
-                    {t('studentLoginId', 'Student Login ID:')}
-                  </label>
-                  <input
-                    type="text"
-                    value={studentId}
-                    onChange={(e) => setStudentId(e.target.value)}
-                    placeholder="e.g. jordan.smith@eduagent.ai"
-                    className="w-full bg-slate-950 text-slate-100 px-3 py-2 rounded-xl border border-slate-700 text-xs font-mono focus:outline-none focus:border-indigo-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-mono font-semibold text-slate-300 mb-1">
-                    {t('password', 'Password:')}
-                  </label>
-                  <input
-                    type="password"
-                    value={studentPass}
-                    onChange={(e) => setStudentPass(e.target.value)}
-                    className="w-full bg-slate-950 text-slate-100 px-3 py-2 rounded-xl border border-slate-700 text-xs font-mono focus:outline-none focus:border-indigo-500"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 font-mono text-xs transition-all mt-2"
-                >
-                  <Lock className="w-4 h-4 text-indigo-300" />
-                  <span>{t('loginStudentBtn')}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </form>
+              <h3 className="text-sm font-bold text-white font-mono group-hover:text-cyan-300 transition-colors">
+                Robotic Voice Mock Interview
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                AI robotic interviewer asking real system design & behavioral questions with real-time audio scoring.
+              </p>
+            </div>
+            <div className="pt-2 flex items-center justify-between text-xs font-mono font-bold text-cyan-400 border-t border-slate-900">
+              <span>Try Interview</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Card 2: Teacher Login Form */}
-          <div className="bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-500 rounded-2xl p-6 shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6 group">
-            <div className="space-y-4">
+          {/* Pod 2: Vision Architecture Scanner */}
+          <div
+            onClick={() => handleStudentLogin()}
+            className="group bg-slate-950/90 hover:bg-slate-900/90 border border-blue-500/40 hover:border-blue-300 rounded-2xl p-4 space-y-3 cursor-pointer shadow-[0_0_20px_rgba(59,130,246,0.2)] hover:shadow-[0_0_30px_rgba(59,130,246,0.45)] transition-all transform hover:-translate-y-1 flex flex-col justify-between"
+          >
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
-                  <Users className="w-7 h-7" />
+                <div className="w-10 h-10 rounded-xl bg-blue-950 border border-blue-500/50 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                  <Eye className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 px-2.5 py-1 rounded-md border border-cyan-800">
-                  {t('teacherDashboard')}
+                <span className="text-[10px] font-mono font-bold text-blue-300 bg-blue-950/80 px-2 py-0.5 rounded-md border border-blue-500/30">
+                  Vision QA
                 </span>
               </div>
-
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold text-white font-mono group-hover:text-cyan-300 transition-colors">
-                  {t('teacherLoginTitle')}
-                </h3>
-                <p className="text-xs text-cyan-300 font-mono font-medium">
-                  {t('teacherDemoTitle', 'Prof. Sharma (BigQuery Risk Telemetry)')}
-                </p>
-                <p className="text-xs text-slate-400 font-sans leading-relaxed">
-                  {t('teacherLoginDesc')}
-                </p>
-              </div>
-
-              {/* Teacher Login Form */}
-              <form onSubmit={handleTeacherLogin} className="space-y-3 pt-2 border-t border-slate-800/80">
-                {teacherError && (
-                  <div className="p-2 text-[11px] bg-red-950/80 border border-red-800 text-red-300 rounded-lg font-mono">
-                    {teacherError}
-                  </div>
-                )}
-                <div>
-                  <label className="block text-[11px] font-mono font-semibold text-slate-300 mb-1">
-                    {t('teacherLoginId', 'Teacher Login ID:')}
-                  </label>
-                  <input
-                    type="text"
-                    value={teacherId}
-                    onChange={(e) => setTeacherId(e.target.value)}
-                    placeholder="e.g. prof.sharma@eduagent.ai"
-                    className="w-full bg-slate-950 text-slate-100 px-3 py-2 rounded-xl border border-slate-700 text-xs font-mono focus:outline-none focus:border-cyan-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-mono font-semibold text-slate-300 mb-1">
-                    {t('password', 'Password:')}
-                  </label>
-                  <input
-                    type="password"
-                    value={teacherPass}
-                    onChange={(e) => setTeacherPass(e.target.value)}
-                    className="w-full bg-slate-950 text-slate-100 px-3 py-2 rounded-xl border border-slate-700 text-xs font-mono focus:outline-none focus:border-cyan-500"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg shadow-cyan-600/30 flex items-center justify-center gap-2 font-mono text-xs transition-all mt-2"
-                >
-                  <Lock className="w-4 h-4 text-cyan-300" />
-                  <span>{t('loginTeacherBtn')}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </form>
+              <h3 className="text-sm font-bold text-white font-mono group-hover:text-blue-300 transition-colors">
+                Architecture Blueprint Vision
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Scan handwritten diagrams, microservices, and whiteboard sketches for instant AI bottlenecks and fixes.
+              </p>
+            </div>
+            <div className="pt-2 flex items-center justify-between text-xs font-mono font-bold text-blue-400 border-t border-slate-900">
+              <span>Scan Blueprint</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Card 3: Parent Login Form */}
-          <div className="bg-slate-900/90 border border-emerald-500/30 hover:border-emerald-500 rounded-2xl p-6 shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6 group">
-            <div className="space-y-4">
+          {/* Pod 3: BigQuery Classroom Risk Radar */}
+          <div
+            onClick={() => handleTeacherLogin()}
+            className="group bg-slate-950/90 hover:bg-slate-900/90 border border-pink-500/40 hover:border-pink-300 rounded-2xl p-4 space-y-3 cursor-pointer shadow-[0_0_20px_rgba(236,72,153,0.2)] hover:shadow-[0_0_30px_rgba(236,72,153,0.45)] transition-all transform hover:-translate-y-1 flex flex-col justify-between"
+          >
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-                  <HeartHandshake className="w-7 h-7" />
+                <div className="w-10 h-10 rounded-xl bg-pink-950 border border-pink-500/50 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
+                  <Database className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 px-2.5 py-1 rounded-md border border-emerald-800">
-                  {t('parentPortal')}
+                <span className="text-[10px] font-mono font-bold text-pink-300 bg-pink-950/80 px-2 py-0.5 rounded-md border border-pink-500/30">
+                  BigQuery
                 </span>
               </div>
+              <h3 className="text-sm font-bold text-white font-mono group-hover:text-pink-300 transition-colors">
+                Classroom Risk Radar Lead
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Prof. Sharma's real-time risk gauges tracking 200 students with automated AI 1-on-1 intervention plans.
+              </p>
+            </div>
+            <div className="pt-2 flex items-center justify-between text-xs font-mono font-bold text-pink-400 border-t border-slate-900">
+              <span>Launch Radar</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
 
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold text-white font-mono group-hover:text-emerald-300 transition-colors">
-                  {t('parentLoginTitle')}
-                </h3>
-                <p className="text-xs text-emerald-300 font-mono font-medium">
-                  {t('parentDemoTitle', 'Lakshmi Parent (Multilingual Voice Access)')}
-                </p>
-                <p className="text-xs text-slate-400 font-sans leading-relaxed">
-                  {t('parentLoginDesc')}
-                </p>
+          {/* Pod 4: Multilingual Voice Parent Advisor */}
+          <div
+            onClick={() => handleParentLogin()}
+            className="group bg-slate-950/90 hover:bg-slate-900/90 border border-purple-500/40 hover:border-purple-300 rounded-2xl p-4 space-y-3 cursor-pointer shadow-[0_0_20px_rgba(168,85,247,0.2)] hover:shadow-[0_0_30px_rgba(168,85,247,0.45)] transition-all transform hover:-translate-y-1 flex flex-col justify-between"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 rounded-xl bg-purple-950 border border-purple-500/50 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                  <Globe className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono font-bold text-purple-300 bg-purple-950/80 px-2 py-0.5 rounded-md border border-purple-500/30">
+                  15+ Languages
+                </span>
               </div>
-
-              {/* Parent Login Form */}
-              <form onSubmit={handleParentLogin} className="space-y-3 pt-2 border-t border-slate-800/80">
-                {parentError && (
-                  <div className="p-2 text-[11px] bg-red-950/80 border border-red-800 text-red-300 rounded-lg font-mono">
-                    {parentError}
-                  </div>
-                )}
-                <div>
-                  <label className="block text-[11px] font-mono font-semibold text-slate-300 mb-1">
-                    {t('parentLoginId', 'Parent Login ID:')}
-                  </label>
-                  <input
-                    type="text"
-                    value={parentId}
-                    onChange={(e) => setParentId(e.target.value)}
-                    placeholder="e.g. parent.lakshmi@eduagent.ai"
-                    className="w-full bg-slate-950 text-slate-100 px-3 py-2 rounded-xl border border-slate-700 text-xs font-mono focus:outline-none focus:border-emerald-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-mono font-semibold text-slate-300 mb-1">
-                    {t('password', 'Password:')}
-                  </label>
-                  <input
-                    type="password"
-                    value={parentPass}
-                    onChange={(e) => setParentPass(e.target.value)}
-                    className="w-full bg-slate-950 text-slate-100 px-3 py-2 rounded-xl border border-slate-700 text-xs font-mono focus:outline-none focus:border-emerald-500"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 font-mono text-xs transition-all mt-2"
-                >
-                  <Lock className="w-4 h-4 text-emerald-300" />
-                  <span>{t('loginParentBtn')}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </form>
+              <h3 className="text-sm font-bold text-white font-mono group-hover:text-purple-300 transition-colors">
+                Parental Voice Advisor
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Translate engineering milestones into simple, jargon-free native language audio summaries.
+              </p>
+            </div>
+            <div className="pt-2 flex items-center justify-between text-xs font-mono font-bold text-purple-400 border-t border-slate-900">
+              <span>Open Advisor</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Architecture Highlights */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <h3 className="text-lg font-bold text-white font-mono">
-            {t('architectureTitle')}
-          </h3>
-          <p className="text-xs text-slate-400">
-            {t('architectureSub')}
-          </p>
+      {/* 5. Section Title: Agent-Led Learning Microservices */}
+      <div className="text-center space-y-1 pt-4">
+        <h3 className="text-lg sm:text-xl font-bold text-white font-mono flex items-center justify-center gap-2">
+          <Layers className="w-5 h-5 text-cyan-400" />
+          <span>Agent-Led Learning Microservices</span>
+        </h3>
+      </div>
+
+      {/* 6. Four Bottom Microservice Cards (Robotic Nodes with Crystal Icons) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+        
+        {/* Microservice 1: Multimodal Vision */}
+        <div className="bg-slate-950/90 border border-cyan-500/40 hover:border-cyan-300 rounded-2xl p-4 space-y-3 shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all duration-300 flex flex-col justify-between group">
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-xl bg-cyan-950/90 border border-cyan-500/50 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Eye className="w-4 h-4 text-cyan-400" />
+              </div>
+              <Crystal3DIcon type="cyan" className="w-5 h-5" />
+            </div>
+            <h4 className="text-xs font-black text-white font-mono flex items-center justify-between">
+              <span>Multimodal Vision</span>
+              <span className="text-[9px] text-cyan-400 font-normal">99.4% FPS</span>
+            </h4>
+            <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
+              Analytics, disengagement, diagrams, and rich real-time visual assessment
+            </p>
+          </div>
+
+          <div className="pt-2.5 border-t border-slate-900 flex items-center justify-between text-[10px] font-mono">
+            <span className="text-slate-500">Agent Status</span>
+            <span className="flex items-center gap-1.5 text-emerald-400 font-bold bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800/50">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Active
+            </span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-            <Cpu className="w-5 h-5 text-indigo-400" />
-            <h4 className="text-xs font-bold text-white font-mono">{t('multimodalVision')}</h4>
-            <p className="text-[11px] text-slate-400 font-sans">
-              {t('multimodalVisionDesc')}
+        {/* Microservice 2: BigQuery Analytics */}
+        <div className="bg-slate-950/90 border border-cyan-500/40 hover:border-cyan-300 rounded-2xl p-4 space-y-3 shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all duration-300 flex flex-col justify-between group">
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-xl bg-blue-950/90 border border-blue-500/50 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Search className="w-4 h-4 text-blue-400" />
+              </div>
+              <Crystal3DIcon type="blue" className="w-5 h-5" />
+            </div>
+            <h4 className="text-xs font-black text-white font-mono flex items-center justify-between">
+              <span>BigQuery Analytics</span>
+              <span className="text-[9px] text-blue-400 font-normal">1.8 TB/s</span>
+            </h4>
+            <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
+              Specialized 200 different reports on CS/Tech classroom risk telemetry
             </p>
           </div>
 
-          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-            <Database className="w-5 h-5 text-cyan-400" />
-            <h4 className="text-xs font-bold text-white font-mono">{t('bigQueryAnalytics')}</h4>
-            <p className="text-[11px] text-slate-400 font-sans">
-              {t('bigQueryAnalyticsDesc')}
+          <div className="pt-2.5 border-t border-slate-900 flex items-center justify-between text-[10px] font-mono">
+            <span className="text-slate-500">Agent Status</span>
+            <span className="flex items-center gap-1.5 text-cyan-400 font-bold bg-cyan-950/40 px-2 py-0.5 rounded border border-cyan-800/50">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              Optimizing
+            </span>
+          </div>
+        </div>
+
+        {/* Microservice 3: AI+Multilingual */}
+        <div className="bg-slate-950/90 border border-cyan-500/40 hover:border-cyan-300 rounded-2xl p-4 space-y-3 shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all duration-300 flex flex-col justify-between group">
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-xl bg-teal-950/90 border border-teal-500/50 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Globe className="w-4 h-4 text-teal-400" />
+              </div>
+              <Crystal3DIcon type="emerald" className="w-5 h-5" />
+            </div>
+            <h4 className="text-xs font-black text-white font-mono flex items-center justify-between">
+              <span>AI+Multilingual</span>
+              <span className="text-[9px] text-teal-400 font-normal">15 Native</span>
+            </h4>
+            <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
+              Targeted automated notes in 15+ native language voice summaries
             </p>
           </div>
 
-          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-            <Globe className="w-5 h-5 text-emerald-400" />
-            <h4 className="text-xs font-bold text-white font-mono">{t('a2aMultilingual')}</h4>
-            <p className="text-[11px] text-slate-400 font-sans">
-              {t('a2aMultilingualDesc')}
+          <div className="pt-2.5 border-t border-slate-900 flex items-center justify-between text-[10px] font-mono">
+            <span className="text-slate-500">Agent Status</span>
+            <span className="flex items-center gap-1.5 text-blue-400 font-bold bg-blue-950/40 px-2 py-0.5 rounded border border-blue-800/50">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+              Translating
+            </span>
+          </div>
+        </div>
+
+        {/* Microservice 4: Skill-Gap Matrix */}
+        <div className="bg-slate-950/90 border border-cyan-500/40 hover:border-cyan-300 rounded-2xl p-4 space-y-3 shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all duration-300 flex flex-col justify-between group">
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="w-9 h-9 rounded-xl bg-purple-950/90 border border-purple-500/50 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Target className="w-4 h-4 text-purple-400" />
+              </div>
+              <Crystal3DIcon type="purple" className="w-5 h-5" />
+            </div>
+            <h4 className="text-xs font-black text-white font-mono flex items-center justify-between">
+              <span>Skill-Gap Matrix</span>
+              <span className="text-[9px] text-purple-400 font-normal">STAR L6</span>
+            </h4>
+            <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
+              Multi-perspective automated interview scoring & remedial gap closure
             </p>
           </div>
 
-          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-            <Target className="w-5 h-5 text-purple-400" />
-            <h4 className="text-xs font-bold text-white font-mono">{t('skillGapTitle')}</h4>
-            <p className="text-[11px] text-slate-400 font-sans">
-              {t('skillGapDesc')}
-            </p>
+          <div className="pt-2.5 border-t border-slate-900 flex items-center justify-between text-[10px] font-mono">
+            <span className="text-slate-500">Agent Status</span>
+            <span className="flex items-center gap-1.5 text-amber-400 font-bold bg-amber-950/40 px-2 py-0.5 rounded border border-amber-800/50">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              Training
+            </span>
           </div>
+        </div>
+
+      </div>
+
+      {/* 7. Nexus Autonomous Bottom Telemetry Bar */}
+      <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-slate-400">
+        <div className="flex items-center gap-2">
+          <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+          <span className="text-slate-200 font-bold">NEXUS AUTONOMOUS STREAM:</span>
+          <span>Core Mesh Active • Model: Gemini 3.7 Flash & Trending Robotics AI</span>
+        </div>
+        <div className="flex items-center gap-4 text-[10px]">
+          <span className="text-emerald-400 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+            Zero-Drift Telemetry
+          </span>
+          <span className="text-cyan-400">ADK 2.4 Ready</span>
+          <span className="text-purple-400">MCP Multi-Node</span>
         </div>
       </div>
     </div>

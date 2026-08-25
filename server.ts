@@ -48,41 +48,61 @@ function formatRoutingHeader(portal: string, feature: string, language: string):
 }
 
 /**
- * Executes Gemini content generation with automatic model fallback list upon rate limits (429/RESOURCE_EXHAUSTED).
+ * Executes Gemini content generation with automatic retry and model fallback upon rate limits (429/RESOURCE_EXHAUSTED) or temporary service unavailability (503/UNAVAILABLE).
  *
  * @param ai GoogleGenAI client instance
  * @param params Gemini API generation params (contents, config, systemInstruction)
  * @returns API response object or fallback object with text: null
  */
 async function generateContentWithRetry(ai: GoogleGenAI, params: any): Promise<any> {
+  // Only valid, officially supported models from the @google/genai SDK
   const modelsToTry = [
-    'gemini-2.0-flash',
-    'gemini-2.0-flash-lite',
+    'gemini-3.7-flash',
+    'gemini-3.1-flash-lite',
     'gemini-flash-latest',
   ];
   let lastError: any = null;
 
   for (const model of modelsToTry) {
-    try {
-      const response = await ai.models.generateContent({
-        ...params,
-        model,
-      });
-      if (response && response.text) {
-        return response;
-      }
-    } catch (err: any) {
-      lastError = err;
-      const errMsg = err?.message || String(err);
-      if (errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('quota')) {
-        console.warn(`Gemini model ${model} rate limited / quota exhausted. Trying next fallback model...`);
-        await new Promise((resolve) => setTimeout(resolve, 400));
-      } else {
-        console.warn(`Gemini model ${model} encountered error: ${errMsg}. Trying fallback model...`);
+    // Retry transient errors (503, 429, network hiccups) up to 2 times per model before switching
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const response = await ai.models.generateContent({
+          ...params,
+          model,
+        });
+        if (response && response.text) {
+          return response;
+        }
+      } catch (err: any) {
+        lastError = err;
+        const errMsg = err?.message || String(err);
+        const isTransient = 
+          errMsg.includes('503') || 
+          errMsg.includes('UNAVAILABLE') || 
+          errMsg.includes('429') || 
+          errMsg.includes('RESOURCE_EXHAUSTED') || 
+          errMsg.includes('quota') ||
+          errMsg.includes('overloaded') ||
+          errMsg.includes('ECONNRESET') ||
+          errMsg.includes('ETIMEDOUT');
+
+        if (isTransient) {
+          if (attempt === 0) {
+            // Short backoff before retrying same model
+            await new Promise((resolve) => setTimeout(resolve, 400 + Math.random() * 200));
+            continue;
+          } else {
+            console.warn(`Gemini model ${model} temporarily unavailable/throttled. Trying next fallback model...`);
+          }
+        } else {
+          console.warn(`Gemini model ${model} encountered non-transient error: ${errMsg.slice(0, 120)}`);
+          break; // Don't retry same model on non-transient syntax/schema errors
+        }
       }
     }
   }
-  console.warn('All Gemini fallback models exhausted or rate limited. Returning graceful fallback.');
+  console.warn('Gemini models exhausted or unavailable. Serving structured fallback response.');
   return { text: null, error: lastError };
 }
 
@@ -1087,7 +1107,7 @@ let serverTelemetryStudents = [
   {
     id: 'st-101',
     studentName: 'Jordan Smith',
-    rollNo: '2022-CS-041',
+    rollNo: 'AST-2026-089',
     email: 'jordan.smith@eng.edu',
     targetRole: 'AI Cloud Architect',
     attendancePct: 96,
@@ -1101,7 +1121,7 @@ let serverTelemetryStudents = [
   {
     id: 'st-102',
     studentName: 'Rohan Sharma',
-    rollNo: '2022-CS-012',
+    rollNo: 'AST-2026-012',
     email: 'rohan.s@eng.edu',
     targetRole: 'AI Systems Engineer',
     attendancePct: 72,
@@ -1115,7 +1135,7 @@ let serverTelemetryStudents = [
   {
     id: 'st-103',
     studentName: 'Ananya Verma',
-    rollNo: '2022-CS-088',
+    rollNo: 'AST-2026-088',
     email: 'ananya.v@eng.edu',
     targetRole: 'Cybersecurity Lead',
     attendancePct: 68,
@@ -1129,7 +1149,7 @@ let serverTelemetryStudents = [
   {
     id: 'st-104',
     studentName: 'Karthik Raja',
-    rollNo: '2022-CS-095',
+    rollNo: 'AST-2026-095',
     email: 'karthik.r@eng.edu',
     targetRole: 'Database Systems Architect',
     attendancePct: 84,
@@ -1142,9 +1162,9 @@ let serverTelemetryStudents = [
   },
   {
     id: 'st-105',
-    studentName: 'Priya Sundaram',
-    rollNo: '2022-CS-112',
-    email: 'priya.s@eng.edu',
+    studentName: 'Priya Patel',
+    rollNo: 'AST-2026-215',
+    email: 'priya.p@eng.edu',
     targetRole: 'Full-Stack DevOps Lead',
     attendancePct: 99,
     projectScore: 95,
@@ -1161,7 +1181,7 @@ let serverActivitySubmissions = [
     id: 'sub-1',
     studentId: 'st-101',
     studentName: 'Jordan Smith',
-    rollNo: '2022-CS-041',
+    rollNo: 'AST-2026-089',
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     module: 'Voice STAR Interview',
     actionType: 'STAR Answer Evaluation',
@@ -1169,6 +1189,58 @@ let serverActivitySubmissions = [
     score: '94/100',
     summary: 'Explained circuit breaker patterns, bounded token buckets, and connection pooling under 10k RPS load spikes.',
     diagnosedGap: 'Demonstrates clear understanding of thread pools and rate limiters.',
+  },
+  {
+    id: 'sub-2',
+    studentId: 'st-102',
+    studentName: 'Rohan Sharma',
+    rollNo: 'AST-2026-012',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    module: 'Vision Image Review',
+    actionType: 'Architecture Diagram Review',
+    title: 'Cloud Distributed Cache SPOF Analysis',
+    score: '61/100',
+    summary: 'Detected single Redis node failure without replica sentinel clustering.',
+    diagnosedGap: 'Concurrent State Mutation & Volatile Memory Hazards (Go/Java)',
+  },
+  {
+    id: 'sub-3',
+    studentId: 'st-103',
+    studentName: 'Ananya Verma',
+    rollNo: 'AST-2026-088',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    module: 'Project Repo Grader',
+    actionType: 'Security Code Submission',
+    title: 'OAuth PKCE Gateway Microservice',
+    score: '55/100',
+    summary: 'Failed PKCE verifier validation check in static code review.',
+    diagnosedGap: 'OAuth 2.0 PKCE Security Tokens & Code Challenge Verification',
+  },
+  {
+    id: 'sub-4',
+    studentId: 'st-104',
+    studentName: 'Karthik Raja',
+    rollNo: 'AST-2026-095',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    module: 'Spaced Retrieval Queue',
+    actionType: 'Database Optimization Quiz',
+    title: 'PostgreSQL Indexing & Partitioning Analysis',
+    score: '78/100',
+    summary: 'Analyzed query plan explain outputs and composite index optimization on multi-tenant tables.',
+    diagnosedGap: 'PostgreSQL B-Tree Index Fragmentation & Query Explain Execution',
+  },
+  {
+    id: 'sub-5',
+    studentId: 'st-105',
+    studentName: 'Priya Patel',
+    rollNo: 'AST-2026-215',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    module: 'Engineering Task Board',
+    actionType: 'CI/CD Pipeline Deployment',
+    title: 'Kubernetes Multi-Cluster GitOps Workflow',
+    score: '95/100',
+    summary: 'Automated helm release charts, canary traffic shifting, and Prometheus latency alerts.',
+    diagnosedGap: 'Mastered - Kubernetes Multi-Cluster Service Mesh Ingress',
   },
 ];
 
@@ -1384,6 +1456,70 @@ Technical Summary Details: ${technicalSummary || 'Scored 94% in Cloud Microservi
     res.json({
       routingHeader,
       response: buildNativeReport(selectedLanguage),
+    });
+  }
+});
+
+// 5b. Parent AI Parental Advisor & Inquiry Assistant Endpoint
+app.post('/api/ai/parent-inquiry', async (req, res) => {
+  const {
+    inquiry = '',
+    studentName = 'Student',
+    attendance = '95%',
+    projectScore = '90/100',
+    technicalTrack = 'Computer Science & Software Engineering',
+    language = 'English',
+    portal = 'Parent',
+  } = req.body;
+  const routingHeader = formatRoutingHeader(portal, 'Voice Audio', language);
+
+  const fallbackAnswer = `**Guidance for ${studentName}'s Family:** ${studentName} is currently excelling with **${attendance}** attendance and a project score of **${projectScore}** in the **${technicalTrack}** track. To support them at home, encourage regular milestone revision and celebrate their engineering problem-solving achievements!`;
+
+  try {
+    const ai = getGenAIClient();
+    if (!ai) {
+      return res.json({
+        routingHeader,
+        response: fallbackAnswer,
+        answer: fallbackAnswer,
+      });
+    }
+
+    const systemInstruction = `You are EduAgent OS (EduMentor AI) serving as a specialized Parental Advisor and Family Mentor.
+A parent or guardian is asking a question about their student: ${studentName}.
+Student Context:
+- Attendance: ${attendance}
+- Repo Project Score: ${projectScore}
+- Technical Focus: ${technicalTrack}
+
+STRICT INSTRUCTIONS:
+1. Provide a warm, respectful, reassuring, and jargon-free answer tailored to the parent's inquiry.
+2. Explain technical concepts in everyday analogies so parents without an engineering background can easily understand.
+3. Offer 2 practical, positive tips on how the parent can support or encourage ${studentName} at home.
+4. Output language: Translate the entire answer into ${language} (or keep in ${language} if English).`;
+
+    const prompt = `Parent Inquiry: "${inquiry}"\nStudent: ${studentName}\nTrack: ${technicalTrack}`;
+
+    const response = await generateContentWithRetry(ai, {
+      contents: prompt,
+      config: {
+        systemInstruction,
+        temperature: 0.3,
+      },
+    });
+
+    const finalAnswer = response?.text?.trim() || fallbackAnswer;
+    res.json({
+      routingHeader,
+      response: finalAnswer,
+      answer: finalAnswer,
+    });
+  } catch (error: any) {
+    console.error('Parent Inquiry Error:', error?.message);
+    res.json({
+      routingHeader,
+      response: fallbackAnswer,
+      answer: fallbackAnswer,
     });
   }
 });

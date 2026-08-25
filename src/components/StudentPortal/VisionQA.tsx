@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { LanguageType } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { getActiveStudentSession, recordStudentActivity } from '../../lib/telemetryStore';
-import { Eye, Upload, AlertTriangle, CheckCircle2, Sparkles, Image as ImageIcon, ArrowRight, Loader2 } from 'lucide-react';
+import { Eye, Upload, AlertTriangle, CheckCircle2, Sparkles, Image as ImageIcon, ArrowRight, Loader2, Cpu, Scan, Zap } from 'lucide-react';
 import { MarkdownRenderer } from '../MarkdownRenderer';
+import { MechaCard } from '../CyberVisuals';
 
 interface Props {
   language: LanguageType;
@@ -101,26 +102,21 @@ export const VisionQA: React.FC<Props> = ({ language, onSetModality }) => {
 
   return (
     <div className="space-y-6">
-      {/* Feature Title */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-            <Eye className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white font-mono">{t('visionTitle', 'Gemini Multimodal Vision Architecture Review')}</h2>
-            <p className="text-sm text-slate-400">
-              {t('visionSubtitle', 'Upload architecture diagrams, system workflows, or code screenshots to detect structural flaws, memory hazards, and SPOFs.')}
-            </p>
-          </div>
-        </div>
-
+      {/* Feature Title Card with Mecha Framing */}
+      <MechaCard
+        themeColor="emerald"
+        title={t('visionTitle', 'Gemini Multimodal Vision Architecture Review')}
+        subTitle={t('visionSubtitle', 'Upload architecture diagrams, system workflows, or code screenshots to detect structural flaws, memory hazards, and SPOFs.')}
+        badge="GEMINI 3.7 FLASH // VISION COGNITIVE ENGINE"
+        icon={<Eye className="w-6 h-6" />}
+      >
         {/* Preset Sample Architectures */}
-        <div className="mt-4 pt-4 border-t border-slate-800">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-3">
-            {t('tryPresets', 'Try Preset Engineering Samples:')}
+        <div className="pt-2">
+          <span className="text-xs font-bold text-emerald-400 font-mono uppercase tracking-wider block mb-3 flex items-center gap-1.5">
+            <Scan className="w-3.5 h-3.5" />
+            {t('tryPresets', 'Try Preset Engineering Architecture Samples:')}
           </span>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
             {sampleArchitectures.map((sample, idx) => (
               <button
                 key={idx}
@@ -128,30 +124,31 @@ export const VisionQA: React.FC<Props> = ({ language, onSetModality }) => {
                   setSelectedImage(sample.image);
                   setPrompt(sample.prompt);
                 }}
-                className="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 hover:border-emerald-500/50 rounded-xl text-left transition-all group"
+                className="flex flex-col p-3.5 bg-slate-950/90 border border-emerald-500/30 hover:border-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] rounded-xl text-left transition-all group cursor-pointer relative overflow-hidden"
               >
-                <div className="w-16 h-12 bg-slate-900 rounded border border-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
-                  <ImageIcon className="w-5 h-5 text-slate-500 group-hover:text-emerald-400" />
+                <div className="w-full h-24 bg-slate-900 rounded-lg border border-slate-800 overflow-hidden flex items-center justify-center mb-2.5 relative group-hover:border-emerald-500/50 transition-colors">
+                  <ImageIcon className="w-6 h-6 text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                  <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-200 group-hover:text-emerald-300">{sample.title}</h4>
-                  <p className="text-[11px] text-slate-400 line-clamp-1">{sample.prompt}</p>
-                </div>
+                <h4 className="text-xs font-bold font-mono text-slate-200 group-hover:text-emerald-300 line-clamp-1">{sample.title}</h4>
+                <p className="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-relaxed">{sample.prompt}</p>
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </MechaCard>
 
       {/* Input & Upload Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column: Image Preview / Upload */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              {t('uploadLabel', 'Upload Image / Diagram / Screenshot')}
-            </label>
-            <div className="border-2 border-dashed border-slate-700 hover:border-emerald-500/50 bg-slate-950/60 rounded-xl p-6 text-center cursor-pointer transition-all relative overflow-hidden group">
+        <MechaCard
+          themeColor="emerald"
+          title={t('uploadLabel', 'Upload Architecture Diagram / Screenshot')}
+          badge="MULTIMODAL OPTIC SENSOR"
+          icon={<Upload className="w-5 h-5" />}
+        >
+          <div className="space-y-4">
+            <div className="border-2 border-dashed border-emerald-500/40 hover:border-emerald-400 bg-slate-950/80 rounded-2xl p-6 text-center cursor-pointer transition-all relative overflow-hidden group shadow-inner">
               <input
                 type="file"
                 accept="image/*"
@@ -163,86 +160,89 @@ export const VisionQA: React.FC<Props> = ({ language, onSetModality }) => {
                   <img
                     src={selectedImage}
                     alt="Uploaded preview"
-                    className="max-h-56 mx-auto rounded-lg border border-slate-800 shadow-lg object-contain"
+                    className="max-h-56 mx-auto rounded-lg border-2 border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.3)] object-contain"
                   />
-                  <p className="text-xs text-emerald-400 font-semibold">{t('imageLoaded', 'Image Loaded & Ready for Gemini Vision Analysis')}</p>
+                  <p className="text-xs text-emerald-400 font-mono font-bold flex items-center justify-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span>{t('imageLoaded', 'Image Loaded & Ready for Gemini Vision Analysis')}</span>
+                  </p>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-slate-900 text-slate-400 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                    <Upload className="w-5 h-5 text-emerald-400" />
+                <div className="space-y-2.5 py-4">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                    <Upload className="w-6 h-6 text-emerald-400" />
                   </div>
-                  <p className="text-sm font-medium text-slate-200">{t('dragDropClick', 'Drag & Drop or Click to Upload')}</p>
-                  <p className="text-xs text-slate-500">{t('uploadSupports', 'Supports PNG, JPG, WebP, SVG screenshots')}</p>
+                  <p className="text-sm font-bold font-mono text-slate-200">{t('dragDropClick', 'Drag & Drop or Click to Upload')}</p>
+                  <p className="text-xs text-slate-400 font-mono">{t('uploadSupports', 'Supports PNG, JPG, WebP, SVG screenshots')}</p>
                 </div>
               )}
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              {t('engineeringPromptLabel', 'Engineering Prompt / Specific Focus Question')}
-            </label>
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder={t('engineeringPromptPlaceholder', 'e.g. Detect concurrency race conditions, memory leaks, single points of failure, or Big-O complexity bottlenecks...')}
-              rows={3}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-emerald-500/60 font-sans resize-none"
-            />
-          </div>
+            <div>
+              <label className="block text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-2">
+                {t('engineeringPromptLabel', 'Engineering Prompt / Specific Focus Question')}
+              </label>
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder={t('engineeringPromptPlaceholder', 'e.g. Detect concurrency race conditions, memory leaks, single points of failure, or Big-O complexity bottlenecks...')}
+                rows={3}
+                className="w-full bg-slate-950 border-2 border-emerald-500/30 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-emerald-400 font-mono resize-none shadow-inner"
+              />
+            </div>
 
-          <button
-            onClick={handleAnalyze}
-            disabled={loading || (!selectedImage && !prompt)}
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all font-mono text-sm"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>{t('btnAnalyzing', 'Running Gemini Multimodal Vision Diagnostic...')}</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                <span>{t('btnAnalyze', 'Analyze Structural Flaws & Remediation')}</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </div>
+            <button
+              onClick={handleAnalyze}
+              disabled={loading || (!selectedImage && !prompt)}
+              className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-slate-950 font-black rounded-xl shadow-[0_0_25px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 transition-all font-mono text-sm cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>{t('btnAnalyzing', 'Running Gemini Multimodal Vision Diagnostic...')}</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="w-5 h-5" />
+                  <span>{t('btnAnalyze', 'Analyze Structural Flaws & Remediation')}</span>
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
+          </div>
+        </MechaCard>
 
         {/* Right Column: Senior Architecture Review Output */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 min-h-[400px] flex flex-col">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-            <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2 font-mono">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span>{t('diagnosticReportTitle', 'Senior Engineering Diagnostic Report')}</span>
-            </h3>
-            {result?.routingHeader && (
-              <span className="text-[10px] font-mono bg-slate-950 text-indigo-300 px-2.5 py-1 rounded border border-slate-800">
+        <MechaCard
+          themeColor="emerald"
+          title={t('diagnosticReportTitle', 'Senior Engineering Diagnostic Report')}
+          badge="VERTEX AI TELEMETRY FEED"
+          icon={<CheckCircle2 className="w-5 h-5 text-emerald-400" />}
+          headerAction={
+            result?.routingHeader && (
+              <span className="text-[10px] font-mono bg-slate-950 text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-500/40">
                 {result.routingHeader}
               </span>
-            )}
-          </div>
-
-          <div className="flex-1 bg-slate-950 rounded-xl p-4 border border-slate-800/80 overflow-y-auto max-h-[500px]">
+            )
+          }
+        >
+          <div className="bg-slate-950/90 rounded-xl p-4 border border-emerald-500/20 overflow-y-auto max-h-[520px] shadow-inner">
             {loading ? (
-              <div className="flex flex-col items-center justify-center h-full py-12 space-y-3 text-slate-400">
-                <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+              <div className="flex flex-col items-center justify-center h-full py-16 space-y-4 text-emerald-400">
+                <Loader2 className="w-10 h-10 animate-spin text-emerald-400" />
                 <p className="text-sm font-mono animate-pulse">{t('evaluatingGraph', 'Evaluating Architecture Graph & AST Constraints...')}</p>
               </div>
             ) : result ? (
               <MarkdownRenderer content={result.response} />
             ) : (
-              <div className="flex flex-col items-center justify-center h-full py-12 text-slate-500 text-center space-y-2">
-                <AlertTriangle className="w-8 h-8 text-slate-600" />
-                <p className="text-sm">{t('noAnalysisPerformed', 'No analysis performed yet.')}</p>
-                <p className="text-xs text-slate-600">{t('noAnalysisDesc', 'Select a preset sample or upload your own diagram to receive senior mentor diagnostic feedback.')}</p>
+              <div className="flex flex-col items-center justify-center h-full py-16 text-slate-500 text-center space-y-3 font-mono">
+                <AlertTriangle className="w-10 h-10 text-slate-600" />
+                <p className="text-sm font-bold text-slate-400">{t('noAnalysisPerformed', 'No analysis performed yet.')}</p>
+                <p className="text-xs text-slate-500 max-w-sm">{t('noAnalysisDesc', 'Select a preset sample or upload your own diagram to receive senior mentor diagnostic feedback.')}</p>
               </div>
             )}
           </div>
-        </div>
+        </MechaCard>
       </div>
     </div>
   );

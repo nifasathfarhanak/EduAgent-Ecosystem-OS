@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LanguageType } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
+import { Flame, Sparkles, Brain, Lightbulb, ArrowRight, Zap, RefreshCw, Layers, CheckCircle2 } from 'lucide-react';
 
 export interface Props {
   language?: LanguageType | string;
@@ -7,6 +9,7 @@ export interface Props {
 }
 
 export function DisengagementAnalogyEngine({ language = 'English', onSetModality }: Props) {
+  const { t } = useLanguage();
   const [selectedTopic, setSelectedTopic] = useState("Memory Safety: Garbage Collection vs Rust Borrow Checker");
   const [analogyOutput, setAnalogyOutput] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -47,83 +50,135 @@ export function DisengagementAnalogyEngine({ language = 'English', onSetModality
         );
       }
       setLoading(false);
-    }, 1000);
+    }, 800);
   };
 
   return (
-    <div className="p-6 bg-slate-950 text-slate-100 rounded-3xl shadow-2xl max-w-5xl mx-auto space-y-6 border border-blue-500/20 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/30">
-      {/* Header */}
-      <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-        <div>
-          <h2 className="text-xl font-bold text-amber-400 flex items-center gap-2">
-            <span>🔥</span> Disengagement Analogy Engine
-          </h2>
-          <p className="text-xs text-slate-400">Generates intuitive real-world analogies when students get stuck on abstract concepts.</p>
+    <div className="space-y-6">
+      {/* Title Header Card */}
+      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 backdrop-blur-md">
+        <div className="flex items-center gap-3.5">
+          <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
+            <Flame className="w-6 h-6 animate-pulse" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white font-mono flex items-center gap-2">
+              <span>Disengagement Analogy Engine</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 font-sans">
+                Cognitive Bridge
+              </span>
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Transforms abstract, dry computer science concepts into vivid real-world mental models.
+            </p>
+          </div>
         </div>
-        <span className="px-3 py-1 bg-amber-500/10 text-amber-300 text-xs rounded-full border border-amber-500/30 font-semibold">
-          Dry Theory → High-Stakes Analogy
-        </span>
-      </div>
 
-      {/* Quick Topic Chips */}
-      <div className="space-y-2">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Click Dry CS Topic to Transform Instantly:</p>
-        <div className="flex flex-wrap gap-2">
-          {topics.map((t, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => {
-                setSelectedTopic(t);
-                handleGenerateAnalogy(t);
-              }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition border cursor-pointer ${selectedTopic === t ? 'bg-amber-600/20 border-amber-500 text-amber-200' : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800'}`}
-            >
-              {t}
-            </button>
-          ))}
+        <div className="px-3.5 py-1.5 bg-amber-500/10 text-amber-300 text-xs rounded-xl border border-amber-500/30 font-mono font-semibold flex items-center gap-1.5 shadow-sm">
+          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <span>Dry Theory → Intuitive Mental Model</span>
         </div>
       </div>
 
-      {/* Input Box & Action */}
-      <div className="space-y-3 p-4 bg-slate-900/60 rounded-2xl border border-slate-800">
-        <label className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Enter Complex or Dry Engineering Topic</label>
-        <div className="flex gap-3">
-          <input 
-            type="text"
-            value={selectedTopic}
-            onChange={(e) => setSelectedTopic(e.target.value)}
-            className="flex-grow p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-amber-500 font-mono"
-          />
-          <button 
-            type="button"
-            onClick={() => handleGenerateAnalogy(selectedTopic)}
-            disabled={loading}
-            className="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 font-bold rounded-xl shadow-lg transition text-sm text-white flex items-center gap-2 whitespace-nowrap disabled:opacity-50 cursor-pointer"
-          >
-            <span>⚡</span> {loading ? "Adapting..." : "Adapt to Real-World Analogy"}
-          </button>
-        </div>
-      </div>
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Quick Topic Chips Left Column */}
+        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 space-y-4 backdrop-blur-md">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono flex items-center gap-1.5">
+              <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
+              <span>Select High-Stakes Topic</span>
+            </h3>
+            <span className="text-[10px] font-mono text-slate-500">5 Ready</span>
+          </div>
 
-      {/* Output Console */}
-      <div className="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-3 shadow-inner">
-        <div className="flex justify-between items-center text-xs text-slate-400 border-b border-slate-800 pb-2">
-          <span className="text-amber-400 font-bold flex items-center gap-1.5"><span>🌿</span> Real-World System Design Analogy Engine</span>
-          <span className="font-mono text-[10px] bg-slate-950 px-2 py-0.5 rounded border border-slate-800">[PORTAL: Student] | [Feature: Text] | [Language: {String(language)}]</span>
-        </div>
+          <div className="space-y-2">
+            {topics.map((t, idx) => {
+              const isSelected = selectedTopic === t;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setSelectedTopic(t);
+                    handleGenerateAnalogy(t);
+                  }}
+                  className={`w-full p-3 rounded-2xl text-left text-xs font-mono font-medium transition-all border cursor-pointer flex items-center justify-between ${
+                    isSelected
+                      ? 'bg-amber-500/15 border-amber-500 text-amber-200 shadow-md shadow-amber-500/10 ring-1 ring-amber-500/40'
+                      : 'bg-slate-950/70 border-slate-800 text-slate-300 hover:bg-slate-850 hover:border-slate-700'
+                  }`}
+                >
+                  <span className="line-clamp-1">{t}</span>
+                  {isSelected && <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0 ml-2" />}
+                </button>
+              );
+            })}
+          </div>
 
-        <div className="min-h-[140px] text-sm text-slate-200 leading-relaxed whitespace-pre-line pt-1">
-          {loading ? (
-            <div className="flex items-center justify-center py-10 space-x-2 text-amber-400">
-              <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-              <span>Synthesizing real-world analogy...</span>
+          <div className="pt-2 border-t border-slate-800">
+            <div className="space-y-2">
+              <label className="text-[11px] font-mono font-semibold text-slate-400">Custom Engineering Topic:</label>
+              <input 
+                type="text"
+                value={selectedTopic}
+                onChange={(e) => setSelectedTopic(e.target.value)}
+                placeholder="e.g. Distributed transactions 2PC"
+                className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-500 font-mono shadow-inner"
+              />
             </div>
-          ) : analogyOutput ? (
-            analogyOutput
-          ) : (
-            <span className="text-slate-500 italic">No analogy generated. Select a topic above and click adapt.</span>
-          )}
+            <button 
+              type="button"
+              onClick={() => handleGenerateAnalogy(selectedTopic)}
+              disabled={loading}
+              className="w-full mt-3 py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-amber-600/20 font-mono text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              <Zap className="w-4 h-4 text-amber-200" />
+              <span>{loading ? "Synthesizing Analogy..." : "Adapt to Real-World Analogy"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Output Console Display */}
+        <div className="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between backdrop-blur-md">
+          <div>
+            <div className="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3 mb-4 gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-bold text-amber-400 flex items-center gap-1.5">
+                  <Brain className="w-4 h-4" />
+                  <span>Cognitive Synthesis Output</span>
+                </span>
+              </div>
+              <span className="font-mono text-[10px] bg-slate-950 text-slate-400 px-3 py-1 rounded-xl border border-slate-800">
+                [PORTAL: Student] | [Feature: Text] | [Language: {String(language)}]
+              </span>
+            </div>
+
+            <div className="min-h-[220px] text-sm text-slate-200 leading-relaxed font-sans pt-1">
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-16 space-y-3 text-amber-400">
+                  <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="font-mono text-xs text-slate-400">Distilling complexity into intuition...</span>
+                </div>
+              ) : analogyOutput ? (
+                <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800/80 space-y-3 shadow-inner whitespace-pre-line">
+                  {analogyOutput}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-16 text-center space-y-2 text-slate-500">
+                  <Lightbulb className="w-8 h-8 text-slate-600" />
+                  <p className="font-mono text-xs">No analogy generated yet. Select a topic on the left to adapt instantly.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>Powered by Gemini 1.5 Pro Disengagement Telemetry</span>
+            <span className="text-emerald-400 flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5" /> High Retention
+            </span>
+          </div>
         </div>
       </div>
     </div>
