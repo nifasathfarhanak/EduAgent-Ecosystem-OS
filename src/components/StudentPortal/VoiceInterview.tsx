@@ -70,7 +70,7 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
   const [chatHistory, setChatHistory] = useState([
     {
       role: 'avatar',
-      text: "Namaste & Hello! I'm Dr. Alex Vance, your Vernacular AI Tutor. Select your preferred dialect (Hinglish, Tanglish, Telglish, English) and upload your resume or ask technical questions in natural spoken language!"
+      text: "Hello! I'm Dr. Alex Vance, your AI Voice Tutor. Upload your resume or ask technical questions — I'll guide you with voice-driven English interview preparation and career coaching!"
     }
   ]);
 
@@ -281,36 +281,16 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
 
           <div className="space-y-1">
             <h4 className="font-bold text-slate-100 text-sm">Dr. Alex Vance</h4>
-            <p className="text-xs text-indigo-400">Principal AI Vernacular Tutor & Copilot</p>
+            <p className="text-xs text-indigo-400">Principal AI Voice Tutor & Copilot</p>
           </div>
 
-          {/* Vernacular Dialect Selector */}
+          {/* Voice Language Badge */}
           <div className="w-full my-3 space-y-1.5">
             <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
-              🗣️ AI Voice Dialect:
+              🗣️ AI Voice Language:
             </span>
-            <div className="grid grid-cols-2 gap-1.5 font-mono text-[10px]">
-              {[
-                { id: 'Hinglish', label: 'Hinglish (हिन्दी+Eng)' },
-                { id: 'Tanglish', label: 'Tanglish (தமிழ்+Eng)' },
-                { id: 'Telglish', label: 'Telglish (తెలుగు+Eng)' },
-                { id: 'English', label: 'English (US)' },
-              ].map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => {
-                    setActiveDialect(d.id as LanguageType);
-                    speakText(`Switched to ${d.id} voice AI mode.`);
-                  }}
-                  className={`py-1.5 px-2 rounded-lg border font-bold transition-all text-center ${
-                    activeDialect === d.id
-                      ? 'bg-blue-950 text-blue-300 border-blue-400 shadow-sm shadow-blue-500/30'
-                      : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-slate-200'
-                  }`}
-                >
-                  {d.label}
-                </button>
-              ))}
+            <div className="py-1.5 px-3 rounded-lg border font-bold font-mono text-[10px] bg-blue-950 text-blue-300 border-blue-400 shadow-sm shadow-blue-500/30 text-center">
+              English (US)
             </div>
           </div>
 
@@ -331,8 +311,8 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
             <p className="font-semibold text-slate-400 uppercase tracking-wider text-[10px]">Copilot Status:</p>
             <p className="p-2.5 bg-slate-950 rounded-xl border border-slate-800 text-blue-300 text-xs leading-relaxed">
               {reportReady
-                ? `Audit completed for ${auditReport?.studentName || 'Student'}. Voice Mode: ${activeDialect}.`
-                : `Active Dialect: ${activeDialect}. Awaiting student resume file upload...`}
+                ? `Audit completed for ${auditReport?.studentName || 'Student'}. Voice Mode: English.`
+                : `Voice Language: English. Awaiting student resume file upload...`}
             </p>
           </div>
         </div>

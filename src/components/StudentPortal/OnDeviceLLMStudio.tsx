@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LanguageType } from '../../types';
 import {
   getEdgePointsState,
-  earnEdgePoints,
-  claimQuestReward,
   setActiveLocalModel,
   AVAILABLE_LOCAL_MODELS,
   LocalModelOption,
@@ -14,32 +12,23 @@ import {
   Cpu,
   Zap,
   ShieldCheck,
-  Award,
   Sparkles,
   Smartphone,
   CheckCircle2,
-  TrendingUp,
-  Flame,
   Terminal,
   Code2,
   Brain,
   Gauge,
   Activity,
   Layers,
-  RefreshCw,
   Clock,
-  ArrowRight,
   BatteryCharging,
   WifiOff,
   Server,
   Database,
-  Sliders,
-  Check,
-  ChevronRight,
   Play,
   RotateCcw,
   BookOpen,
-  Volume2,
 } from 'lucide-react';
 
 interface Props {
@@ -49,7 +38,7 @@ interface Props {
 export const OnDeviceLLMStudio: React.FC<Props> = ({ language }) => {
   const activeStudent = getActiveStudentSession();
   const [edgeState, setEdgeState] = useState<EdgePointsState>(() => getEdgePointsState());
-  const [activeTab, setActiveTab] = useState<'prompt' | 'code' | 'quiz' | 'benchmark' | 'quests'>('prompt');
+  const [activeTab, setActiveTab] = useState<'prompt' | 'code' | 'quiz' | 'benchmark'>('prompt');
   const [isLocalMode, setIsLocalMode] = useState(true);
   const [mobileView, setMobileView] = useState(false);
   const [selectedModelId, setSelectedModelId] = useState('gemma-2b-edge');
@@ -62,9 +51,7 @@ export const OnDeviceLLMStudio: React.FC<Props> = ({ language }) => {
     tokens: number;
     latencyMs: number;
     tokensPerSec: number;
-    pointsEarned: number;
   } | null>(null);
-  const [showPointToast, setShowPointToast] = useState<{ points: number; text: string } | null>(null);
 
   // Code Optimizer State
   const [codeSnippet, setCodeSnippet] = useState(
@@ -176,26 +163,11 @@ void processSensorBuffer(int* rawStream, int streamLen) {
         const tokensGenerated = 285;
         const tokensPerSec = +(tokensGenerated / Math.max(0.4, latencyMs / 1000)).toFixed(1);
 
-        const { pointsAwarded, newTotal } = earnEdgePoints(
-          `On-Device ${currentModel.name} Inference`,
-          isLocal,
-          tokensGenerated,
-          model,
-          latencyMs
-        );
-
         setGenStats({
           tokens: tokensGenerated,
           latencyMs,
           tokensPerSec,
-          pointsEarned: pointsAwarded,
         });
-
-        setShowPointToast({
-          points: pointsAwarded,
-          text: isLocal ? `+${pointsAwarded} Edge Points! (2.5x Local LLM Multiplier)` : `+${pointsAwarded} Cloud Points`,
-        });
-        setTimeout(() => setShowPointToast(null), 4000);
 
         recordStudentActivity({
           studentId: activeStudent.id,
@@ -204,7 +176,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
           module: 'On-Device Local LLM Studio',
           actionType: isLocal ? 'Edge Local LLM Execution' : 'Cloud Gemini Query',
           title: `On-Device Inference: ${promptInput.slice(0, 45)}...`,
-          score: `${pointsAwarded} Points Earned`,
+          score: 'Completed',
           summary: `Executed on-device ${currentModel.name} generation with 0ms network latency. Total tokens: ${tokensGenerated}.`,
           diagnosedGap: 'Demonstrates mastery of on-device neural edge computing & offline privacy.',
         });
@@ -244,19 +216,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
       );
       setIsAnalyzingCode(false);
 
-      const { pointsAwarded } = earnEdgePoints(
-        'On-Device AST Code Repair',
-        true,
-        320,
-        'Qwen 2.5 Coder 0.5B',
-        8
-      );
-
-      setShowPointToast({
-        points: pointsAwarded,
-        text: `+${pointsAwarded} Edge Points! (AST Code Optimizer Bonus)`,
-      });
-      setTimeout(() => setShowPointToast(null), 4000);
+      // Code analysis complete — no points
     }, 600);
   };
 
@@ -280,33 +240,12 @@ void processSensorBuffer(int* rawStream, int streamLen) {
           grade: 'Grade A+ (WebGPU Turbo)',
         });
 
-        const { pointsAwarded } = earnEdgePoints(
-          'WebGPU On-Device NPU Benchmark',
-          true,
-          450,
-          'WebGPU Hardware Kernel',
-          15
-        );
-
-        setShowPointToast({
-          points: pointsAwarded,
-          text: `+${pointsAwarded} Points! (Hardware Benchmark Completed)`,
-        });
-        setTimeout(() => setShowPointToast(null), 4000);
+        // Benchmark complete — no points
       }
     }, 300);
   };
 
-  const handleClaimQuest = (questId: string) => {
-    const pts = claimQuestReward(questId);
-    if (pts > 0) {
-      setShowPointToast({
-        points: pts,
-        text: `+${pts} Points Claimed from Quest!`,
-      });
-      setTimeout(() => setShowPointToast(null), 4000);
-    }
-  };
+  // Quests removed
 
   return (
     <div className="space-y-6">
@@ -418,7 +357,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
             }`}
           >
             <Cpu className="w-4 h-4" />
-            <span>⚡ On-Device Local LLM (2.5x Points)</span>
+            <span>⚡ On-Device Local LLM (Gemma 2B)</span>
           </button>
 
           <button
@@ -430,7 +369,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
             }`}
           >
             <Server className="w-4 h-4" />
-            <span>☁️ Cloud Gemini 3.7 (1x Points)</span>
+            <span>☁️ Cloud Gemini 3.7 (Fallback)</span>
           </button>
         </div>
 
@@ -503,11 +442,10 @@ void processSensorBuffer(int* rawStream, int streamLen) {
       {/* Main Studio Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-800">
         {[
-          { id: 'prompt', label: 'Local Tutor & Playground', icon: Terminal, points: '+100 Pts' },
-          { id: 'code', label: 'Offline AST Code Optimizer', icon: Code2, points: '+125 Pts' },
-          { id: 'quiz', label: 'On-Device Flashcards & Quiz', icon: BookOpen, points: '+75 Pts' },
-          { id: 'benchmark', label: 'WebGPU NPU Benchmark', icon: Gauge, points: '+120 Pts' },
-          { id: 'quests', label: 'Active Edge Quests & Bounties', icon: Award, points: 'Claim Rewards' },
+          { id: 'prompt', label: 'Local Tutor & Playground', icon: Terminal },
+          { id: 'code', label: 'Offline AST Code Optimizer', icon: Code2 },
+          { id: 'quiz', label: 'On-Device Flashcards & Quiz', icon: BookOpen },
+          { id: 'benchmark', label: 'WebGPU NPU Benchmark', icon: Gauge },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -523,9 +461,6 @@ void processSensorBuffer(int* rawStream, int streamLen) {
             >
               <Icon className="w-4 h-4 text-cyan-400" />
               <span>{tab.label}</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                {tab.points}
-              </span>
             </button>
           );
         })}
@@ -589,7 +524,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
                     Engine: {isLocalMode ? currentModel.name : 'Cloud Gemini'}
                   </span>
                   <span className="text-emerald-400">
-                    {isLocalMode ? '⚡ Multiplier: 2.5x Points' : 'Standard 1x'}
+                    {isLocalMode ? '⚡ 100% Air-Gapped Privacy' : 'Cloud Mode'}
                   </span>
                 </div>
 
@@ -599,7 +534,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
                   className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-amber-400 hover:from-cyan-400 hover:to-amber-300 text-slate-950 font-black font-mono text-xs flex items-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.6)] cursor-pointer disabled:opacity-50 transition-all"
                 >
                   <Play className="w-4 h-4 fill-current" />
-                  <span>{isGenerating ? 'Generating On-Device...' : 'Run On-Device Inference (+100 Pts)'}</span>
+                  <span>{isGenerating ? 'Generating On-Device...' : 'Run On-Device Inference'}</span>
                 </button>
               </div>
             </div>
@@ -618,7 +553,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
                     <div className="flex items-center gap-3 font-mono text-[11px]">
                       <span className="text-emerald-400 font-bold">{genStats.tokensPerSec} tok/s</span>
                       <span className="text-slate-400">{genStats.latencyMs}ms</span>
-                      <span className="text-amber-400 font-bold">+{genStats.pointsEarned} Pts</span>
+                      <span className="text-cyan-400 font-bold">{genStats.tokens} tokens</span>
                     </div>
                   )}
                 </div>
@@ -645,7 +580,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
                 className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold font-mono text-xs flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
               >
                 <Code2 className="w-4 h-4" />
-                <span>{isAnalyzingCode ? 'Parsing AST...' : 'Run Local Code Optimizer (+125 Pts)'}</span>
+                <span>{isAnalyzingCode ? 'Parsing AST...' : 'Run Local Code Optimizer'}</span>
               </button>
             </div>
 
@@ -672,8 +607,8 @@ void processSensorBuffer(int* rawStream, int streamLen) {
                 <h3 className="text-sm font-bold text-white font-mono">MobileBERT Edge Quiz Node</h3>
                 <p className="text-xs text-slate-400">Zero-latency exam testing generated and validated 100% on device.</p>
               </div>
-              <span className="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-mono text-xs font-bold border border-amber-500/30">
-                +75 Edge Points per Correct Answer
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-mono text-xs font-bold border border-emerald-500/30">
+                Zero-Latency On-Device Quiz
               </span>
             </div>
 
@@ -717,20 +652,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
                     onClick={() => {
                       if (selectedOption === null) return;
                       setQuizSubmitted(true);
-                      if (selectedOption === quizQuestion.correct) {
-                        const { pointsAwarded } = earnEdgePoints(
-                          'On-Device Quiz Mastered',
-                          true,
-                          180,
-                          'MobileBERT Edge',
-                          5
-                        );
-                        setShowPointToast({
-                          points: pointsAwarded,
-                          text: `+${pointsAwarded} Points! (Quiz Solved Correctly)`,
-                        });
-                        setTimeout(() => setShowPointToast(null), 4000);
-                      }
+                      // Quiz answer submitted
                     }}
                     disabled={selectedOption === null}
                     className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-black font-mono text-xs transition-all cursor-pointer disabled:opacity-50"
@@ -772,7 +694,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
                   className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold font-mono text-xs flex items-center gap-2 cursor-pointer disabled:opacity-50 transition-all"
                 >
                   <Gauge className="w-4 h-4" />
-                  <span>{benchmarkRunning ? 'Testing Shaders...' : 'Run Benchmark (+120 Pts)'}</span>
+                  <span>{benchmarkRunning ? 'Testing Shaders...' : 'Run Benchmark'}</span>
                 </button>
               </div>
 
@@ -816,66 +738,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
           </div>
         )}
 
-        {/* TAB 5: ACTIVE EDGE QUESTS & BOUNTIES */}
-        {activeTab === 'quests' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-white font-mono">Active Edge Quests & Bounties</h3>
-                <p className="text-xs text-slate-400">Complete on-device AI tasks to level up your Edge Node rank and earn verified badges.</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {edgeState.quests.map((quest) => (
-                <div
-                  key={quest.id}
-                  className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-3 relative overflow-hidden"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h4 className="text-xs font-bold text-white font-mono">{quest.title}</h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{quest.description}</p>
-                    </div>
-                    <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono text-xs font-bold shrink-0">
-                      +{quest.rewardPoints} Pts
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[10px] font-mono text-slate-400">
-                      <span>Progress:</span>
-                      <span className="text-cyan-300 font-bold">{quest.progress} / {quest.target}</span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-                      <div
-                        className="h-full bg-cyan-400 transition-all duration-300"
-                        style={{ width: `${Math.min(100, (quest.progress / quest.target) * 100)}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-2 flex justify-end">
-                    {quest.claimed ? (
-                      <span className="text-xs font-mono text-emerald-400 flex items-center gap-1 font-bold">
-                        <Check className="w-4 h-4" /> Reward Claimed
-                      </span>
-                    ) : quest.completed ? (
-                      <button
-                        onClick={() => handleClaimQuest(quest.id)}
-                        className="px-4 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-mono font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.6)] transition-all"
-                      >
-                        <Sparkles className="w-3.5 h-3.5" /> Claim +{quest.rewardPoints} Points
-                      </button>
-                    ) : (
-                      <span className="text-xs font-mono text-slate-500">In Progress</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Quests tab removed */}
       </div>
 
       {/* Recent On-Device Compute Telemetry Log */}
@@ -905,7 +768,6 @@ void processSensorBuffer(int* rawStream, int streamLen) {
               <div className="flex items-center gap-4 text-[11px]">
                 <span className="text-emerald-400 font-bold">{log.tokensPerSec} tok/s</span>
                 <span className="text-slate-400">{log.latencyMs}ms</span>
-                <span className="text-amber-400 font-bold">+{log.pointsEarned} Pts</span>
                 <span className="text-slate-500">{log.timestamp}</span>
               </div>
             </div>
