@@ -743,17 +743,43 @@ Evaluate this candidate's answer thoroughly using the STAR (Situation, Task, Act
       }
     }
 
+    const lowerAns = answerText.toLowerCase().trim();
+    const isDonKnow = lowerAns.includes("don't know") || lowerAns.includes("dont know") || lowerAns.includes("don know") || lowerAns.includes("no idea") || lowerAns === 'hi' || lowerAns === 'hello';
+    const words = lowerAns.split(/\s+/).filter((w) => w.length > 2);
+    const isTooShort = words.length < 6;
+
+    if (isDonKnow || isTooShort) {
+      return res.json({
+        scorecard: {
+          situation: { score: 2, feedback: 'No situation or project context established.' },
+          task: { score: 1, feedback: 'Failed to define task or problem scope.' },
+          action: { score: 1, feedback: 'No engineering actions or technical trade-offs described.' },
+          result: { score: 1, feedback: 'No quantifiable outcomes or metrics provided.' },
+          overallScore: 15,
+          summary: 'Response failed technical verification. Candidate did not provide required STAR technical details.',
+        },
+        evaluationText: `### STAR Evaluation & Scorecard\n\n**Candidate Transcript:** "${answerText}"\n\n- **Situation (2/10):** Missing context.\n- **Task (1/10):** Unclear goal.\n- **Action (1/10):** No technical details.\n- **Result (1/10):** No impact metrics.`,
+        status: 'success',
+      });
+    }
+
+    const techKeywords = ['sql', 'redis', 'cache', 'python', 'query', 'index', 'lock', 'db', 'api', 'server', 'latency', 'star', 'scale', 'concurrency', 'thread', 'innodb', 'read committed', 'onnx'];
+    const matched = techKeywords.filter((kw) => lowerAns.includes(kw));
+
+    const techScore = Math.min(10, Math.max(4, 5 + matched.length * 2));
+    const overallScore = Math.min(95, Math.max(35, techScore * 9));
+
     // Dynamic Fallback Scorecard JSON
     return res.json({
       scorecard: {
-        situation: { score: 9, feedback: 'Clear context provided for the problem domain.' },
-        task: { score: 8, feedback: 'Defined responsibility and ownership boundaries.' },
-        action: { score: 10, feedback: 'Strong technical execution and architecture trade-offs.' },
-        result: { score: 9, feedback: 'Quantified impact and performance metrics.' },
-        overallScore: 90,
-        summary: 'Excellent STAR structured response with strong technical depth.',
+        situation: { score: 8, feedback: 'Clear context provided for the problem domain.' },
+        task: { score: 7, feedback: 'Defined responsibility and ownership boundaries.' },
+        action: { score: techScore, feedback: `Engineered technical primitives (${matched.join(', ') || 'standard mechanisms'}).` },
+        result: { score: 8, feedback: 'Quantified impact and performance metrics.' },
+        overallScore,
+        summary: overallScore > 70 ? 'Excellent STAR structured response with strong technical depth.' : 'Satisfactory response, but requires deeper technical metrics.',
       },
-      evaluationText: `### STAR Evaluation & Scorecard\n\n**Candidate Transcript:** "${answerText}"\n\n- **Situation (9/10):** Strong problem context.\n- **Task (8/10):** Clear goals defined.\n- **Action (10/10):** High technical depth.\n- **Result (9/10):** Measurable outcomes achieved.`,
+      evaluationText: `### STAR Evaluation & Scorecard\n\n**Candidate Transcript:** "${answerText}"\n\n- **Situation (8/10):** Context established.\n- **Task (7/10):** Goal defined.\n- **Action (${techScore}/10):** Technical execution evaluated.\n- **Result (8/10):** Outcomes measured.`,
       status: 'success',
     });
   } catch (error: any) {
