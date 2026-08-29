@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LanguageType, FeatureModality, RiskTier } from '../../types';
+import { LanguageType, FeatureModality, RiskTier, UserProfile } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import {
   getAllStudentProfiles,
@@ -28,21 +28,28 @@ import {
   Layers,
   ChevronRight,
   RefreshCw,
+  Bot,
 } from 'lucide-react';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { InsideRoboticTelemetryBar, RoboticEqualizer, RoboticAIPilotCard, RoboticRadarVisualizer, MechaCard } from '../CyberVisuals';
+import { AIMentoringHub } from './AIMentoringHub';
 
 interface Props {
   language: LanguageType;
   onSetModality: (modality: FeatureModality) => void;
+  currentUser?: UserProfile;
 }
 
-export const TeacherPortal: React.FC<Props> = ({ language, onSetModality }) => {
+export const TeacherPortal: React.FC<Props> = ({ language, onSetModality, currentUser }) => {
   const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState<'radar' | 'mentoring'>('radar');
   const [selectedTier, setSelectedTier] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [students, setStudents] = useState<StudentProfile[]>(getAllStudentProfiles());
   const [submissions, setSubmissions] = useState<ActivitySubmission[]>(getActivitySubmissions());
+
+  const teacherName = currentUser?.name || 'Dr. Sarah Jenkins';
+  const assignedCourse = 'CS401 — Machine Learning & Neural Nets';
 
   // Modal / Drill-Down State
   const [drillDownStudent, setDrillDownStudent] = useState<StudentProfile | null>(null);
@@ -149,29 +156,59 @@ export const TeacherPortal: React.FC<Props> = ({ language, onSetModality }) => {
       {/* 1. Robotic Telemetry & Pilot HUD Banner */}
       <InsideRoboticTelemetryBar
         portalType="TEACHER"
-        activeEntityName="Prof. Sharma"
-        roleBadge="Lead Faculty & Microservices Director"
-        telemetryStatus="NEXUS COMMAND ONLINE // BIGQUERY TELEMETRY SYNCED"
+        activeEntityName={teacherName}
+        roleBadge={`${assignedCourse} • Lead Faculty`}
+        telemetryStatus="NEXUS COMMAND ONLINE // TELEMETRY SYNCED"
       />
 
-      {/* 2. Teacher Robotic AI Co-Pilot & Real-Time Radar HUD */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <RoboticAIPilotCard
-            mentorName="Nexus Command Co-Pilot"
-            mentorRole="Gemini 3.7 Classroom Telemetry & Risk Evaluator"
-            statusText={`Cohort Telemetry: ${students.length} Active Profiles | ${criticalCount} Critical | ${moderateCount} Moderate | ${onTrackCount} On-Track`}
-            neuralSyncPct={99.9}
-            speechBubble={`Professor Sharma, telemetry scan detected ${criticalCount} cadets requiring immediate STAR interview & CI/CD architecture remediation. Real-time BigQuery CDC synchronization is active.`}
-            themeColor="pink"
-            quickActions={[
-              { label: `Filter Critical (${criticalCount})`, onClick: () => setSelectedTier('CRITICAL') },
-              { label: `Filter Moderate (${moderateCount})`, onClick: () => setSelectedTier('MODERATE') },
-              { label: 'View All Cohort', onClick: () => setSelectedTier('ALL') },
-              { label: 'Sync BigQuery Telemetry', onClick: fetchTelemetry },
-            ]}
-          />
-        </div>
+      {/* Top Level Tab Navigation */}
+      <div className="flex items-center gap-3 bg-slate-950 p-2 rounded-2xl border border-slate-800 font-mono text-xs">
+        <button
+          onClick={() => setActiveTab('radar')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all cursor-pointer ${
+            activeTab === 'radar'
+              ? 'bg-pink-950 text-pink-300 border border-pink-500/50 shadow-md ring-1 ring-pink-500/40'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Database className="w-4 h-4" />
+          <span>Classroom Risk Radar ({assignedCourse})</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('mentoring')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all cursor-pointer ${
+            activeTab === 'mentoring'
+              ? 'bg-purple-950 text-purple-300 border border-purple-500/50 shadow-md ring-1 ring-purple-500/40'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Bot className="w-4 h-4" />
+          <span>AI Mentoring Hub (1:1 Scripts)</span>
+        </button>
+      </div>
+
+      {activeTab === 'mentoring' ? (
+        <AIMentoringHub language={language} students={students} teacherName={teacherName} />
+      ) : (
+        <>
+          {/* 2. Teacher Robotic AI Co-Pilot & Real-Time Radar HUD */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <RoboticAIPilotCard
+                mentorName="Nexus Command Co-Pilot"
+                mentorRole="Gemini 2.5 Classroom Telemetry & Risk Evaluator"
+                statusText={`Cohort Telemetry: ${students.length} Active Profiles | ${criticalCount} Critical | ${moderateCount} Moderate | ${onTrackCount} On-Track`}
+                neuralSyncPct={99.9}
+                speechBubble={`Professor ${teacherName}, telemetry scan detected ${criticalCount} cadets requiring immediate STAR interview & CI/CD architecture remediation.`}
+                themeColor="pink"
+                quickActions={[
+                  { label: `Filter Critical (${criticalCount})`, onClick: () => setSelectedTier('CRITICAL') },
+                  { label: `Filter Moderate (${moderateCount})`, onClick: () => setSelectedTier('MODERATE') },
+                  { label: 'View All Cohort', onClick: () => setSelectedTier('ALL') },
+                  { label: 'Sync Telemetry', onClick: fetchTelemetry },
+                ]}
+              />
+            </div>
 
         {/* BigQuery Radar Sonar Scan Card */}
         <MechaCard
@@ -487,6 +524,8 @@ export const TeacherPortal: React.FC<Props> = ({ language, onSetModality }) => {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

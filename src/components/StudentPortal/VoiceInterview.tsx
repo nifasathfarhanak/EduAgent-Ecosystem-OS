@@ -55,6 +55,7 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
   const [analyzing, setAnalyzing] = useState(false);
   const [reportReady, setReportReady] = useState(false);
   const [activeTab, setActiveTab] = useState<'audit' | 'chat'>('audit');
+  const [activeDialect, setActiveDialect] = useState<LanguageType>('Hinglish');
 
   // Audit Report State
   const [auditReport, setAuditReport] = useState<AuditReportData | null>(null);
@@ -69,7 +70,7 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
   const [chatHistory, setChatHistory] = useState([
     {
       role: 'avatar',
-      text: "Hello! I'm Dr. Alex Vance, Principal AI Interview Copilot. Upload your resume file or paste text to generate a real-time audit report and custom mock interview scenarios."
+      text: "Namaste & Hello! I'm Dr. Alex Vance, your Vernacular AI Tutor. Select your preferred dialect (Hinglish, Tanglish, Telglish, English) and upload your resume or ask technical questions in natural spoken language!"
     }
   ]);
 
@@ -84,6 +85,11 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
       const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.rate = 1.0;
       utterance.pitch = 1.0;
+      if (activeDialect === 'Hinglish' || activeDialect === 'Hindi') utterance.lang = 'hi-IN';
+      else if (activeDialect === 'Tanglish' || activeDialect === 'Tamil') utterance.lang = 'ta-IN';
+      else if (activeDialect === 'Telglish' || activeDialect === 'Telugu') utterance.lang = 'te-IN';
+      else utterance.lang = 'en-US';
+
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => setIsSpeaking(false);
       utterance.onerror = () => setIsSpeaking(false);
@@ -275,7 +281,37 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
 
           <div className="space-y-1">
             <h4 className="font-bold text-slate-100 text-sm">Dr. Alex Vance</h4>
-            <p className="text-xs text-indigo-400">Principal AI Interview Copilot</p>
+            <p className="text-xs text-indigo-400">Principal AI Vernacular Tutor & Copilot</p>
+          </div>
+
+          {/* Vernacular Dialect Selector */}
+          <div className="w-full my-3 space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+              🗣️ AI Voice Dialect:
+            </span>
+            <div className="grid grid-cols-2 gap-1.5 font-mono text-[10px]">
+              {[
+                { id: 'Hinglish', label: 'Hinglish (हिन्दी+Eng)' },
+                { id: 'Tanglish', label: 'Tanglish (தமிழ்+Eng)' },
+                { id: 'Telglish', label: 'Telglish (తెలుగు+Eng)' },
+                { id: 'English', label: 'English (US)' },
+              ].map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => {
+                    setActiveDialect(d.id as LanguageType);
+                    speakText(`Switched to ${d.id} voice AI mode.`);
+                  }}
+                  className={`py-1.5 px-2 rounded-lg border font-bold transition-all text-center ${
+                    activeDialect === d.id
+                      ? 'bg-blue-950 text-blue-300 border-blue-400 shadow-sm shadow-blue-500/30'
+                      : 'bg-slate-950/80 text-slate-400 border-slate-800 hover:text-slate-200'
+                  }`}
+                >
+                  {d.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Voice Waveform Activity */}
@@ -295,8 +331,8 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
             <p className="font-semibold text-slate-400 uppercase tracking-wider text-[10px]">Copilot Status:</p>
             <p className="p-2.5 bg-slate-950 rounded-xl border border-slate-800 text-blue-300 text-xs leading-relaxed">
               {reportReady
-                ? `Audit completed for ${auditReport?.studentName || 'Student'}. Ready for mock interview questions.`
-                : 'Awaiting student resume file upload...'}
+                ? `Audit completed for ${auditReport?.studentName || 'Student'}. Voice Mode: ${activeDialect}.`
+                : `Active Dialect: ${activeDialect}. Awaiting student resume file upload...`}
             </p>
           </div>
         </div>

@@ -1,0 +1,17 @@
+{
+  "short_name": "EduAgent OS",
+  "name": "EduAgent University - Phone-First AI Platform",
+  "description": "Phone-First AI Smart Education Platform featuring Vernacular Voice AI, Stress Sensor, 1v1 Battle Arena, AST Credentials, and AI Mentoring",
+  "start_url": "/",
+  "background_color": "#02040a",
+  "theme_color": "#02040a",
+  "display": "standalone",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

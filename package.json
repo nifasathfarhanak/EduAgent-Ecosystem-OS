@@ -36,6 +36,7 @@
     "@types/three": "^0.185.4",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.0",
+    "happy-dom": "^20.11.15",
     "jsdom": "^30.0.1",
     "supertest": "^7.2.2",
     "tailwindcss": "^4.1.14",
@@ -43,5 +44,10 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.3",
     "vitest": "^4.1.10"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-darwin-arm64": "^4.63.1",
+    "@tailwindcss/oxide-darwin-arm64": "^4.3.3",
+    "lightningcss-darwin-arm64": "^1.33.0"
   }
 }

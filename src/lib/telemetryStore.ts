@@ -351,3 +351,38 @@ export function recordStudentActivity(submission: Omit<ActivitySubmission, 'id' 
 
   return newSub;
 }
+
+export function deleteStudentProfile(id: string): void {
+  const current = getAllStudentProfiles();
+  const filtered = current.filter((s) => s.id !== id);
+  saveAllStudentProfiles(filtered);
+}
+
+export function upsertStudentProfile(profile: Partial<StudentProfile> & { id: string }): StudentProfile {
+  const current = getAllStudentProfiles();
+  const existing = current.find((s) => s.id === profile.id);
+  const updated: StudentProfile = {
+    id: profile.id,
+    studentName: profile.studentName || existing?.studentName || 'Student',
+    rollNo: profile.rollNo || existing?.rollNo || '2026-CS-000',
+    email: profile.email || existing?.email || 'student@eng.edu',
+    targetRole: profile.targetRole || existing?.targetRole || 'Software Engineer',
+    attendancePct: profile.attendancePct ?? existing?.attendancePct ?? 90,
+    projectScore: profile.projectScore ?? existing?.projectScore ?? 80,
+    avgQuizScore: profile.avgQuizScore ?? existing?.avgQuizScore ?? 80,
+    keyLearningGap: profile.keyLearningGap || existing?.keyLearningGap || 'None',
+    lastActive: profile.lastActive || 'Just now',
+    riskTier: profile.riskTier || existing?.riskTier || '[ON-TRACK]',
+    activeModule: profile.activeModule || existing?.activeModule || 'General',
+  };
+
+  const index = current.findIndex((s) => s.id === profile.id);
+  if (index >= 0) {
+    current[index] = updated;
+  } else {
+    current.push(updated);
+  }
+
+  saveAllStudentProfiles(current);
+  return updated;
+}

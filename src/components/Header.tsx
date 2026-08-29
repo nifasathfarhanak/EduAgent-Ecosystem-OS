@@ -9,7 +9,7 @@ import {
 import {
   GraduationCap,
   Users,
-  HeartHandshake,
+  ShieldCheck,
   Globe,
   Sparkles,
   ChevronDown,
@@ -21,6 +21,7 @@ import {
   Terminal,
   Zap,
   Bot,
+  User,
 } from 'lucide-react';
 
 interface Props {
@@ -33,6 +34,7 @@ interface Props {
   onLogout: () => void;
   currentTheme?: BackgroundThemeId;
   onSelectTheme?: (theme: BackgroundThemeId) => void;
+  onOpenLogin?: () => void;
 }
 
 /**
@@ -48,6 +50,7 @@ export const Header: React.FC<Props> = ({
   onLogout,
   currentTheme = 'robotics',
   onSelectTheme,
+  onOpenLogin,
 }) => {
   const { language, setLanguage, t } = useLanguage();
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -137,9 +140,9 @@ export const Header: React.FC<Props> = ({
                     <Users className="w-3.5 h-3.5" /> Teacher Active
                   </span>
                 )}
-                {activePortal === 'Parent' && (
-                  <span className="flex items-center gap-1.5 text-purple-300 font-bold">
-                    <HeartHandshake className="w-3.5 h-3.5" /> Parent Active
+                {activePortal === 'Admin' && (
+                  <span className="flex items-center gap-1.5 text-cyan-300 font-bold">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Admin Active
                   </span>
                 )}
               </div>
@@ -161,12 +164,12 @@ export const Header: React.FC<Props> = ({
               </select>
             </div>
 
-            {/* Profile Dropdown & Logout (Post-Login) */}
+            {/* Login / Profile Dropdown */}
             {currentUser ? (
               <div className="relative">
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center gap-2 bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 rounded-xl px-2.5 py-1.5 transition-all text-left shadow-md"
+                  className="flex items-center gap-2 bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 rounded-xl px-2.5 py-1.5 transition-all text-left shadow-md cursor-pointer"
                 >
                   <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-600 to-purple-600 text-white font-mono text-[10px] font-black flex items-center justify-center shadow">
                     {currentUser.avatar}
@@ -186,6 +189,19 @@ export const Header: React.FC<Props> = ({
                       <p className="text-[11px] text-slate-400 truncate">{currentUser.email}</p>
                     </div>
 
+                    {onOpenLogin && (
+                      <button
+                        onClick={() => {
+                          setProfileDropdownOpen(false);
+                          onOpenLogin();
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-xl text-cyan-300 hover:bg-cyan-950/40 border border-transparent hover:border-cyan-900/50 flex items-center gap-2 transition-all font-bold"
+                      >
+                        <User className="w-3.5 h-3.5" />
+                        <span>Switch User Role</span>
+                      </button>
+                    )}
+
                     <button
                       onClick={() => {
                         onLogout();
@@ -199,7 +215,15 @@ export const Header: React.FC<Props> = ({
                   </div>
                 )}
               </div>
-            ) : null}
+            ) : (
+              <button
+                onClick={onOpenLogin}
+                className="px-4 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-bold text-xs rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Sign In / Login</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

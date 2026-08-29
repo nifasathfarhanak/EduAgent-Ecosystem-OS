@@ -47,12 +47,12 @@ const VALID_TOKENS: Record<string, Omit<AuthenticatedUser, 'authenticatedAt'>> =
     permissions: ['teacher:read', 'teacher:intervene', 'student:read', 'ai:access'],
     tokenType: 'Bearer',
   },
-  'eduagent-bearer-token-parent': {
-    id: 'prt-301',
-    name: 'Robert Smith',
-    email: 'r.smith@parent.edu',
-    role: 'Parent',
-    permissions: ['parent:read', 'a2a:translate', 'ai:access'],
+  'eduagent-bearer-token-admin': {
+    id: 'adm-001',
+    name: 'University Registrar Admin',
+    email: 'admin@eng.edu',
+    role: 'Admin',
+    permissions: ['admin:all', 'student:crud', 'teacher:crud', 'course:crud', 'ai:access'],
     tokenType: 'Bearer',
   },
   'eduagent-admin-api-key-secret': {
