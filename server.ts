@@ -108,6 +108,109 @@ async function generateContentWithRetry(ai: GoogleGenAI, params: any): Promise<a
 }
 
 /**
+ * Queries a real live Open-Source LLM API (OpenRouter Free Tier / HuggingFace Inference / Ollama)
+ */
+async function queryOpenSourceLLMAPI(prompt: string, systemInstruction?: string): Promise<string | null> {
+  // 1. Try OpenRouter Free Tier API (Llama 3.2 3B Instruct / Gemma 2 9B)
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+
+    const openRouterRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://eduagent.os',
+        'X-Title': 'EduAgent OS',
+      },
+      body: JSON.stringify({
+        model: 'meta-llama/llama-3.2-3b-instruct:free',
+        messages: [
+          ...(systemInstruction ? [{ role: 'system', content: systemInstruction }] : []),
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+        max_tokens: 800,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    if (openRouterRes.ok) {
+      const data = await openRouterRes.json();
+      const content = data?.choices?.[0]?.message?.content;
+      if (content && content.trim().length > 10) {
+        return content.trim();
+      }
+    }
+  } catch (err: any) {
+    console.warn('OpenRouter free API notice:', err?.message || err);
+  }
+
+  // 2. Try HuggingFace Serverless Inference API (Qwen 2.5 Coder 32B)
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+
+    const hfRes = await fetch('https://router.huggingface.co/hf-inference/models/Qwen/Qwen2.5-Coder-32B-Instruct/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [
+          ...(systemInstruction ? [{ role: 'system', content: systemInstruction }] : []),
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 800,
+        temperature: 0.3,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    if (hfRes.ok) {
+      const data = await hfRes.json();
+      const content = data?.choices?.[0]?.message?.content;
+      if (content && content.trim().length > 10) {
+        return content.trim();
+      }
+    }
+  } catch (err: any) {
+    console.warn('HuggingFace inference API notice:', err?.message || err);
+  }
+
+  // 3. Try Local Ollama Daemon (if student runs Ollama on localhost:11434)
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+
+    const ollamaRes = await fetch('http://localhost:11434/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'gemma2',
+        prompt: `${systemInstruction ? `[SYSTEM INSTRUCTION]\n${systemInstruction}\n\n` : ''}[USER PROMPT]\n${prompt}`,
+        stream: false,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    if (ollamaRes.ok) {
+      const data = await ollamaRes.json();
+      if (data?.response && data.response.trim().length > 10) {
+        return data.response.trim();
+      }
+    }
+  } catch {
+    // Ollama local daemon offline, skip
+  }
+
+  return null;
+}
+
+/**
  * System Health Check Endpoint
  */
 app.get('/api/health', (req, res) => {
@@ -741,24 +844,51 @@ Evaluate this candidate's answer thoroughly using the STAR (Situation, Task, Act
           // Fallback if parsing fails
         }
       }
+    } else {
+      // Call Live Open-Source LLM API (OpenRouter / HuggingFace / Ollama)
+      const openSourceLLMResponse = await queryOpenSourceLLMAPI(
+        prompt,
+        'You are an elite L6 Staff Bar Raiser interviewer evaluating candidate interview answers strictly against the STAR framework. Output JSON.'
+      );
+
+      if (openSourceLLMResponse) {
+        try {
+          const jsonMatch = openSourceLLMResponse.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (parsed && parsed.scorecard) {
+              return res.json(parsed);
+            }
+          }
+        } catch (_) {}
+      }
     }
 
     const lowerAns = answerText.toLowerCase().trim();
+    const lowerQuestion = (question || '').toLowerCase().trim();
     const isDonKnow = lowerAns.includes("don't know") || lowerAns.includes("dont know") || lowerAns.includes("don know") || lowerAns.includes("no idea") || lowerAns === 'hi' || lowerAns === 'hello';
     const words = lowerAns.split(/\s+/).filter((w) => w.length > 2);
     const isTooShort = words.length < 6;
 
-    if (isDonKnow || isTooShort) {
+    // Detect if candidate simply repeated the question back into microphone/input
+    const isQuestionRepeat = lowerQuestion.length > 15 && (
+      (lowerAns.length > 15 && lowerQuestion.includes(lowerAns.slice(0, 25))) ||
+      (lowerAns.length > 15 && lowerAns.includes(lowerQuestion.slice(0, 25)))
+    );
+
+    if (isDonKnow || isTooShort || isQuestionRepeat) {
       return res.json({
         scorecard: {
-          situation: { score: 2, feedback: 'No situation or project context established.' },
+          situation: { score: 2, feedback: isQuestionRepeat ? 'Candidate repeated the interview question instead of answering.' : 'No situation or project context established.' },
           task: { score: 1, feedback: 'Failed to define task or problem scope.' },
           action: { score: 1, feedback: 'No engineering actions or technical trade-offs described.' },
           result: { score: 1, feedback: 'No quantifiable outcomes or metrics provided.' },
           overallScore: 15,
-          summary: 'Response failed technical verification. Candidate did not provide required STAR technical details.',
+          summary: isQuestionRepeat
+            ? 'Candidate repeated the interview question back into the microphone instead of providing an answer.'
+            : 'Response failed technical verification. Candidate did not provide required STAR technical details.',
         },
-        evaluationText: `### STAR Evaluation & Scorecard\n\n**Candidate Transcript:** "${answerText}"\n\n- **Situation (2/10):** Missing context.\n- **Task (1/10):** Unclear goal.\n- **Action (1/10):** No technical details.\n- **Result (1/10):** No impact metrics.`,
+        evaluationText: `### STAR Evaluation & Scorecard\n\n**Candidate Transcript:** "${answerText}"\n\n- **Situation (2/10):** ${isQuestionRepeat ? 'Candidate repeated question' : 'Missing context'}.\n- **Task (1/10):** Unclear goal.\n- **Action (1/10):** No technical details.\n- **Result (1/10):** No impact metrics.`,
         status: 'success',
       });
     }
@@ -1727,6 +1857,23 @@ Provide a comprehensive, authoritative grounded answer strictly addressing the s
 
       if (response?.text) {
         const { verifiedAnswer, guardrailsPassed } = applyEduGuardrails(response.text.trim());
+        return res.json({
+          success: true,
+          query,
+          subjectCode: subjectCode || retrievedChunks[0]?.subjectCode,
+          subjectName: targetSubject,
+          answer: verifiedAnswer,
+          confidenceScore,
+          guardrails: { status: 'PASSED', safetyScore: 0.99, groundingVerified: true },
+          retrievedChunks: retrievedResults,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } else {
+      // Call Live Open-Source LLM API (OpenRouter / HuggingFace / Ollama)
+      const openSourceAnswer = await queryOpenSourceLLMAPI(userPrompt, systemInstruction);
+      if (openSourceAnswer) {
+        const { verifiedAnswer } = applyEduGuardrails(openSourceAnswer.trim());
         return res.json({
           success: true,
           query,

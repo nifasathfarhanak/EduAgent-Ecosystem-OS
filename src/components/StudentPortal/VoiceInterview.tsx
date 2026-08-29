@@ -345,8 +345,11 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
       const isGibberish = !/[a-z]{3,}/i.test(userText) || words.length < 3;
       const isDonKnow = lowerText.includes("don't know") || lowerText.includes("dont know") || lowerText.includes("don know");
       
-      const techKeywords = ['sql', 'redis', 'cache', 'python', 'query', 'index', 'lock', 'db', 'api', 'server', 'latency', 'star', 'scale', 'concurrency', 'thread', 'innodb', 'read committed', 'onnx'];
-      const matchedKeywords = techKeywords.filter(kw => lowerText.includes(kw));
+      const lowerQ = (question || '').toLowerCase().trim();
+      const isQuestionRepeat = lowerQ.length > 15 && (
+        (lowerText.length > 15 && lowerQ.includes(lowerText.slice(0, 25))) ||
+        (lowerText.length > 15 && lowerText.includes(lowerQ.slice(0, 25)))
+      );
 
       let technical = 0;
       let clarity = 0;
@@ -354,12 +357,15 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
       let impact = 0;
       let correctionText = '';
 
-      if (isGibberish || isTooShort || isDonKnow) {
+      const techKeywords = ['sql', 'redis', 'cache', 'python', 'query', 'index', 'lock', 'db', 'api', 'server', 'latency', 'star', 'scale', 'concurrency', 'thread', 'innodb', 'read committed', 'onnx'];
+      const matchedKeywords = techKeywords.filter(kw => lowerText.includes(kw));
+
+      if (isGibberish || isTooShort || isDonKnow || isQuestionRepeat) {
         technical = 15;
         clarity = 20;
         relevance = 10;
         impact = 15;
-        correctionText = `❌ **Incomplete Technical Answer**\n\n` +
+        correctionText = `${isQuestionRepeat ? '❌ **Question Repeated**: Candidate repeated the interview question into microphone instead of answering.' : '❌ **Incomplete Technical Answer**'}\n\n` +
           `✅ **Real-Time Specific Technical Answer**:\n` +
           `"${specificAnswer.idealAnswer}"`;
       } else {
