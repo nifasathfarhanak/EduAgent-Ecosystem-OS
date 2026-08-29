@@ -219,20 +219,50 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
     }
   };
 
-  // Specific technical answers for audit questions
-  const QUESTION_SPECIFIC_ANSWERS: Record<number, { topic: string; idealAnswer: string }> = {
-    0: {
-      topic: 'PHP Fraud Detection & DB Isolation under Concurrent Load',
-      idealAnswer: 'To handle high concurrent loads in the PHP fraud engine, we configured MySQL InnoDB isolation to READ COMMITTED to prevent gap locking, implemented row-level SELECT ... FOR UPDATE transactions, cached fraud detection rules in Redis with LRU eviction, and used connection pooling. This reduced latency by 45% under 10k QPS.',
-    },
-    1: {
-      topic: 'Python Edge-Device Facial Recognition Latency',
-      idealAnswer: 'We optimized edge device latency by quantizing the PyTorch model into ONNX/TensorRT FP16 format, sub-sampling video stream frames (1 out of 3), and executing CUDA hardware acceleration. This reduced inference time from 180ms to 24ms on NPU hardware.',
-    },
-    2: {
-      topic: 'Redis Pub/Sub Sharding & High-Throughput Concurrency',
-      idealAnswer: 'We implemented a 6-node Redis Cluster using CRC16 consistent hashing to distribute message channels across shards, added pipeline batching for publications, and wired an async Node.js WebSocket worker pool to support 50k concurrent alerts with sub-5ms latency.',
-    },
+  // Dynamic technical answer generator tailored to ANY passed question
+  const getDynamicModelAnswerForQuestion = (questionText: string, index: number): { topic: string; idealAnswer: string } => {
+    const qLower = (questionText || '').toLowerCase();
+
+    if (qLower.includes('isolation') || qLower.includes('fraud') || qLower.includes('php') || qLower.includes('database lock') || qLower.includes('innodb')) {
+      return {
+        topic: 'PHP Fraud Detection & DB Isolation under Concurrent Load',
+        idealAnswer: 'To handle high concurrent loads in the PHP fraud engine, we configured MySQL InnoDB isolation to READ COMMITTED to prevent gap locking, implemented row-level SELECT ... FOR UPDATE transactions, cached fraud detection rules in Redis with LRU eviction, and used connection pooling. This reduced latency by 45% under 10k QPS.',
+      };
+    }
+
+    if (qLower.includes('latency') || qLower.includes('facial') || qLower.includes('edge') || qLower.includes('door') || qLower.includes('npu') || qLower.includes('onnx') || qLower.includes('tensorrt')) {
+      return {
+        topic: 'Python Edge-Device Facial Recognition Latency',
+        idealAnswer: 'We optimized edge device latency by quantizing the PyTorch model into ONNX/TensorRT FP16 format, sub-sampling video stream frames (1 out of 3), and executing CUDA hardware acceleration. This reduced inference time from 180ms to 24ms on NPU hardware.',
+      };
+    }
+
+    if (qLower.includes('redis') || qLower.includes('pub/sub') || qLower.includes('sharding') || qLower.includes('alert') || qLower.includes('websocket')) {
+      return {
+        topic: 'Redis Pub/Sub Sharding & High-Throughput Concurrency',
+        idealAnswer: 'We implemented a 6-node Redis Cluster using CRC16 consistent hashing to distribute message channels across shards, added pipeline batching for publications, and wired an async Node.js WebSocket worker pool to support 50k concurrent alerts with sub-5ms latency.',
+      };
+    }
+
+    if (qLower.includes('react') || qLower.includes('frontend') || qLower.includes('state') || qLower.includes('component')) {
+      return {
+        topic: 'React Frontend Performance & State Architecture',
+        idealAnswer: 'To resolve UI rendering bottlenecks, we implemented React.memo component memoization, split code bundles with dynamic import() lazy loading, offloaded heavy state transformations to Web Workers, and normalized global state. This improved page load speed by 58%.',
+      };
+    }
+
+    if (qLower.includes('cloud') || qLower.includes('aws') || qLower.includes('kubernetes') || qLower.includes('docker') || qLower.includes('microservice')) {
+      return {
+        topic: 'Cloud Infrastructure & Microservice Resilience',
+        idealAnswer: 'We containerized microservices using Docker, configured Kubernetes HPA autoscaling on CPU/memory thresholds, deployed NGINX ingress with TLS 1.3 termination, and enabled Istio service mesh mTLS. This ensured 99.99% availability under 50k peak QPS.',
+      };
+    }
+
+    const cleanQ = questionText.replace(/^[^a-zA-Z]+/, '').trim();
+    return {
+      topic: cleanQ.length > 50 ? cleanQ.slice(0, 50) + '...' : cleanQ,
+      idealAnswer: `To resolve "${cleanQ}", the standard engineering approach requires: 1) Defining context, scale, and performance constraints. 2) Applying explicit technical mechanisms (e.g. concurrency locks, caching layers, thread safety, or database indexing). 3) Validating quantifiable outcomes with automated latency and throughput benchmarks.`,
+    };
   };
 
   const handleSendResponse = async () => {
@@ -262,7 +292,7 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
     // 2. Real-Time AI Technical Evaluation
     const questionIndex = currentScenarioIndex;
     const question = auditReport?.questions[questionIndex] || 'Explain your technical approach and system design choice.';
-    const specificAnswer = QUESTION_SPECIFIC_ANSWERS[questionIndex] || QUESTION_SPECIFIC_ANSWERS[0];
+    const specificAnswer = getDynamicModelAnswerForQuestion(question, questionIndex);
 
     try {
       // Call Gemini AI evaluation API
