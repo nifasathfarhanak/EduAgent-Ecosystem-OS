@@ -275,7 +275,7 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
 
     const lowerText = userText.toLowerCase();
 
-    // 1. Conversational Casual Greetings & Questions
+    // 1. Conversational Casual Greetings
     const isGreeting = /^(hi|hello|hey|greetings|hola|namaste|who are you|what is this|ready|start|yes|ok|okay)\b/i.test(lowerText) && userText.split(' ').length < 5;
     
     if (isGreeting) {
@@ -289,7 +289,42 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
       return;
     }
 
-    // 2. Real-Time AI Technical Evaluation
+    // 2. Student Questions & Knowledge Inquiries (e.g. "what is dsa", "explain query isolation", etc.)
+    const isStudentQuestion = /^(what|why|how|explain|tell|can|could|define|which|where)\b/i.test(lowerText) || lowerText.endsWith('?');
+
+    if (isStudentQuestion) {
+      try {
+        const currentQ = auditReport?.questions[currentScenarioIndex] || 'How did you optimize database query isolation in your PHP fraud detection system under concurrent loads?';
+        
+        const ragRes = await fetch('/api/ai/rag-qa', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eduagent-bearer-token-student',
+          },
+          body: JSON.stringify({
+            query: userText,
+            studentName: auditReport?.studentName || 'Student',
+          }),
+        });
+
+        if (ragRes.ok) {
+          const ragData = await ragRes.json();
+          if (ragData && ragData.answer) {
+            const cleanAnswer = ragData.answer.replace(/\n\n---\n\*🛡️[\s\S]*/, '').trim();
+            const tutorResponse = `### 💡 Dr. Alex Vance Explanation:\n${cleanAnswer}\n\n---\n*Ready to practice?* Whenever you're ready, answer Question #${currentScenarioIndex + 1}:\n"${currentQ}"`;
+
+            setChatHistory(prev => [...prev, { role: 'avatar', text: tutorResponse }]);
+            speakText(`Here is the explanation for ${userText}: ${cleanAnswer.slice(0, 140)}. Whenever you're ready, answer Question ${currentScenarioIndex + 1}!`);
+            return;
+          }
+        }
+      } catch (_) {
+        // Continue to fallback if fetch fails
+      }
+    }
+
+    // 3. Real-Time AI Technical Evaluation
     const questionIndex = currentScenarioIndex;
     const question = auditReport?.questions[questionIndex] || 'Explain your technical approach and system design choice.';
     const specificAnswer = getDynamicModelAnswerForQuestion(question, questionIndex);
