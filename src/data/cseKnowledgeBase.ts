@@ -411,6 +411,61 @@ def is_safe_state(available, max_m, allocation):
    - Soft (Symbolic) Link: Creates a NEW separate inode whose data block contains the string path of the target file. If the target file is deleted or moved, the soft link becomes a Broken / Dangling pointer.
 3. Journaling (ext4): Writes metadata updates to a circular on-disk journal before committing to actual filesystem blocks, preventing filesystem corruption during sudden power failures.`,
     complexityOrProperties: 'Direct block access: O(1) via pointer table. Journaling recovery on crash: O(journal size) in milliseconds.'
+  },
+  // ==========================================
+  // SUBJECT 4: DISTRIBUTED SYSTEMS & SYSTEM DESIGN (CS401)
+  // ==========================================
+  {
+    id: 'sys-01',
+    subjectCode: 'CS302',
+    subjectName: 'Distributed Systems & Cloud Architecture',
+    topic: 'State Synchronization & Data Integrity',
+    subtopic: 'Frontend-Backend State Sync, Idempotency, and Real-Time Event Streams',
+    source: 'Martin Kleppmann (Designing Data-Intensive Applications) / MIT 6.824 / Netflix TechBlog',
+    keywords: [
+      'state synchronization', 'data integrity', 'frontend', 'backend', 'microservices',
+      'idempotency', 'idempotency keys', 'caching', 'client-side caching', 'event streams',
+      'websocket', 'sse', 'server-sent events', 'kafka', 'optimistic updates', 'tanstack query',
+      'react query', 'swr', 'etag', 'stale-while-revalidate', 'outbox pattern', 'event-driven'
+    ],
+    content: `Ensuring state synchronization and data integrity across frontend clients and backend microservices requires a multi-tiered architecture:
+1. Client-Side State Management & Caching: Using libraries like TanStack (React) Query or SWR with stale-while-revalidate protocols to manage local cache, query deduplication, and optimistic UI updates with automated rollback on network errors.
+2. Network Idempotency & Repeatable Requests: Assigning unique client-generated Idempotency Keys (UUIDv4) in HTTP request headers (e.g., 'Idempotency-Key: <uuid>'). The backend stores processed request hashes and results in Redis/database with a TTL, preventing duplicate mutations during automatic network retries.
+3. Real-Time Event Streaming: Publishing domain events to Kafka or Redis Pub/Sub, and pushing push-notifications down to clients via WebSockets or Server-Sent Events (SSE) to invalidate client cache immediately upon server-side changes.
+4. Distributed Consistency & Outbox Pattern: Using the Transactional Outbox Pattern to atomically commit database changes and publish domain events, ensuring zero message loss and eventual consistency across microservices.`,
+    codeSnippet: `// Client-Side Optimistic Mutation with Idempotency Key
+import { v4 as uuidv4 } from 'uuid';
+
+async function submitOrder(orderData) {
+  const idempotencyKey = uuidv4();
+  const response = await fetch('/api/v1/orders', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Idempotency-Key': idempotencyKey, // Prevents duplicate execution
+    },
+    body: JSON.stringify(orderData)
+  });
+  return response.json();
+}`,
+    complexityOrProperties: 'Guarantees exactly-once semantic handling, sub-20ms optimistic local updates, and eventual consistency.'
+  },
+  {
+    id: 'sys-02',
+    subjectCode: 'CS302',
+    subjectName: 'Distributed Systems & Cloud Architecture',
+    topic: 'Distributed Caching & Invalidation',
+    subtopic: 'Cache-Aside, Redis Clustering, and Stampede Mitigation',
+    source: 'Stanford CS244B / Redis Core Architecture / High Scalability',
+    keywords: [
+      'caching', 'redis', 'cache aside', 'invalidation', 'cache stampede',
+      'ttl', 'eviction', 'lru', 'write-through', 'read-through', 'singleflight', 'mutex'
+    ],
+    content: `Distributed caching reduces database read load and minimizes p99 request latency:
+1. Cache-Aside Pattern: The application first queries Redis. On a cache hit, data is returned instantly. On a cache miss, data is queried from the primary database, populated into Redis with a Time-To-Live (TTL), and returned.
+2. Cache Invalidation: Upon write operations, the backend explicitly evicts or updates corresponding cache keys (Cache Eviction over Invalidation).
+3. Cache Stampede Mitigation: When high-traffic keys expire simultaneously, hundreds of concurrent requests hit the database. Mitigated by Probabilistic Early Expiration (XFetch algorithm) or Distributed Mutex/Singleflight locking so only 1 worker refreshes the cache while others wait.`,
+    complexityOrProperties: 'Read Latency: Sub-1ms (O(1) in Redis). Database read load reduction: 60-90%.'
   }
 ];
 
@@ -433,13 +488,13 @@ export function retrieveCSEKnowledgeChunks(query: string, subjectCode?: string, 
       // Check keywords exact match (high boost)
       chunk.keywords.forEach((kw) => {
         if (query.toLowerCase().includes(kw.toLowerCase())) {
-          score += 15;
+          score += 25;
         }
       });
 
       // Check subtopic & topic match
-      if (query.toLowerCase().includes(chunk.topic.toLowerCase())) score += 20;
-      if (query.toLowerCase().includes(chunk.subtopic.toLowerCase())) score += 25;
+      if (query.toLowerCase().includes(chunk.topic.toLowerCase())) score += 30;
+      if (query.toLowerCase().includes(chunk.subtopic.toLowerCase())) score += 35;
 
       // Check token frequency
       cleanTokens.forEach((token) => {

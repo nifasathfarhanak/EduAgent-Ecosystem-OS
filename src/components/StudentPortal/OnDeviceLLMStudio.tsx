@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   BookOpen,
   Sparkles,
+  Code2,
 } from 'lucide-react';
 
 interface Props {
@@ -49,26 +50,26 @@ export const OnDeviceLLMStudio: React.FC<Props> = ({ language }) => {
       const topChunk = retrieved[0].chunk;
       const secondChunk = retrieved[1]?.chunk;
 
-      let answer = `### 📚 **${topChunk.topic} — ${topChunk.subtopic}**\n\n`;
-      answer += `**1. Core Syllabus Concept & Mechanics:**\n${topChunk.content}\n\n`;
+      let answer = `### 💻 **${topChunk.topic} — ${topChunk.subtopic}**\n\n`;
+      answer += `**1. Technical Architecture & Engineering Mechanics:**\n${topChunk.content}\n\n`;
 
       if (topChunk.codeSnippet) {
-        answer += `**2. Practical Code Example:**\n\`\`\`cpp\n${topChunk.codeSnippet}\n\`\`\`\n\n`;
+        answer += `**2. Production Code / Implementation:**\n\`\`\`cpp\n${topChunk.codeSnippet}\n\`\`\`\n\n`;
       }
 
       if (topChunk.complexityOrProperties) {
-        answer += `**3. Complexity & Performance Guarantee:**\n• ${topChunk.complexityOrProperties}\n\n`;
+        answer += `**3. Latency, Complexity & Invariant Guarantees:**\n• ${topChunk.complexityOrProperties}\n\n`;
       }
 
       if (secondChunk) {
-        answer += `**4. Related Curriculum Module (${secondChunk.subjectName}):**\n• **${secondChunk.topic}**: ${secondChunk.subtopic}\n`;
+        answer += `**4. Cross-System Architectural Dependency (${secondChunk.subjectName}):**\n• **${secondChunk.topic}**: ${secondChunk.subtopic}\n`;
       }
 
       answer += `\n---\n*Source Reference: ${topChunk.source} (Offline Local Index)*`;
       return answer;
     }
 
-    // 2. Specialized CSE syllabus answers for common student queries
+    // 2. Specialized CSE technical answers for common engineering queries
     if (queryLower.includes('paging') || queryLower.includes('virtual memory')) {
       return `### 🖥️ **Operating Systems: Virtual Memory Paging & TLB**\n\n` +
         `**1. Concept Overview:**\n` +
@@ -143,18 +144,18 @@ export const OnDeviceLLMStudio: React.FC<Props> = ({ language }) => {
     }
 
     // Default fallback synthesis for any other query
-    return `### 💡 **Syllabus Explanation: ${userQuery}**\n\n` +
-      `**1. Theoretical Definition:**\n` +
-      `In Computer Science & Engineering, "${userQuery}" is a foundational concept evaluated in Core CSE Curricula (Data Structures, DBMS, Operating Systems, Networks, and Software Engineering).\n\n` +
-      `**2. Architectural Impact & Usage:**\n` +
-      `• Ensures deterministic execution and resource optimization.\n` +
-      `• Prevents runtime hazards (e.g., race conditions, memory leaks, high time complexity).\n` +
-      `• Frequently tested in GATE CS and technical system design interviews.\n\n` +
-      `**3. Recommended Study Steps:**\n` +
+    return `### 💡 **Technical Architecture: ${userQuery}**\n\n` +
+      `**1. System Mechanics & Definition:**\n` +
+      `In Software Engineering & Distributed Systems, "${userQuery}" represents a core architectural mechanism evaluated in systems design, kernel engineering, and high-throughput pipelines.\n\n` +
+      `**2. Architectural Impact & Trade-offs:**\n` +
+      `• Ensures deterministic execution, low latency, and robust fault-isolation.\n` +
+      `• Mitigates concurrency hazards (race conditions, memory leaks, high Big-O complexity).\n` +
+      `• Frequently benchmarked in enterprise technical bar-raiser assessments.\n\n` +
+      `**3. Recommended Technical Deep Dive:**\n` +
       `1. Review core algorithms/primitives associated with this topic.\n` +
-      `2. Implement a mini-code prototype in C++/Python.\n` +
-      `3. Analyze time (Big-O) and space complexity trade-offs.\n\n` +
-      `*Grounding Source: Verified Offline CSE Knowledge Index*`;
+      `2. Implement a benchmark prototype in C++/Go/Rust.\n` +
+      `3. Analyze p99 latency, memory throughput, and algorithmic invariants.\n\n` +
+      `*Grounding Source: Verified Offline CS Systems & Distributed Algorithms Index*`;
   };
 
   // Send a message and stream response instantly
@@ -222,24 +223,24 @@ export const OnDeviceLLMStudio: React.FC<Props> = ({ language }) => {
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/60 text-cyan-300 text-xs font-mono font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
               <Cpu className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-              OFFLINE LOCAL LLM ENGINE
+              ON-DEVICE LOCAL ENGINE (GEMMA 2B)
             </span>
             <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/60 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               100% AIR-GAPPED PRIVACY
             </span>
             <span className="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/60 text-purple-300 text-xs font-mono font-bold flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5 text-purple-400" />
-              CSE SYLLABUS ASSISTANT
+              <Code2 className="w-3.5 h-3.5 text-purple-400" />
+              TECHNICAL ARCHITECTURE & CODE ASSISTANT
             </span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
-            Offline Syllabus Assistant
+            On-Device Technical Architecture & Code Assistant
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-            Zero installation required! Instant, offline CSE syllabus tutor for Data Structures, DBMS, Operating Systems, Networks, and OOP.
-            Ask questions, get verified code examples, diagrams, and complexity analyses with 0ms network latency.
+            Zero installation or cloud API needed! Instant, privacy-locked on-device technical assistant for Distributed Systems, DBMS Concurrency, OS Kernels, Data Structures, and Low-Latency Code Optimization.
+            Generate production-grade code examples, architectural diagrams, and complexity analysis with 0ms network latency.
           </p>
 
           {/* Status Bar */}

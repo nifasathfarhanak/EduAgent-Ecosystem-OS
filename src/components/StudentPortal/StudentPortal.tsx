@@ -67,13 +67,13 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
   };
 
   const tabs = [
-    { id: 'localllm', key: 'onDeviceLocalLlm', label: '⚡ On-Device Local LLM (Gemma 2B)', icon: Cpu, color: 'text-amber-400 font-black' },
-    { id: 'rag', key: 'cseRagGroundStudio', label: 'CSE Curriculum RAG Studio', icon: Brain, color: 'text-cyan-400 font-bold' },
-    { id: 'assessment', key: 'aiAssessmentEngine', label: 'AI Subject Assessment & Report', icon: FileCheck, color: 'text-emerald-400 font-bold' },
-    { id: 'video', key: 'aiVideoLessonStudio', label: 'AI Subject Video Reference Studio', icon: Video, color: 'text-pink-400 font-bold' },
-    { id: 'interview', key: 'voiceStarInterview', label: 'Voice AI Tutor (English)', icon: Mic, color: 'text-cyan-400' },
-    { id: 'vision', key: 'visionImageReview', label: 'Vision Image Review', icon: Eye, color: 'text-emerald-400' },
-    { id: 'tasks', key: 'engineeringTaskBoard', label: 'Engineering Task Board', icon: Terminal, color: 'text-indigo-400' },
+    { id: 'localllm', key: 'onDeviceLocalLlm', label: '⚡ On-Device Technical Architecture & Code Engine', icon: Cpu, color: 'text-amber-400 font-black' },
+    { id: 'rag', key: 'cseRagGroundStudio', label: 'CSE Curriculum RAG Ground Studio', icon: Brain, color: 'text-cyan-400 font-bold' },
+    { id: 'assessment', key: 'aiAssessmentEngine', label: 'AI Adaptive Assessment & Diagnostic Engine', icon: FileCheck, color: 'text-emerald-400 font-bold' },
+    { id: 'video', key: 'aiVideoLessonStudio', label: 'AI Interactive Video Lecture & Reference Studio', icon: Video, color: 'text-pink-400 font-bold' },
+    { id: 'interview', key: 'voiceStarInterview', label: 'RAG Voice Mock Interviewer (Dr. Alex Vance)', icon: Mic, color: 'text-cyan-400' },
+    { id: 'vision', key: 'visionImageReview', label: 'Gemini Multimodal Vision Architecture Review', icon: Eye, color: 'text-emerald-400' },
+    { id: 'tasks', key: 'engineeringTaskBoard', label: 'Cloud & Systems Engineering Task Board', icon: Terminal, color: 'text-indigo-400' },
   ];
 
   return (
@@ -90,13 +90,13 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
         mentorRole={`Dedicated to ${activeSession.studentName}`}
         statusText={`Active Track: ${activeSession.targetRole} | Attendance: ${activeSession.attendancePct}% | Project Score: ${activeSession.projectScore}/100`}
         neuralSyncPct={99.8}
-        speechBubble={`Cadet ${activeSession.studentName}, your diagnosed gap is: "${activeSession.keyLearningGap}". CSE 3-Subject RAG Knowledge Base and Local LLM Studio are active.`}
+        speechBubble={`Cadet ${activeSession.studentName}, your diagnosed gap is: "${activeSession.keyLearningGap}". CSE Grounded RAG Knowledge Base and On-Device Technical Engine are active.`}
         themeColor="cyan"
         quickActions={[
-          { label: '⚡ On-Device Local LLM', onClick: () => handleTabChange('localllm', '⚡ On-Device Local LLM (Gemma 2B)') },
-          { label: 'CSE RAG Ground Studio', onClick: () => handleTabChange('rag', 'CSE Curriculum RAG Studio') },
-          { label: 'Voice AI Tutor', onClick: () => handleTabChange('interview', 'Voice AI Tutor (English)') },
-          { label: 'AI Video Reference Studio', onClick: () => handleTabChange('video', 'AI Subject Video Reference Studio') },
+          { label: '⚡ On-Device Tech Engine', onClick: () => handleTabChange('localllm', '⚡ On-Device Technical Architecture & Code Engine') },
+          { label: 'CSE RAG Ground Studio', onClick: () => handleTabChange('rag', 'CSE Curriculum RAG Ground Studio') },
+          { label: 'RAG Voice AI Tutor', onClick: () => handleTabChange('interview', 'RAG Voice Mock Interviewer (Dr. Alex Vance)') },
+          { label: 'AI Video Reference Studio', onClick: () => handleTabChange('video', 'AI Interactive Video Lecture & Reference Studio') },
         ]}
       />
 
