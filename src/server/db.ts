@@ -59,6 +59,25 @@ export interface DBActivitySubmission {
   createdAt: string;
 }
 
+export interface DBTeacherRecord {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  assignedCourseId?: string;
+  assignedCourseName?: string;
+  studentCount?: number;
+}
+
+export interface DBCourseRecord {
+  id: string;
+  code: string;
+  name: string;
+  assignedTeacherId?: string;
+  assignedTeacherName?: string;
+  studentCount?: number;
+}
+
 /**
  * Mock Persistent Database Connection Pool Class
  */
@@ -71,6 +90,8 @@ export class DatabasePool {
   private startTime: number = Date.now();
 
   private studentsStore: Map<string, DBStudentRecord> = new Map();
+  private teachersStore: Map<string, DBTeacherRecord> = new Map();
+  private coursesStore: Map<string, DBCourseRecord> = new Map();
   private activityStore: DBActivitySubmission[] = [];
 
   constructor() {
@@ -81,6 +102,65 @@ export class DatabasePool {
    * Seeds default mock persistent records for EduAgent OS telemetry.
    */
   private seedInitialData(): void {
+    const initialTeachers: DBTeacherRecord[] = [
+      {
+        id: 'tc-101',
+        name: 'Dr. Sarah Jenkins',
+        email: 'sarah.jenkins@eng.edu',
+        department: 'Computer Science & AI',
+        assignedCourseId: 'crs-401',
+        assignedCourseName: 'CS401 — Machine Learning & Neural Nets',
+        studentCount: 23,
+      },
+      {
+        id: 'tc-102',
+        name: 'Prof. Ramesh Sharma',
+        email: 'ramesh.sharma@eng.edu',
+        department: 'Systems & Distributed Computing',
+        assignedCourseId: 'crs-302',
+        assignedCourseName: 'CS302 — Distributed Systems & Cloud',
+        studentCount: 18,
+      },
+      {
+        id: 'tc-103',
+        name: 'Dr. Priya Nair',
+        email: 'priya.nair@eng.edu',
+        department: 'Cybersecurity & Networks',
+        assignedCourseId: 'crs-501',
+        assignedCourseName: 'CS501 — Advanced Cybersecurity',
+        studentCount: 15,
+      },
+    ];
+
+    const initialCourses: DBCourseRecord[] = [
+      {
+        id: 'crs-401',
+        code: 'CS401',
+        name: 'Machine Learning & Neural Nets',
+        assignedTeacherId: 'tc-101',
+        assignedTeacherName: 'Dr. Sarah Jenkins',
+        studentCount: 23,
+      },
+      {
+        id: 'crs-302',
+        code: 'CS302',
+        name: 'Distributed Systems & Cloud Architecture',
+        assignedTeacherId: 'tc-102',
+        assignedTeacherName: 'Prof. Ramesh Sharma',
+        studentCount: 18,
+      },
+      {
+        id: 'crs-501',
+        code: 'CS501',
+        name: 'Advanced Cybersecurity & Token Security',
+        assignedTeacherId: 'tc-103',
+        assignedTeacherName: 'Dr. Priya Nair',
+        studentCount: 15,
+      },
+    ];
+
+    initialTeachers.forEach((t) => this.teachersStore.set(t.id, t));
+    initialCourses.forEach((c) => this.coursesStore.set(c.id, c));
     const initialStudents: DBStudentRecord[] = [
       {
         id: 'st-101',
@@ -307,6 +387,83 @@ export class DatabasePool {
       return this.activityStore.filter((sub) => sub.studentId === studentId);
     }
     return this.activityStore;
+  }
+
+  /**
+   * Deletes a student from the database store.
+   */
+  public async deleteStudent(id: string): Promise<boolean> {
+    this.totalQueriesExecuted++;
+    return this.studentsStore.delete(id);
+  }
+
+  /**
+   * Retrieves all teacher records.
+   */
+  public async getTeachers(): Promise<DBTeacherRecord[]> {
+    this.totalQueriesExecuted++;
+    return Array.from(this.teachersStore.values());
+  }
+
+  /**
+   * Upserts a teacher record.
+   */
+  public async upsertTeacher(teacher: Partial<DBTeacherRecord> & { id: string }): Promise<DBTeacherRecord> {
+    this.totalQueriesExecuted++;
+    const existing = this.teachersStore.get(teacher.id);
+    const updated: DBTeacherRecord = {
+      id: teacher.id,
+      name: teacher.name || existing?.name || 'Teacher',
+      email: teacher.email || existing?.email || 'teacher@eng.edu',
+      department: teacher.department || existing?.department || 'Computer Science',
+      assignedCourseId: teacher.assignedCourseId ?? existing?.assignedCourseId,
+      assignedCourseName: teacher.assignedCourseName ?? existing?.assignedCourseName,
+      studentCount: teacher.studentCount ?? existing?.studentCount ?? 20,
+    };
+    this.teachersStore.set(teacher.id, updated);
+    return updated;
+  }
+
+  /**
+   * Deletes a teacher record.
+   */
+  public async deleteTeacher(id: string): Promise<boolean> {
+    this.totalQueriesExecuted++;
+    return this.teachersStore.delete(id);
+  }
+
+  /**
+   * Retrieves all course records.
+   */
+  public async getCourses(): Promise<DBCourseRecord[]> {
+    this.totalQueriesExecuted++;
+    return Array.from(this.coursesStore.values());
+  }
+
+  /**
+   * Upserts a course record.
+   */
+  public async upsertCourse(course: Partial<DBCourseRecord> & { id: string }): Promise<DBCourseRecord> {
+    this.totalQueriesExecuted++;
+    const existing = this.coursesStore.get(course.id);
+    const updated: DBCourseRecord = {
+      id: course.id,
+      code: course.code || existing?.code || 'CS101',
+      name: course.name || existing?.name || 'Computer Science Fundamentals',
+      assignedTeacherId: course.assignedTeacherId ?? existing?.assignedTeacherId,
+      assignedTeacherName: course.assignedTeacherName ?? existing?.assignedTeacherName,
+      studentCount: course.studentCount ?? existing?.studentCount ?? 20,
+    };
+    this.coursesStore.set(course.id, updated);
+    return updated;
+  }
+
+  /**
+   * Deletes a course record.
+   */
+  public async deleteCourse(id: string): Promise<boolean> {
+    this.totalQueriesExecuted++;
+    return this.coursesStore.delete(id);
   }
 
   /**

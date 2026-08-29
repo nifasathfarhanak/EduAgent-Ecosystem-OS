@@ -1,7 +1,10 @@
-export type PortalType = 'Student' | 'Teacher' | 'Parent';
+export type PortalType = 'Student' | 'Teacher' | 'Admin';
 
 export type LanguageType =
   | 'English'
+  | 'Hinglish'
+  | 'Tanglish'
+  | 'Telglish'
   | 'Tamil'
   | 'Hindi'
   | 'Telugu'
@@ -21,6 +24,27 @@ export interface UserProfile {
   role: PortalType;
   title: string;
   avatar: string;
+  studentId?: string;
+  teacherId?: string;
+}
+
+export interface TeacherProfile {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  assignedCourseId?: string;
+  assignedCourseName?: string;
+  studentCount?: number;
+}
+
+export interface CourseRecord {
+  id: string;
+  code: string;
+  name: string;
+  assignedTeacherId?: string;
+  assignedTeacherName?: string;
+  studentCount?: number;
 }
 
 export interface RoutingHeaderState {

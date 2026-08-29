@@ -204,6 +204,51 @@ export const SpacedRetrieval: React.FC<Props> = ({ language }) => {
               <p className="text-sm text-slate-200 leading-relaxed font-sans">{t(activeCard.question, activeCard.question)}</p>
             </div>
 
+            {/* Ebbinghaus Retention Decay Curve Visualizer */}
+            <div className="bg-slate-950/90 p-4 rounded-xl border border-slate-800/90 mb-4 space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-amber-400 font-bold flex items-center gap-1.5">
+                  <Brain className="w-3.5 h-3.5" /> Ebbinghaus Retention Curve (SM-2 Math)
+                </span>
+                <span className="text-slate-400 text-[11px]">
+                  Projected Recall: <strong className="text-emerald-400">{activeCard.intervalDay === 60 ? '98%' : activeCard.intervalDay === 21 ? '85%' : activeCard.intervalDay === 7 ? '68%' : '42%'}</strong>
+                </span>
+              </div>
+
+              {/* Memory Retention Curve SVG Chart */}
+              <div className="h-20 w-full relative pt-2">
+                <svg className="w-full h-full overflow-visible" viewBox="0 0 300 60" preserveAspectRatio="none">
+                  {/* Grid Lines */}
+                  <line x1="0" y1="10" x2="300" y2="10" stroke="#1e293b" strokeDasharray="3 3" />
+                  <line x1="0" y1="35" x2="300" y2="35" stroke="#1e293b" strokeDasharray="3 3" />
+                  {/* Decay Path without Spaced Repetition (Red) */}
+                  <path
+                    d="M 0 10 Q 60 55 300 58"
+                    fill="none"
+                    stroke="#ef4444"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 2"
+                    opacity="0.6"
+                  />
+                  {/* SM-2 Spaced Retrieval Curve (Emerald) */}
+                  <path
+                    d="M 0 10 Q 50 40 70 12 Q 130 35 150 10 Q 220 28 240 8 L 300 8"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="2.5"
+                  />
+                  {/* Current Recall Point */}
+                  <circle cx={activeCard.intervalDay === 60 ? '240' : activeCard.intervalDay === 21 ? '150' : activeCard.intervalDay === 7 ? '70' : '20'} cy="10" r="4" fill="#fbbf24" className="animate-ping" />
+                  <circle cx={activeCard.intervalDay === 60 ? '240' : activeCard.intervalDay === 21 ? '150' : activeCard.intervalDay === 7 ? '70' : '20'} cy="10" r="4" fill="#fbbf24" />
+                </svg>
+              </div>
+
+              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-1">
+                <span className="text-red-400/80">-- Without Repetition (80% Forgetting in 14d)</span>
+                <span className="text-emerald-400 font-bold">— SM-2 Spaced Queue ($I_n = I_{n-1} \times EF$)</span>
+              </div>
+            </div>
+
             {/* Answer Toggle */}
             {showAnswer ? (
               <div className="bg-emerald-950/20 p-5 rounded-xl border border-emerald-800/60 space-y-2 animate-fadeIn">

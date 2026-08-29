@@ -263,6 +263,9 @@ ${routingHeader}
  */
 function getLanguageCode(lang: string): string {
   switch (lang) {
+    case 'Hinglish': return 'hi-IN';
+    case 'Tanglish': return 'ta-IN';
+    case 'Telglish': return 'te-IN';
     case 'Hindi': return 'hi-IN';
     case 'Tamil': return 'ta-IN';
     case 'Telugu': return 'te-IN';
@@ -1293,6 +1296,222 @@ app.post('/api/telemetry/activity', async (req, res) => {
   }
 });
 
+// ==========================================
+// ADMIN CRUD ROUTES (Students, Teachers, Courses)
+// ==========================================
+
+// Students CRUD
+app.get('/api/admin/students', async (req, res) => {
+  try {
+    const students = await db.getStudents();
+    res.json({ success: true, students });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch students' });
+  }
+});
+
+app.post('/api/admin/students', async (req, res) => {
+  try {
+    const data = req.body;
+    if (!data.studentName) {
+      return res.status(400).json({ error: 'Student name is required' });
+    }
+    const newStudent = await db.upsertStudent({
+      id: data.id || `st-${Date.now()}`,
+      studentName: data.studentName,
+      rollNo: data.rollNo || `AST-2026-${Math.floor(100 + Math.random() * 900)}`,
+      email: data.email || 'student@eng.edu',
+      targetRole: data.targetRole || 'Software Engineer',
+      attendancePct: data.attendancePct ?? 90,
+      projectScore: data.projectScore ?? 80,
+      avgQuizScore: data.avgQuizScore ?? 80,
+      keyLearningGap: data.keyLearningGap || 'Under Evaluation',
+      lastActive: 'Just now',
+      riskTier: data.riskTier || '[ON-TRACK]',
+      activeModule: 'General',
+    });
+    res.json({ success: true, student: newStudent });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to create student' });
+  }
+});
+
+app.put('/api/admin/students/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = await db.upsertStudent({ ...req.body, id });
+    res.json({ success: true, student: updated });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to update student' });
+  }
+});
+
+app.delete('/api/admin/students/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await db.deleteStudent(id);
+    res.json({ success: deleted });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to delete student' });
+  }
+});
+
+// Teachers CRUD
+app.get('/api/admin/teachers', async (req, res) => {
+  try {
+    const teachers = await db.getTeachers();
+    res.json({ success: true, teachers });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch teachers' });
+  }
+});
+
+app.post('/api/admin/teachers', async (req, res) => {
+  try {
+    const data = req.body;
+    if (!data.name) {
+      return res.status(400).json({ error: 'Teacher name is required' });
+    }
+    const newTeacher = await db.upsertTeacher({
+      id: data.id || `tc-${Date.now()}`,
+      name: data.name,
+      email: data.email || 'teacher@eng.edu',
+      department: data.department || 'Computer Science',
+      assignedCourseId: data.assignedCourseId,
+      assignedCourseName: data.assignedCourseName,
+      studentCount: data.studentCount ?? 20,
+    });
+    res.json({ success: true, teacher: newTeacher });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to create teacher' });
+  }
+});
+
+app.put('/api/admin/teachers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = await db.upsertTeacher({ ...req.body, id });
+    res.json({ success: true, teacher: updated });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to update teacher' });
+  }
+});
+
+app.delete('/api/admin/teachers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await db.deleteTeacher(id);
+    res.json({ success: deleted });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to delete teacher' });
+  }
+});
+
+// Courses CRUD
+app.get('/api/admin/courses', async (req, res) => {
+  try {
+    const courses = await db.getCourses();
+    res.json({ success: true, courses });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch courses' });
+  }
+});
+
+app.post('/api/admin/courses', async (req, res) => {
+  try {
+    const data = req.body;
+    if (!data.name || !data.code) {
+      return res.status(400).json({ error: 'Course code and name are required' });
+    }
+    const newCourse = await db.upsertCourse({
+      id: data.id || `crs-${Date.now()}`,
+      code: data.code,
+      name: data.name,
+      assignedTeacherId: data.assignedTeacherId,
+      assignedTeacherName: data.assignedTeacherName,
+      studentCount: data.studentCount ?? 20,
+    });
+    res.json({ success: true, course: newCourse });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to create course' });
+  }
+});
+
+app.put('/api/admin/courses/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = await db.upsertCourse({ ...req.body, id });
+    res.json({ success: true, course: updated });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to update course' });
+  }
+});
+
+app.delete('/api/admin/courses/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await db.deleteCourse(id);
+    res.json({ success: deleted });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to delete course' });
+  }
+});
+
+// AI Mentoring Suggestion Generator (for Teacher Portal)
+app.post('/api/ai/mentor-suggestion', async (req, res) => {
+  const { studentName, diagnosedGap, score, teacherName } = req.body;
+  try {
+    const ai = getGenAIClient();
+    const prompt = `You are an AI Pedagogy Assistant generating a 1:1 mentoring script for Professor ${teacherName || 'Teacher'} to guide student ${studentName}.
+Student diagnosed gap: "${diagnosedGap || 'Concurrent State Mutex Safety'}". Score: ${score || 60}%.
+
+Provide a concise 3-step mentoring conversation script:
+1. What to say to ${studentName} in your next 1:1 session (opening question & encouragement).
+2. Key conceptual analogy or technical diagram to draw.
+3. Specific 15-minute remedial practice exercise to assign.`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
+    const script = response?.response?.text() || `1:1 Mentoring Script for ${studentName}:\n1. Open with: "${studentName}, I noticed your last Async Quiz score was ${score}%. Walk me through your thought process on locks."\n2. Analogy: Compare mutex locks to a single-person bathroom key at a coffee shop.\n3. Exercise: Assign refactoring a 10-line Go mutex script in the Sandbox.`;
+
+    res.json({ success: true, script });
+  } catch (err) {
+    res.json({
+      success: true,
+      script: `1:1 Mentoring Script for ${studentName}:\n1. Open with: "${studentName}, let's review your last attempt on ${diagnosedGap} together."\n2. Analogy: Use visual race condition diagram.\n3. Exercise: Refactor unsynchronized state variable in isolated sandbox.`,
+    });
+  }
+});
+
+// AI Student Mentor Chat Endpoint
+app.post('/api/ai/student-mentor-chat', async (req, res) => {
+  const { message, studentName, diagnosedGap, history = [] } = req.body;
+  try {
+    const ai = getGenAIClient();
+    const prompt = `You are Astro-X, a personal AI Mentor for engineering student ${studentName}.
+Diagnosed Gap Context: "${diagnosedGap || 'General Learning Gap'}".
+Student Message: "${message}"
+
+Respond concisely, encouragingly, and technically accurately with clear examples.`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
+    const reply = response?.response?.text() || `Great question, ${studentName}! Based on your current gap (${diagnosedGap}), focus on practicing memory safety and state isolation in the sandbox.`;
+    res.json({ success: true, reply });
+  } catch (err) {
+    res.json({
+      success: true,
+      reply: `I'm here to help, ${studentName}! Focus on mastering ${diagnosedGap} by practicing micro-quizzes in the Spaced Retrieval Queue.`,
+    });
+  }
+});
+
 // 5. Parent Portal: A2A Protocol Zero-Jargon Multilingual Updates
 app.post('/api/ai/parent-a2a-translate', async (req, res) => {
   const {
@@ -1671,6 +1890,88 @@ Current Student Skills: ${JSON.stringify(studentSkills)}`;
         ],
       },
     });
+  }
+});
+
+// AI Subject Video & Animation Lesson Generator Endpoint
+app.post('/api/ai/generate-video-lesson', async (req, res) => {
+  const { topic = 'B-Tree Database Indexing', language = 'English' } = req.body;
+  try {
+    const ai = getGenAIClient();
+    if (!ai) {
+      return res.json({ success: true, scenes: [] });
+    }
+
+    const prompt = `You are an AI Educational Video Producer. Create a structured 3-scene animated video lesson breakdown for the subject: "${topic}".
+Language for voice scripts: ${language}.
+
+Respond STRICTLY in JSON format with an array of "scenes":
+[
+  {
+    "id": 1,
+    "title": "Scene 1 title",
+    "durationSec": 5,
+    "script": "Voice narration text in ${language}",
+    "visualGraphic": "GRAPHIC BADGE TITLE",
+    "codeSnippet": "optional short code or diagram text",
+    "diagramNodes": ["Node 1", "Node 2", "Node 3"]
+  }
+]`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
+    const text = response?.response?.text() || '';
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (jsonMatch) {
+      const scenes = JSON.parse(jsonMatch[0]);
+      return res.json({ success: true, scenes });
+    }
+    res.json({ success: true, scenes: [] });
+  } catch (err) {
+    res.json({ success: true, scenes: [] });
+  }
+});
+
+// AI Subject Assessment Generator Endpoint
+app.post('/api/ai/generate-assessment', async (req, res) => {
+  const { subject = 'Machine Learning', language = 'English' } = req.body;
+  try {
+    const ai = getGenAIClient();
+    if (!ai) {
+      return res.json({ success: true, questions: [] });
+    }
+
+    const prompt = `You are an AI University Examiner. Create a 3-question multiple-choice assessment for subject: "${subject}".
+Language: ${language}.
+
+Respond STRICTLY in JSON format with an array of "questions":
+[
+  {
+    "id": 1,
+    "question": "Question text here",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correctIdx": 1,
+    "explanation": "Clear explanation of why Option B is correct"
+  }
+]`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
+    const text = response?.response?.text() || '';
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (jsonMatch) {
+      const questions = JSON.parse(jsonMatch[0]);
+      return res.json({ success: true, questions });
+    }
+    res.json({ success: true, questions: [] });
+  } catch (err) {
+    res.json({ success: true, questions: [] });
   }
 });
 

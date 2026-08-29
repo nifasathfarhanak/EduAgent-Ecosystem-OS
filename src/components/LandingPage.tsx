@@ -52,24 +52,26 @@ interface Props {
 export const demoUsers: UserProfile[] = [
   {
     name: 'Jordan Smith',
-    email: 'ASD-Jordan-Smith',
+    email: 'jordan.smith@eng.edu',
     role: 'Student',
-    title: 'Final Year CS - Cloud & AI Specialist',
+    title: 'Final Year CS - AI Cloud Specialist',
     avatar: 'JS',
+    studentId: 'st-101',
   },
   {
-    name: 'Prof. Sharma',
-    email: 'ASD-Prof-Sharma',
+    name: 'Dr. Sarah Jenkins',
+    email: 'sarah.jenkins@eng.edu',
     role: 'Teacher',
-    title: 'BigQuery Classroom Risk Radar Lead',
-    avatar: 'PS',
+    title: 'CS401 Machine Learning Lead',
+    avatar: 'SJ',
+    teacherId: 'tc-101',
   },
   {
-    name: 'Lakshmi Parent',
-    email: 'ASD-Parent',
-    role: 'Parent',
-    title: 'Multilingual Voice Access Parent',
-    avatar: 'LP',
+    name: 'University Registrar Admin',
+    email: 'admin@eng.edu',
+    role: 'Admin',
+    title: 'University Administrator & Registrar',
+    avatar: 'AD',
   },
 ];
 

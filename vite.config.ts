@@ -14,7 +14,7 @@ export default defineConfig(() => {
     },
     test: {
       globals: true,
-      environment: 'jsdom',
+      environment: 'happy-dom',
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.

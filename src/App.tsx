@@ -6,15 +6,18 @@ import { RoutingHeaderBanner } from './components/RoutingHeaderBanner';
 import { LandingPage, demoUsers } from './components/LandingPage';
 import { StudentPortal } from './components/StudentPortal/StudentPortal';
 import { TeacherPortal } from './components/TeacherPortal/TeacherPortal';
-import { ParentPortal } from './components/ParentPortal/ParentPortal';
+import { AdminPortal } from './components/AdminPortal/AdminPortal';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { LiveA2AFeedModal } from './components/LiveA2AFeedModal';
 import {
   SmartEducationBackground,
   BackgroundThemeId,
   BackgroundThemeSelector,
   BACKGROUND_THEMES,
 } from './components/SmartEducationBackground';
-import { Cpu, Terminal, Shield, Zap, Radio, Layers, Bot, Sparkles } from 'lucide-react';
+import { LoginModal } from './components/LoginModal';
+import { Cpu, Terminal, Shield, Zap, Radio, Layers, Bot, Sparkles, UserCheck } from 'lucide-react';
 
 export default function App() {
   const [portal, setPortal] = useState<PortalType | 'Landing'>('Landing');
@@ -22,6 +25,8 @@ export default function App() {
   const { language, setLanguage } = useLanguage();
   const [feature, setFeature] = useState<FeatureModality>('Vision Image');
   const [manualTheme, setManualTheme] = useState<BackgroundThemeId | undefined>(undefined);
+  const [showA2AFeed, setShowA2AFeed] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleLoginAs = (user: UserProfile) => {
     setCurrentUser(user);
@@ -30,8 +35,8 @@ export default function App() {
       setFeature('Vision Image');
     } else if (user.role === 'Teacher') {
       setFeature('Text');
-    } else if (user.role === 'Parent') {
-      setFeature('Voice Audio');
+    } else if (user.role === 'Admin') {
+      setFeature('Text');
     }
   };
 
@@ -47,19 +52,19 @@ export default function App() {
       return;
     }
 
-    // If user is already logged in, lock view to their role
     if (currentUser) {
       setPortal(currentUser.role);
       if (currentUser.role === 'Student') setFeature('Vision Image');
       else if (currentUser.role === 'Teacher') setFeature('Text');
-      else if (currentUser.role === 'Parent') setFeature('Voice Audio');
+      else if (currentUser.role === 'Admin') setFeature('Text');
     } else {
-      setPortal('Landing');
+      // Allow demo viewing of portals even before explicit login
+      setPortal(newPortal);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#02040a] text-slate-100 flex flex-col font-sans antialiased selection:bg-cyan-500 selection:text-black relative">
+    <div className="min-h-screen bg-[#02040a] text-slate-100 flex flex-col font-sans antialiased selection:bg-cyan-500 selection:text-black relative pb-16 md:pb-0">
       {/* Next-Gen Smart Education AI Background (Context-Aware + Dynamic Robotics AI Themes) */}
       <SmartEducationBackground
         portal={portal}
@@ -78,6 +83,13 @@ export default function App() {
         onLogout={handleLogout}
         currentTheme={manualTheme || 'robotics'}
         onSelectTheme={(t) => setManualTheme(t)}
+        onOpenLogin={() => setShowLoginModal(true)}
+      />
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLoginAs={handleLoginAs}
       />
 
       {/* Mandatory Routing Header Banner */}
@@ -95,22 +107,29 @@ export default function App() {
           )}
 
           {portal === 'Student' && (
-            <StudentPortal language={language} onSetModality={setFeature} />
+            <StudentPortal language={language} onSetModality={setFeature} currentUser={currentUser || undefined} />
           )}
 
           {portal === 'Teacher' && (
-            <TeacherPortal language={language} onSetModality={setFeature} />
+            <TeacherPortal language={language} onSetModality={setFeature} currentUser={currentUser || undefined} />
           )}
 
-          {portal === 'Parent' && (
-            <ParentPortal
-              language={language}
-              onLanguageChange={setLanguage}
-              onSetModality={setFeature}
-            />
+          {portal === 'Admin' && (
+            <AdminPortal language={language} />
           )}
         </ErrorBoundary>
       </main>
+
+      {/* Live A2A Trace Modal for Phone Mirroring Demo */}
+      <LiveA2AFeedModal isOpen={showA2AFeed} onClose={() => setShowA2AFeed(false)} />
+
+      {/* Mobile Bottom Navigation for Phone Mirroring */}
+      <MobileBottomNav
+        activePortal={portal}
+        onPortalChange={handlePortalChange}
+        onToggleA2AFeed={() => setShowA2AFeed((prev) => !prev)}
+        showA2AFeed={showA2AFeed}
+      />
 
       {/* Enterprise Nexus System Status Footer */}
       <footer className="bg-slate-950/90 border-t border-cyan-500/20 text-xs font-mono py-4 px-6 text-slate-400 backdrop-blur-xl z-10 shadow-[0_-5px_25px_rgba(0,0,0,0.8)]">
@@ -123,14 +142,17 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-4 text-[11px]">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
-              <span>Trending Robotic AI Active</span>
-            </span>
+            <button
+              onClick={() => setShowA2AFeed(true)}
+              className="flex items-center gap-1.5 text-emerald-400 font-bold hover:underline cursor-pointer"
+            >
+              <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              <span>A2A Agent Trace Active</span>
+            </button>
             <span className="text-slate-700">•</span>
             <span className="text-cyan-400 font-medium">STAR Evaluator L6</span>
             <span className="text-slate-700">•</span>
-            <span className="text-purple-400 font-medium">Spaced Retrieval (1-7-21-60d)</span>
+            <span className="text-purple-400 font-medium">Spaced Retrieval (SM-2 Alg)</span>
           </div>
         </div>
       </footer>
