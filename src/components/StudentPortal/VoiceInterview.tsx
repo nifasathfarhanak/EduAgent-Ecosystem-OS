@@ -23,6 +23,7 @@ import {
   Lightbulb,
   Upload,
   FolderOpen,
+  Mic,
 } from 'lucide-react';
 
 export interface Props {
@@ -188,6 +189,52 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
     speakText(`Mock Interview Question ${qIndex + 1}: ${question}`);
   };
 
+  // Live Speech Recognition (Microphone Voice Input)
+  const [isListening, setIsListening] = useState(false);
+
+  const startVoiceInput = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Speech Recognition is not supported in this browser. Please use Chrome or Edge.');
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => setIsListening(true);
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setUserInput(prev => (prev ? `${prev} ${transcript}` : transcript));
+        setIsListening(false);
+      };
+      recognition.onerror = () => setIsListening(false);
+      recognition.onend = () => setIsListening(false);
+      recognition.start();
+    } catch {
+      setIsListening(false);
+    }
+  };
+
+  // Specific technical answers for audit questions
+  const QUESTION_SPECIFIC_ANSWERS: Record<number, { topic: string; idealAnswer: string }> = {
+    0: {
+      topic: 'PHP Fraud Detection & DB Isolation under Concurrent Load',
+      idealAnswer: 'To handle high concurrent loads in the PHP fraud engine, we configured MySQL InnoDB isolation to READ COMMITTED to prevent gap locking, implemented row-level SELECT ... FOR UPDATE transactions, cached fraud detection rules in Redis with LRU eviction, and used connection pooling. This reduced latency by 45% under 10k QPS.',
+    },
+    1: {
+      topic: 'Python Edge-Device Facial Recognition Latency',
+      idealAnswer: 'We optimized edge device latency by quantizing the PyTorch model into ONNX/TensorRT FP16 format, sub-sampling video stream frames (1 out of 3), and executing CUDA hardware acceleration. This reduced inference time from 180ms to 24ms on NPU hardware.',
+    },
+    2: {
+      topic: 'Redis Pub/Sub Sharding & High-Throughput Concurrency',
+      idealAnswer: 'We implemented a 6-node Redis Cluster using CRC16 consistent hashing to distribute message channels across shards, added pipeline batching for publications, and wired an async Node.js WebSocket worker pool to support 50k concurrent alerts with sub-5ms latency.',
+    },
+  };
+
   const handleSendResponse = () => {
     if (!userInput.trim()) return;
 
@@ -196,7 +243,9 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
     setUserInput('');
     setIsSpeaking(true);
 
-    const question = auditReport?.questions[currentScenarioIndex] || 'Explain your technical approach and system design choice.';
+    const questionIndex = currentScenarioIndex;
+    const question = auditReport?.questions[questionIndex] || 'Explain your technical approach and system design choice.';
+    const specificAnswer = QUESTION_SPECIFIC_ANSWERS[questionIndex] || QUESTION_SPECIFIC_ANSWERS[0];
     const lowerText = userText.toLowerCase();
 
     setTimeout(() => {
@@ -205,7 +254,7 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
       const isTooShort = words.length < 6;
       const isGibberish = !/[a-z]{3,}/i.test(userText) || words.length < 3;
       
-      const techKeywords = ['sql', 'redis', 'cache', 'python', 'query', 'index', 'lock', 'db', 'api', 'server', 'latency', 'star', 'situation', 'task', 'action', 'result', 'scale', 'load', 'memory', 'cpu', 'concurrency', 'thread', 'process', 'buffer', 'sharding'];
+      const techKeywords = ['sql', 'redis', 'cache', 'python', 'query', 'index', 'lock', 'db', 'api', 'server', 'latency', 'star', 'situation', 'task', 'action', 'result', 'scale', 'load', 'memory', 'cpu', 'concurrency', 'thread', 'process', 'buffer', 'sharding', 'innodb', 'read committed', 'onnx', 'tensorrt'];
       const matchedKeywords = techKeywords.filter(kw => lowerText.includes(kw));
 
       let technical = 0;
@@ -214,44 +263,43 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
       let impact = 0;
       let correctionText = '';
 
-      if (isGibberish || isTooShort) {
+      if (isGibberish || isTooShort || lowerText.includes("don't know") || lowerText.includes("dont know") || lowerText.includes("don know")) {
         technical = 15;
         clarity = 20;
         relevance = 10;
         impact = 15;
-        correctionText = `❌ **Incorrect & Incomplete Response**: Answer is too brief or lacks engineering depth.\n\n` +
-          `✅ **Real-Time Correct Answer & Ideal Response**:\n` +
-          `• **Situation & Task**: Clearly state the project context, scale, and specific problem faced.\n` +
-          `• **Technical Action**: Describe exact engineering steps (e.g., indexing DB columns, adding Redis LRU cache, tuning query locks).\n` +
-          `• **Quantifiable Result**: Conclude with metrics (e.g., 'Reduced query latency by 45% under 10k QPS').`;
+        correctionText = `❌ **Incorrect Response**: Answer is missing or lacks technical substance.\n\n` +
+          `✅ **Real-Time Specific Technical Answer & Ideal Response**:\n` +
+          `"${specificAnswer.idealAnswer}"`;
       } else if (matchedKeywords.length === 0) {
         technical = 40;
         clarity = 55;
         relevance = 45;
         impact = 40;
-        correctionText = `⚠️ **Partially Incorrect Answer**: Response lacks specific technical concepts relevant to the question.\n\n` +
-          `✅ **Real-Time Correct Answer & Standard**:\n` +
-          `When asked about "${question.slice(0, 50)}...", you should explicitly mention system primitives (e.g., atomic locks, connection pooling, caching strategies, and load testing).`;
+        correctionText = `⚠️ **Partially Incorrect Answer**: Lacks specific engineering primitives for ${specificAnswer.topic}.\n\n` +
+          `✅ **Real-Time Specific Technical Answer**:\n` +
+          `"${specificAnswer.idealAnswer}"`;
       } else {
-        technical = Math.min(95, 60 + matchedKeywords.length * 10);
-        clarity = Math.min(96, 70 + words.length * 2);
-        relevance = 88;
-        impact = Math.min(92, 65 + matchedKeywords.length * 8);
-        correctionText = `✅ **Accurate Response**: Good coverage of key technical concepts (${matchedKeywords.join(', ')}).`;
+        technical = Math.min(95, 65 + matchedKeywords.length * 10);
+        clarity = Math.min(96, 75 + words.length * 2);
+        relevance = 90;
+        impact = Math.min(92, 70 + matchedKeywords.length * 8);
+        correctionText = `✅ **Accurate Technical Answer**: Covered key mechanisms (${matchedKeywords.join(', ')}).\n\n` +
+          `💡 **Reference Answer**: "${specificAnswer.idealAnswer}"`;
       }
 
       const overall = Math.round((clarity + technical + relevance + impact) / 4);
 
       const computedScorecard: ScorecardData = {
-        clarity: { score: clarity, feedback: clarity > 70 ? "Clear structure." : "Vague articulation." },
+        clarity: { score: clarity, feedback: clarity > 70 ? "Clear structure." : "Vague response." },
         technicalAccuracy: { score: technical, feedback: technical > 70 ? "Accurate architecture principles." : "Lacks required technical depth." },
         relevance: { score: relevance, feedback: relevance > 70 ? "Directly addresses scenario." : "Off-topic response." },
         impact: { score: impact, feedback: impact > 70 ? "Demonstrates business value." : "No measurable outcomes provided." },
         overallScore: overall,
         summary: overall < 50 ? "Response failed technical verification." : "Satisfactory interview performance.",
         motivationalAdvice: overall < 50 
-          ? "Study the correct answer above and practice again with explicit technical metrics."
-          : "Great progress! Incorporate exact performance benchmarks to achieve L6 level."
+          ? "Listen to the correct technical answer spoken by the AI tutor and practice again!"
+          : "Great job! Keep practicing with quantifiable performance metrics."
       };
 
       setLastScorecard(computedScorecard);
@@ -266,7 +314,12 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
         `💡 **Advice**: ${computedScorecard.motivationalAdvice}`;
 
       setChatHistory(prev => [...prev, { role: 'avatar', text: aiResponse }]);
-      speakText(`Evaluation completed. Real-time interview score is ${overall} out of 100.`);
+
+      // Voice Output — speak evaluation and the correct technical answer out loud!
+      const speechOut = overall < 50
+        ? `Interview Evaluation: Marks are ${overall} out of 100. Incorrect answer. Here is the correct technical answer: ${specificAnswer.idealAnswer}`
+        : `Interview Evaluation: Marks are ${overall} out of 100. Good technical explanation!`;
+      speakText(speechOut);
     }, 1000);
   };
 
@@ -543,15 +596,30 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
                     <div ref={chatEndRef} />
                   </div>
 
-                  <div className="flex gap-2 pt-2 border-t border-slate-800">
+                  <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+                    <button
+                      type="button"
+                      onClick={startVoiceInput}
+                      title="Click to speak your answer with microphone"
+                      className={`p-3 rounded-xl border transition cursor-pointer flex items-center gap-1 text-xs font-bold font-mono ${
+                        isListening
+                          ? 'bg-red-950 border-red-500 text-red-300 animate-pulse'
+                          : 'bg-slate-950 border-slate-800 text-cyan-400 hover:border-cyan-400 hover:text-cyan-300'
+                      }`}
+                    >
+                      <Mic className={`w-4 h-4 ${isListening ? 'animate-bounce text-red-400' : ''}`} />
+                      <span>{isListening ? 'Listening...' : 'Voice Input'}</span>
+                    </button>
+
                     <input
                       type="text"
                       value={userInput}
                       onChange={(e) => setUserInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSendResponse()}
-                      placeholder="Type your STAR interview answer..."
+                      placeholder="Type or click Voice Input to speak your STAR interview answer..."
                       className="flex-grow p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
                     />
+
                     <button
                       type="button"
                       onClick={handleSendResponse}
