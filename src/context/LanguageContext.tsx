@@ -10,6 +10,9 @@ export interface LanguageOption {
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
   { id: 'English', label: 'English', nativeLabel: 'English', code: 'en' },
+  { id: 'Hinglish', label: 'Hinglish', nativeLabel: 'Hinglish', code: 'hi-en' },
+  { id: 'Tanglish', label: 'Tanglish', nativeLabel: 'Tanglish', code: 'ta-en' },
+  { id: 'Telglish', label: 'Telglish', nativeLabel: 'Telglish', code: 'te-en' },
   { id: 'Tamil', label: 'Tamil', nativeLabel: 'தமிழ்', code: 'ta' },
   { id: 'Hindi', label: 'Hindi', nativeLabel: 'हिन्दी', code: 'hi' },
   { id: 'Telugu', label: 'Telugu', nativeLabel: 'తెలుగు', code: 'te' },
@@ -22,8 +25,8 @@ export const SUPPORTED_LANGUAGES: LanguageOption[] = [
   { id: 'Odia', label: 'Odia', nativeLabel: 'ଓଡ଼ିଆ', code: 'or' },
 ];
 
-// Complete 10-Language UI Dictionary for zero-lag instant rendering
-const UI_DICTIONARY: Record<LanguageType, Record<string, string>> = {
+// Complete Multi-Language UI Dictionary for zero-lag instant rendering
+const UI_DICTIONARY: Partial<Record<LanguageType, Record<string, string>>> & Record<'English', Record<string, string>> = {
   English: {
     heroTag: 'Autonomous EdTech Operating System • Powered by Google Cloud & AI Studio',
     heroTitle: 'Next-Gen Autonomous EdTech Ecosystem for Computer Science & Engineering',

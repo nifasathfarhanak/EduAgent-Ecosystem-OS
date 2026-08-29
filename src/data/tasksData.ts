@@ -10,12 +10,12 @@ export interface LocalizedTask {
   labUrl: string;
   cloudShellUrl: string;
   projectId: string;
-  title: Record<LanguageType, string>;
-  category: Record<LanguageType, string>;
-  difficulty: Record<LanguageType, string>;
-  status: Record<LanguageType, string>;
-  summary: Record<LanguageType, string>;
-  labSteps: Record<LanguageType, string[]>;
+  title: Partial<Record<LanguageType, string>> & { English: string };
+  category: Partial<Record<LanguageType, string>> & { English: string };
+  difficulty: Partial<Record<LanguageType, string>> & { English: string };
+  status: Partial<Record<LanguageType, string>> & { English: string };
+  summary: Partial<Record<LanguageType, string>> & { English: string };
+  labSteps: Partial<Record<LanguageType, string[]>> & { English: string[] };
 }
 
 export const LOCALIZED_TASKS: LocalizedTask[] = [

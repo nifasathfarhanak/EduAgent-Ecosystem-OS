@@ -245,7 +245,7 @@ export const SpacedRetrieval: React.FC<Props> = ({ language }) => {
 
               <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-1">
                 <span className="text-red-400/80">-- Without Repetition (80% Forgetting in 14d)</span>
-                <span className="text-emerald-400 font-bold">— SM-2 Spaced Queue ($I_n = I_{n-1} \times EF$)</span>
+                <span className="text-emerald-400 font-bold">{"— SM-2 Spaced Queue (Iₙ = Iₙ₋₁ × EF)"}</span>
               </div>
             </div>
 

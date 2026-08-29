@@ -9,7 +9,7 @@ import { DisengagementStudio } from './DisengagementStudio';
 import { SkillGapMatrix } from './SkillGapMatrix';
 import { EngineeringTasks } from './EngineeringTasks';
 import { AITestPlanWorkflow } from './AITestPlanWorkflow';
-import { CognitiveStressDetector } from './CognitiveStressDetector';
+import { CSERagGroundStudio } from './CSERagGroundStudio';
 import { P2PArena } from './P2PArena';
 import { VerifiedCredentials } from './VerifiedCredentials';
 import { MentorSwarm } from './MentorSwarm';
@@ -35,7 +35,7 @@ interface Props {
 
 export const StudentPortal: React.FC<Props> = ({ language, onSetModality, currentUser }) => {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<string>('vision');
+  const [activeTab, setActiveTab] = useState<string>('rag');
   const [activeSession, setActiveSession] = useState<StudentProfile>(() => {
     const all = getAllStudentProfiles();
     if (currentUser?.studentId) {
@@ -76,14 +76,14 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
   };
 
   const tabs = [
-    { id: 'vision', key: 'visionImageReview', label: 'Vision Image Review', icon: Eye, color: 'text-emerald-400' },
+    { id: 'rag', key: 'cseRagGroundStudio', label: 'CSE Curriculum RAG Studio', icon: Brain, color: 'text-cyan-400 font-bold' },
     { id: 'assessment', key: 'aiAssessmentEngine', label: 'AI Subject Assessment & Report', icon: FileCheck, color: 'text-emerald-400 font-bold' },
     { id: 'video', key: 'aiVideoLessonStudio', label: 'AI Subject Video Studio', icon: Video, color: 'text-pink-400 font-bold' },
     { id: 'aitestplan', key: 'aiTestPlanWorkflow', label: 'AI Test Plan & Study Workflow', icon: Sparkles, color: 'text-cyan-400 font-bold' },
     { id: 'chat', key: 'aiMentorChat', label: '24/7 AI Mentor Chat', icon: MessageSquare, color: 'text-purple-400 font-bold' },
     { id: 'internship', key: 'microInternshipSimulator', label: 'AI Micro-Internship Simulator', icon: Briefcase, color: 'text-amber-400 font-bold' },
     { id: 'interview', key: 'voiceStarInterview', label: 'Vernacular Voice AI Tutor', icon: Mic, color: 'text-cyan-400' },
-    { id: 'stress', key: 'cognitiveStressDetector', label: 'Stress & Fatigue Detector', icon: HeartPulse, color: 'text-pink-400 font-bold' },
+    { id: 'vision', key: 'visionImageReview', label: 'Vision Image Review', icon: Eye, color: 'text-emerald-400' },
     { id: 'p2p', key: 'p2pArena', label: '1v1 Mobile P2P Arena', icon: Swords, color: 'text-red-400 font-bold' },
     { id: 'credentials', key: 'verifiedCredentials', label: 'AST Verified Credentials', icon: ShieldCheck, color: 'text-emerald-400 font-bold' },
     { id: 'mentors', key: 'mentorSwarm', label: 'AI Mentor Swarm Panel', icon: Bot, color: 'text-purple-400 font-bold' },
@@ -108,13 +108,13 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
         mentorRole={`Gemini 2.5 & Vertex AI • Dedicated to ${activeSession.studentName}`}
         statusText={`Active Track: ${activeSession.targetRole} | Attendance: ${activeSession.attendancePct}% | Project Score: ${activeSession.projectScore}/100`}
         neuralSyncPct={99.8}
-        speechBubble={`Cadet ${activeSession.studentName}, your diagnosed gap is: "${activeSession.keyLearningGap}". AI Mentor Chat, Stress Sensor, 1v1 Battle Arena, and AST Verified Credentials are live!`}
+        speechBubble={`Cadet ${activeSession.studentName}, your diagnosed gap is: "${activeSession.keyLearningGap}". CSE 3-Subject RAG Knowledge Base, AI Mentor Chat, 1v1 Battle Arena, and AST Verified Credentials are live!`}
         themeColor="cyan"
         quickActions={[
+          { label: 'CSE RAG Ground Studio', onClick: () => handleTabChange('rag', 'CSE Curriculum RAG Studio') },
           { label: 'AI Mentor Chat', onClick: () => handleTabChange('chat', '24/7 AI Mentor Chat') },
           { label: 'AI Test Plan & Workflow', onClick: () => handleTabChange('aitestplan', 'AI Test Plan & Study Workflow') },
           { label: 'Vernacular Voice AI', onClick: () => handleTabChange('interview', 'Vernacular Voice AI Tutor') },
-          { label: 'Stress & Fatigue Sensor', onClick: () => handleTabChange('stress', 'Stress & Fatigue Detector') },
           { label: '1v1 P2P Battle Arena', onClick: () => handleTabChange('p2p', '1v1 Mobile P2P Arena') },
           { label: 'AST Verified Credentials', onClick: () => handleTabChange('credentials', 'AST Verified Credentials') },
         ]}
@@ -166,6 +166,7 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
       </div>
 
       <ErrorBoundary resetKey={activeTab} fallbackTitle={`${activeTab.toUpperCase()} Module Error`}>
+        {activeTab === 'rag' && <CSERagGroundStudio studentName={activeSession.studentName} />}
         {activeTab === 'vision' && <VisionQA language={language} onSetModality={onSetModality} />}
         {activeTab === 'assessment' && <AIAssessmentEngine language={language} />}
         {activeTab === 'video' && <AIVideoLessonStudio language={language} />}
@@ -173,7 +174,6 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
         {activeTab === 'chat' && <AIMentorChat language={language} />}
         {activeTab === 'internship' && <MicroInternshipSimulator language={language} />}
         {activeTab === 'interview' && <VoiceInterview language={language} onSetModality={onSetModality} />}
-        {activeTab === 'stress' && <CognitiveStressDetector language={language} />}
         {activeTab === 'p2p' && <P2PArena language={language} />}
         {activeTab === 'credentials' && <VerifiedCredentials language={language} />}
         {activeTab === 'mentors' && <MentorSwarm language={language} />}

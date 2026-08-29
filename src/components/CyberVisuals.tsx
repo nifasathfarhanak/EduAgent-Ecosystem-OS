@@ -716,7 +716,7 @@ export const InsideRoboticTelemetryBar: React.FC<{
 // 9. Reusable Mecha Card Container with Futuristic Angle Cuts, Glowing Borders & Corner Brackets
 export const MechaCard: React.FC<{
   children: React.ReactNode;
-  themeColor?: 'cyan' | 'pink' | 'purple' | 'emerald' | 'amber';
+  themeColor?: 'cyan' | 'pink' | 'purple' | 'emerald' | 'amber' | 'red';
   title?: string;
   subTitle?: string;
   badge?: string;
@@ -780,6 +780,15 @@ export const MechaCard: React.FC<{
       badge: 'bg-amber-950/90 text-amber-300 border-amber-500/50',
       iconBox: 'bg-amber-950 border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.35)]',
       title: 'text-amber-300',
+    },
+    red: {
+      border: 'border-red-500/40 hover:border-red-400',
+      glow: 'shadow-[0_0_30px_rgba(239,68,68,0.15)] hover:shadow-[0_0_40px_rgba(239,68,68,0.3)]',
+      topLine: 'from-red-500 via-red-400 to-transparent',
+      corner: 'border-red-400',
+      badge: 'bg-red-950/90 text-red-300 border-red-500/50',
+      iconBox: 'bg-red-950 border-red-500/40 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.35)]',
+      title: 'text-red-300',
     },
   }[themeColor];
 

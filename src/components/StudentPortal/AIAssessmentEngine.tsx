@@ -129,7 +129,6 @@ export const AIAssessmentEngine: React.FC<Props> = ({ language }) => {
       studentId: activeStudent.id,
       studentName: activeStudent.studentName,
       rollNo: activeStudent.rollNo,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       module: `Subject Assessment: ${subject}`,
       actionType: 'SUBJECT_ASSESSMENT_SUBMISSION',
       title: `Completed ${subject} AI Assessment`,

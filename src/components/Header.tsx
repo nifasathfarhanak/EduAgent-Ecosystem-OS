@@ -22,6 +22,7 @@ import {
   Zap,
   Bot,
   User,
+  Code2,
 } from 'lucide-react';
 
 interface Props {
@@ -67,30 +68,30 @@ export const Header: React.FC<Props> = ({
       {/* Top Accent Neon Line (Cyan to Magenta Gradient) */}
       <div className="h-[2px] w-full bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500 opacity-90 shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-2 sm:py-3 flex flex-col md:flex-row items-center justify-between gap-2 sm:gap-4">
         {/* Cyberpunk Capsule Navbar Container */}
-        <div className="w-full flex items-center justify-between gap-4 bg-slate-950/80 border border-cyan-500/30 rounded-2xl px-4 py-2.5 shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:border-cyan-400/50 transition-all">
+        <div className="w-full flex items-center justify-between gap-1.5 sm:gap-4 bg-slate-950/85 border border-cyan-500/30 rounded-2xl px-2 sm:px-4 py-2 sm:py-2.5 shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:border-cyan-400/50 transition-all max-w-full">
           
           {/* Brand Logo & Title: EduAgent AST */}
           <div
-            className="flex items-center gap-3 cursor-pointer group select-none"
+            className="flex items-center gap-1.5 sm:gap-3 cursor-pointer group select-none flex-shrink-0"
             onClick={() => onPortalChange('Landing')}
           >
             <div className="relative">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-pink-500 p-[1.5px] shadow-[0_0_15px_rgba(6,182,212,0.5)] group-hover:scale-105 transition-transform duration-300">
+              <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-pink-500 p-[1.5px] shadow-[0_0_15px_rgba(6,182,212,0.5)] group-hover:scale-105 transition-transform duration-300">
                 <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                  <Terminal className="w-4 h-4 text-cyan-400" />
+                  <GraduationCap className="w-4 h-4 text-cyan-400" />
                 </div>
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-cyan-400 border border-slate-950 rounded-full animate-ping" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-cyan-400 border border-slate-950 rounded-full animate-ping" />
             </div>
 
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-black tracking-tight text-white font-mono bg-gradient-to-r from-white via-slate-100 to-cyan-200 bg-clip-text text-transparent">
-                  EduAgent AST
+              <div className="flex items-center gap-1 sm:gap-2">
+                <span className="text-xs sm:text-base font-black tracking-tight text-white font-mono bg-gradient-to-r from-white via-slate-100 to-cyan-200 bg-clip-text text-transparent">
+                  EduAgent<span className="hidden xs:inline"> AST</span>
                 </span>
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono font-bold tracking-wider uppercase">
+                <span className="hidden md:inline text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono font-bold tracking-wider uppercase">
                   AST-v4
                 </span>
               </div>
@@ -118,7 +119,21 @@ export const Header: React.FC<Props> = ({
           </div>
 
           {/* Right Section: AI Theme Switcher, Active Portal Badge, Language Pill & User Profile */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            {/* Developer Spec & Architecture Portal Button */}
+            <button
+              onClick={() => onPortalChange(activePortal === 'Developer' ? 'Landing' : 'Developer')}
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl border font-mono text-xs font-bold transition-all cursor-pointer shadow-sm ${
+                activePortal === 'Developer'
+                  ? 'bg-cyan-500 text-slate-950 border-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.8)] scale-105'
+                  : 'bg-slate-900/90 text-cyan-300 hover:text-cyan-100 hover:bg-slate-800 border-cyan-500/40 hover:border-cyan-300'
+              }`}
+              title="View Lead Developer Credentials & System Architecture Specs"
+            >
+              <Code2 className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+              <span className="hidden sm:inline">Developer</span>
+            </button>
+
             {/* Next-Gen AI Background Theme Customizer */}
             {onSelectTheme && (
               <BackgroundThemeSelector
@@ -129,7 +144,7 @@ export const Header: React.FC<Props> = ({
 
             {/* Post-Login Role Badge */}
             {isPostLogin && (
-              <div className="hidden sm:flex items-center gap-2 bg-slate-900/90 px-3 py-1 rounded-xl border border-slate-800 font-mono text-xs shadow-inner">
+              <div className="hidden md:flex items-center gap-2 bg-slate-900/90 px-3 py-1 rounded-xl border border-slate-800 font-mono text-xs shadow-inner">
                 {activePortal === 'Student' && (
                   <span className="flex items-center gap-1.5 text-cyan-300 font-bold">
                     <GraduationCap className="w-3.5 h-3.5" /> Student Active
@@ -148,32 +163,19 @@ export const Header: React.FC<Props> = ({
               </div>
             )}
 
-            {/* Neon Language Pill Selector (e.g. Tamil (T) / English) */}
-            <div className="relative flex items-center gap-1.5 bg-slate-950/90 hover:bg-slate-900 border border-cyan-500/40 hover:border-cyan-300 rounded-xl px-3 py-1.5 shadow-[0_0_10px_rgba(6,182,212,0.2)] transition-all">
-              <Globe className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
-              <select
-                value={language}
-                onChange={(e) => handleLangChange(e.target.value as LanguageType)}
-                className="bg-transparent text-xs font-bold text-slate-200 focus:outline-none cursor-pointer font-mono pr-1"
-              >
-                {SUPPORTED_LANGUAGES.map((lang) => (
-                  <option key={lang.id} value={lang.id} className="bg-slate-950 text-slate-100">
-                    {lang.label} ({lang.nativeLabel.slice(0, 3)})
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Login / Profile Dropdown */}
             {currentUser ? (
-              <div className="relative">
+              <div className="relative flex-shrink-0">
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center gap-2 bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 rounded-xl px-2.5 py-1.5 transition-all text-left shadow-md cursor-pointer"
+                  className="flex items-center gap-1 sm:gap-2 bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 rounded-xl px-1.5 sm:px-2.5 py-1.5 transition-all text-left shadow-md cursor-pointer"
                 >
-                  <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-600 to-purple-600 text-white font-mono text-[10px] font-black flex items-center justify-center shadow">
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-600 to-purple-600 text-white font-mono text-[10px] font-black flex items-center justify-center shadow flex-shrink-0">
                     {currentUser.avatar}
                   </div>
+                  <span className="hidden sm:inline text-xs font-mono font-bold text-cyan-300">
+                    {currentUser.role}
+                  </span>
                   <ChevronDown className="w-3 h-3 text-slate-400" />
                 </button>
 
@@ -218,10 +220,11 @@ export const Header: React.FC<Props> = ({
             ) : (
               <button
                 onClick={onOpenLogin}
-                className="px-4 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-bold text-xs rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-2 sm:px-3.5 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-black text-xs rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all cursor-pointer flex items-center gap-1 sm:gap-1.5 whitespace-nowrap flex-shrink-0"
+                title="Sign In / Authenticate Role"
               >
-                <User className="w-3.5 h-3.5" />
-                <span>Sign In / Login</span>
+                <User className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>Sign In</span>
               </button>
             )}
           </div>

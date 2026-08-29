@@ -96,8 +96,12 @@ export const SmartEducationBackground: React.FC<Props> = ({
         return 'cyber-matrix';
       case 'Teacher':
         return 'neural-brain';
+      case 'Admin':
+        return 'cyber-matrix';
       case 'Parent':
         return 'smart-campus';
+      case 'Developer':
+        return 'quantum-lab';
       case 'Landing':
       default:
         return 'robotics';
@@ -460,29 +464,28 @@ export const BackgroundThemeSelector: React.FC<{
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="relative inline-block z-30">
+    <div className="relative inline-block z-30 flex-shrink-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-slate-950/90 hover:bg-slate-900 border border-cyan-500/50 hover:border-cyan-400 text-cyan-300 px-3.5 py-1.5 rounded-2xl font-mono text-xs shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all cursor-pointer group"
+        className="flex items-center gap-1 sm:gap-2 bg-slate-950/90 hover:bg-slate-900 border border-cyan-500/50 hover:border-cyan-400 text-cyan-300 px-2 sm:px-3 py-1.5 rounded-xl sm:rounded-2xl font-mono text-xs shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all cursor-pointer group"
         title="Customize Next-Gen AI Smart Education Background"
       >
-        <Sparkles className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-45 transition-transform duration-300" />
-        <span className="font-bold flex items-center gap-1.5">
-          <span>AI Theme:</span>
-          <span className="text-white bg-cyan-950/80 px-2 py-0.5 rounded-lg border border-cyan-500/40">
-            {BACKGROUND_THEMES[currentTheme]?.icon} {BACKGROUND_THEMES[currentTheme]?.shortLabel}
-          </span>
+        <Sparkles className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-45 transition-transform duration-300 flex-shrink-0" />
+        <span className="hidden md:inline font-bold">Theme:</span>
+        <span className="text-white bg-cyan-950/80 px-1.5 sm:px-2 py-0.5 rounded-lg border border-cyan-500/40 text-[11px] sm:text-xs">
+          {BACKGROUND_THEMES[currentTheme]?.icon}
+          <span className="hidden sm:inline ml-1">{BACKGROUND_THEMES[currentTheme]?.shortLabel}</span>
         </span>
-        <Wand2 className="w-3 h-3 text-pink-400" />
+        <Wand2 className="w-3 h-3 text-pink-400 hidden sm:inline flex-shrink-0" />
       </button>
 
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs"
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-xs"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-slate-950/95 border-2 border-cyan-500/60 rounded-3xl p-3.5 shadow-[0_0_40px_rgba(6,182,212,0.5)] backdrop-blur-2xl z-50 space-y-2 animate-fade-in font-sans">
+          <div className="absolute right-0 mt-2 w-72 sm:w-80 max-w-[90vw] bg-slate-950/95 border-2 border-cyan-500/60 rounded-3xl p-3.5 shadow-[0_0_40px_rgba(6,182,212,0.5)] backdrop-blur-2xl z-50 space-y-2 animate-fade-in font-sans">
             <div className="flex items-center justify-between border-b border-cyan-500/30 pb-2 px-1">
               <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-white">
                 <Bot className="w-4 h-4 text-cyan-400" />

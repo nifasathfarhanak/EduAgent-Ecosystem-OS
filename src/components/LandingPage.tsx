@@ -9,7 +9,6 @@ import {
   CircuitWingLeft,
   CircuitWingRight,
   RoboticEqualizer,
-  RoboticBiometricScanner,
 } from './CyberVisuals';
 import {
   BackgroundThemeId,

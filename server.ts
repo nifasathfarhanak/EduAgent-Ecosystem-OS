@@ -4,6 +4,7 @@ import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import { db } from './src/server/db';
 import { authMiddleware, AuthenticatedRequest, generateMockToken, requireRole } from './src/server/auth';
+import { retrieveCSEKnowledgeChunks, CSE_KNOWLEDGE_BASE, CSE_SUBJECTS } from './src/data/cseKnowledgeBase';
 
 dotenv.config();
 
@@ -1475,7 +1476,7 @@ Provide a concise 3-step mentoring conversation script:
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
-    const script = response?.response?.text() || `1:1 Mentoring Script for ${studentName}:\n1. Open with: "${studentName}, I noticed your last Async Quiz score was ${score}%. Walk me through your thought process on locks."\n2. Analogy: Compare mutex locks to a single-person bathroom key at a coffee shop.\n3. Exercise: Assign refactoring a 10-line Go mutex script in the Sandbox.`;
+    const script = response?.text || `1:1 Mentoring Script for ${studentName}:\n1. Open with: "${studentName}, I noticed your last Async Quiz score was ${score}%. Walk me through your thought process on locks."\n2. Analogy: Compare mutex locks to a single-person bathroom key at a coffee shop.\n3. Exercise: Assign refactoring a 10-line Go mutex script in the Sandbox.`;
 
     res.json({ success: true, script });
   } catch (err) {
@@ -1502,13 +1503,133 @@ Respond concisely, encouragingly, and technically accurately with clear examples
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
-    const reply = response?.response?.text() || `Great question, ${studentName}! Based on your current gap (${diagnosedGap}), focus on practicing memory safety and state isolation in the sandbox.`;
+    const reply = response?.text || `Great question, ${studentName}! Based on your current gap (${diagnosedGap}), focus on practicing memory safety and state isolation in the sandbox.`;
     res.json({ success: true, reply });
   } catch (err) {
     res.json({
       success: true,
       reply: `I'm here to help, ${studentName}! Focus on mastering ${diagnosedGap} by practicing micro-quizzes in the Spaced Retrieval Queue.`,
     });
+  }
+});
+
+// ==========================================
+// CSE DEGREE RAG (Retrieval-Augmented Generation) ENGINE
+// Degree: B.Tech / B.E. Computer Science & Engineering (Core 3 Subjects)
+// Subjects: CS201 (DSA), CS301 (DBMS), CS302 (OS & Systems)
+// ==========================================
+
+// Get CSE Curriculum Metadata & Pre-Loaded Knowledge Statistics
+app.get('/api/ai/cse-curriculum', (req, res) => {
+  res.json({
+    success: true,
+    degree: 'B.Tech / B.E. Computer Science & Engineering',
+    subjects: CSE_SUBJECTS,
+    totalChunks: CSE_KNOWLEDGE_BASE.length,
+    sources: [
+      'OSSU Open Source Society University',
+      'MIT OpenCourseWare (6.006, 6.828)',
+      'Stanford CS (CS106B, CS161, CS145, CS140)',
+      'CMU 15-445 Database Systems',
+      'Remzi OSTEP Operating Systems Three Easy Pieces',
+      'GATE CSE Standard Subject Syllabus'
+    ]
+  });
+});
+
+// Execute Grounded RAG Query with Top-K Retrieval and Gemini Synthesis
+app.post('/api/ai/rag-qa', async (req, res) => {
+  const { query, subjectCode, studentName = 'Cadet' } = req.body;
+  if (!query || !query.trim()) {
+    return res.status(400).json({ error: 'Query is required for RAG search' });
+  }
+
+  try {
+    // 1. Phase 1: High-Precision Knowledge Chunk Retrieval
+    const retrievedResults = retrieveCSEKnowledgeChunks(query, subjectCode, 3);
+    const retrievedChunks = retrievedResults.map((r) => r.chunk);
+    const confidenceScore = retrievedResults[0]?.score || 0.88;
+
+    // Format retrieved context for grounding
+    const contextText = retrievedChunks
+      .map((c, idx) => `[Source ${idx + 1}: ${c.source} | ${c.subjectName} (${c.subjectCode}) - ${c.topic}: ${c.subtopic}]\n${c.content}\n${c.codeSnippet ? `Code Example:\n${c.codeSnippet}\n` : ''}${c.complexityOrProperties ? `Key Properties / Complexity:\n${c.complexityOrProperties}\n` : ''}`)
+      .join('\n---\n\n');
+
+    const targetSubject = CSE_SUBJECTS.find((s) => s.code === subjectCode)?.name || 'Computer Science & Engineering';
+
+    const systemInstruction = `You are a distinguished Principal Professor of Computer Science & Engineering and AI Socratic Tutor for undergraduate students.
+You are answering a question on ${targetSubject} for student ${studentName}.
+
+MANDATORY GROUNDING INSTRUCTIONS:
+1. Ground your answer strictly on the provided verified curriculum context excerpts from leading open-source CS curricula (MIT, Stanford, CMU, OSTEP, CLRS).
+2. Structure your response with:
+   - **Core Concept & Theoretical Foundation** (Clear, intuitive explanation).
+   - **Key Properties & Algorithmic/Architectural Mechanics** (Step-by-step).
+   - **Practical Implementation Snippet** (Clean C++, Python, or SQL where relevant).
+   - **Complexity / Performance Trade-offs** (Big-O time and space or latency considerations).
+   - **Academic Source Citations** (Explicitly reference the retrieved source modules).
+3. Be rigorous, technically precise, and pedagogically clear.`;
+
+    const userPrompt = `VERIFIED CSE KNOWLEDGE BASE CONTEXT:
+"""
+${contextText}
+"""
+
+STUDENT QUERY:
+"${query}"
+
+Provide a comprehensive, authoritative grounded answer strictly addressing the student query using the above context.`;
+
+    const ai = getGenAIClient();
+    if (ai) {
+      const response = await generateContentWithRetry(ai, {
+        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+        config: {
+          systemInstruction,
+          temperature: 0.3, // Low temperature for high factual accuracy
+        },
+      });
+
+      if (response?.text) {
+        return res.json({
+          success: true,
+          query,
+          subjectCode: subjectCode || retrievedChunks[0]?.subjectCode,
+          subjectName: targetSubject,
+          answer: response.text.trim(),
+          confidenceScore,
+          retrievedChunks: retrievedResults,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+
+    // Deterministic fallback using the retrieved knowledge chunks directly
+    const primary = retrievedChunks[0];
+    const fallbackAnswer = `### **${primary?.topic || 'Computer Science Concept'} — ${primary?.subtopic || ''}**
+
+**1. Core Theoretical Mechanism:**
+${primary?.content || 'In Computer Science and Engineering, this concept provides fundamental algorithmic or architectural guarantees.'}
+
+${primary?.codeSnippet ? `**2. Implementation Reference:**\n\`\`\`cpp\n${primary.codeSnippet}\n\`\`\`\n` : ''}
+${primary?.complexityOrProperties ? `**3. Complexity & Performance Analysis:**\n- ${primary.complexityOrProperties}\n` : ''}
+**4. Curriculum Citations & References:**
+- *Primary Grounding:* **${primary?.source || 'Open-Source Computer Science Curricula (OSSU / Stanford CS)'}**
+${retrievedChunks.slice(1).map((c) => `- *Cross-Reference:* ${c.source} — ${c.subtopic}`).join('\n')}`;
+
+    res.json({
+      success: true,
+      query,
+      subjectCode: subjectCode || retrievedChunks[0]?.subjectCode,
+      subjectName: targetSubject,
+      answer: fallbackAnswer,
+      confidenceScore,
+      retrievedChunks: retrievedResults,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err: any) {
+    console.error('RAG QA Error:', err);
+    res.status(500).json({ error: 'Failed to process RAG query', details: err?.message });
   }
 });
 
@@ -1923,7 +2044,7 @@ Respond STRICTLY in JSON format with an array of "scenes":
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
-    const text = response?.response?.text() || '';
+    const text = response?.text || '';
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (jsonMatch) {
       const scenes = JSON.parse(jsonMatch[0]);
@@ -1963,7 +2084,7 @@ Respond STRICTLY in JSON format with an array of "questions":
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
     });
 
-    const text = response?.response?.text() || '';
+    const text = response?.text || '';
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (jsonMatch) {
       const questions = JSON.parse(jsonMatch[0]);

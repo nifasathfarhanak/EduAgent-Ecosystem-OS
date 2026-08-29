@@ -1,4 +1,4 @@
-export type PortalType = 'Student' | 'Teacher' | 'Admin';
+export type PortalType = 'Student' | 'Teacher' | 'Admin' | 'Parent' | 'Developer';
 
 export type LanguageType =
   | 'English'

@@ -7,6 +7,7 @@ import { LandingPage, demoUsers } from './components/LandingPage';
 import { StudentPortal } from './components/StudentPortal/StudentPortal';
 import { TeacherPortal } from './components/TeacherPortal/TeacherPortal';
 import { AdminPortal } from './components/AdminPortal/AdminPortal';
+import { DeveloperView } from './components/DeveloperView';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { LiveA2AFeedModal } from './components/LiveA2AFeedModal';
@@ -52,19 +53,26 @@ export default function App() {
       return;
     }
 
+    if (newPortal === 'Developer') {
+      setPortal('Developer');
+      setFeature('Text');
+      return;
+    }
+
     if (currentUser) {
-      setPortal(currentUser.role);
-      if (currentUser.role === 'Student') setFeature('Vision Image');
-      else if (currentUser.role === 'Teacher') setFeature('Text');
-      else if (currentUser.role === 'Admin') setFeature('Text');
+      setPortal(newPortal);
+      if (newPortal === 'Student') setFeature('Vision Image');
+      else setFeature('Text');
     } else {
       // Allow demo viewing of portals even before explicit login
       setPortal(newPortal);
+      if (newPortal === 'Student') setFeature('Vision Image');
+      else setFeature('Text');
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#02040a] text-slate-100 flex flex-col font-sans antialiased selection:bg-cyan-500 selection:text-black relative pb-16 md:pb-0">
+    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#02040a] text-slate-100 flex flex-col font-sans antialiased selection:bg-cyan-500 selection:text-black relative pb-16 md:pb-0">
       {/* Next-Gen Smart Education AI Background (Context-Aware + Dynamic Robotics AI Themes) */}
       <SmartEducationBackground
         portal={portal}
@@ -96,7 +104,7 @@ export default function App() {
       <RoutingHeaderBanner portal={portal} feature={feature} language={language} />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 z-10">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 z-10 overflow-x-hidden">
         <ErrorBoundary resetKey={portal} fallbackTitle={`${portal} Portal Execution Warning`}>
           {portal === 'Landing' && (
             <LandingPage
@@ -116,6 +124,10 @@ export default function App() {
 
           {portal === 'Admin' && (
             <AdminPortal language={language} />
+          )}
+
+          {portal === 'Developer' && (
+            <DeveloperView onBackToLanding={() => handlePortalChange('Landing')} />
           )}
         </ErrorBoundary>
       </main>
@@ -142,6 +154,13 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-4 text-[11px]">
+            <button
+              onClick={() => handlePortalChange('Developer')}
+              className="flex items-center gap-1.5 text-cyan-400 font-bold hover:underline cursor-pointer"
+            >
+              <span>Developer Specs</span>
+            </button>
+            <span className="text-slate-700">•</span>
             <button
               onClick={() => setShowA2AFeed(true)}
               className="flex items-center gap-1.5 text-emerald-400 font-bold hover:underline cursor-pointer"

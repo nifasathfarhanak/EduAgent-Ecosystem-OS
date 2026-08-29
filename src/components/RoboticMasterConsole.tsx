@@ -30,7 +30,6 @@ import {
   ParentNetworkAvatar,
   Crystal3DIcon,
   RoboticEqualizer,
-  RoboticBiometricScanner,
 } from './CyberVisuals';
 
 interface RoboticMasterConsoleProps {
@@ -276,17 +275,17 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
       {/* 4. Top Header Bar: SMART EDUCATION HUD + Role Portals Selector */}
-      <div className="relative z-20 p-5 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-cyan-500/30 bg-slate-950/60 backdrop-blur-md">
+      <div className="relative z-20 p-3 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 border-b border-cyan-500/30 bg-slate-950/60 backdrop-blur-md">
         {/* Top-Left Smart Education Badge (Matching Screenshot) */}
-        <div className="inline-flex items-center gap-3 bg-slate-950/90 border-2 border-cyan-400 p-3 sm:p-3.5 rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.8),inset_0_0_15px_rgba(6,182,212,0.3)]">
+        <div className="inline-flex items-center gap-2 sm:gap-3 bg-slate-950/90 border-2 border-cyan-400 p-2.5 sm:p-3.5 rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.8),inset_0_0_15px_rgba(6,182,212,0.3)]">
           <div className="space-y-0.5 text-left">
-            <div className="text-lg sm:text-xl font-black font-mono tracking-wider text-cyan-300 drop-shadow-[0_0_10px_#22d3ee]">
+            <div className="text-base sm:text-xl font-black font-mono tracking-wider text-cyan-300 drop-shadow-[0_0_10px_#22d3ee]">
               SMART
             </div>
-            <div className="text-base sm:text-lg font-black font-mono tracking-widest text-cyan-400 drop-shadow-[0_0_12px_#06b6d4]">
+            <div className="text-sm sm:text-lg font-black font-mono tracking-widest text-cyan-400 drop-shadow-[0_0_12px_#06b6d4]">
               EDUCATION
             </div>
-            <div className="pt-1 flex items-center gap-2 text-[9px] font-mono text-cyan-200">
+            <div className="pt-0.5 flex items-center gap-1.5 text-[8px] sm:text-[9px] font-mono text-cyan-200">
               <span className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                 AUTONOMOUS EDTECH
@@ -295,73 +294,73 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
             </div>
           </div>
 
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-cyan-950/90 border border-cyan-400 flex items-center justify-center text-cyan-300 shadow-[0_0_18px_rgba(6,182,212,0.8)]">
-            <GraduationCap className="w-6 h-6 stroke-[2.2] animate-bounce-slow" />
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-cyan-950/90 border border-cyan-400 flex items-center justify-center text-cyan-300 shadow-[0_0_18px_rgba(6,182,212,0.8)] flex-shrink-0">
+            <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.2] animate-bounce-slow" />
           </div>
         </div>
 
         {/* Portal Switching Tabs */}
-        <div className="flex flex-wrap items-center gap-2 bg-slate-900/80 p-1.5 rounded-2xl border border-cyan-500/40 backdrop-blur-xl">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-900/80 p-1 sm:p-1.5 rounded-2xl border border-cyan-500/40 backdrop-blur-xl">
           <button
             onClick={() => setActiveTab('student')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all cursor-pointer ${
               activeTab === 'student'
                 ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.8)] scale-105'
                 : 'text-slate-300 hover:text-cyan-300 hover:bg-slate-800/80'
             }`}
           >
-            <Bot className="w-4 h-4" />
-            <span>Student Cadet</span>
+            <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+            <span>Student</span>
           </button>
 
           <button
             onClick={() => setActiveTab('teacher')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all cursor-pointer ${
               activeTab === 'teacher'
                 ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-[0_0_20px_rgba(236,72,153,0.8)] scale-105'
                 : 'text-slate-300 hover:text-pink-300 hover:bg-slate-800/80'
             }`}
           >
-            <Database className="w-4 h-4" />
-            <span>Faculty Command</span>
+            <Database className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+            <span>Faculty</span>
           </button>
 
           <button
             onClick={() => setActiveTab('parent')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all cursor-pointer ${
               activeTab === 'parent'
                 ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.8)] scale-105'
                 : 'text-slate-300 hover:text-purple-300 hover:bg-slate-800/80'
             }`}
           >
-            <Globe className="w-4 h-4" />
-            <span>Guardian Voice</span>
+            <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+            <span>Guardian</span>
           </button>
 
           <button
             onClick={() => setActiveTab('showcase')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-mono font-bold transition-all cursor-pointer ${
               activeTab === 'showcase'
                 ? 'bg-gradient-to-r from-amber-500 to-emerald-600 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.8)] scale-105'
                 : 'text-slate-300 hover:text-amber-300 hover:bg-slate-800/80'
             }`}
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Try AI Showcase</span>
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+            <span>Showcase</span>
           </button>
         </div>
       </div>
 
       {/* 5. Main Center Stage: AI Galaxy Matrix + 3D Humanoid Robot + Integrated Login Cockpit */}
-      <div className="relative z-20 p-5 sm:p-8 lg:p-10 min-h-[580px] flex flex-col justify-between">
+      <div className="relative z-20 p-3 sm:p-8 lg:p-10 min-h-[520px] flex flex-col justify-between overflow-hidden">
         
         {/* Upper Visual Stage: Rotating Galaxy Matrix Sphere (Left/Center) & Standing Robot (Right) */}
-        <div className="relative w-full h-[260px] sm:h-[300px] md:h-[340px] flex items-center justify-between pointer-events-none">
+        <div className="relative w-full h-[220px] sm:h-[300px] md:h-[340px] flex items-center justify-between pointer-events-none overflow-hidden sm:overflow-visible">
           
           {/* AI Galaxy Matrix Hologram Sphere (Matching Screenshot) */}
           <div
             onClick={triggerOrbVoice}
-            className="pointer-events-auto absolute top-1/2 left-[30%] sm:left-[38%] md:left-[40%] -translate-x-1/2 -translate-y-1/2 w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80 cursor-pointer group"
+            className="pointer-events-auto absolute top-1/2 left-[28%] xs:left-[32%] sm:left-[38%] md:left-[40%] -translate-x-1/2 -translate-y-1/2 w-44 h-44 xs:w-52 xs:h-52 sm:w-72 sm:h-72 md:w-80 md:h-80 cursor-pointer group"
             title="Click to activate voice telemetry"
           >
             {/* Concentric Rotating HUD Rings */}
@@ -430,7 +429,7 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
           </div>
 
           {/* 3D Humanoid Robot Standing on Platform & Pointing (Matching Screenshot) */}
-          <div className="absolute right-0 sm:right-4 md:right-8 bottom-0 w-48 sm:w-64 md:w-76 lg:w-84 h-[240px] sm:h-[280px] md:h-[320px]">
+          <div className="absolute -right-2 sm:right-4 md:right-8 bottom-0 w-36 xs:w-44 sm:w-64 md:w-76 lg:w-84 h-[200px] sm:h-[280px] md:h-[320px]">
             <svg
               viewBox="0 0 380 500"
               className="w-full h-full drop-shadow-[0_0_35px_rgba(6,182,212,0.7)]"
@@ -540,27 +539,52 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
                 <div className="space-y-1 text-left">
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-400 text-[10px] font-mono text-cyan-300 font-bold">
                     <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                    MECHA-CORE // NX-STU-01
+                    STUDENT PORTAL ACCESS
                   </div>
                   <h3 className="text-xl font-black text-cyan-300 font-mono tracking-tight">
                     Student Portal Gateway
                   </h3>
                   <p className="text-xs text-slate-300 font-sans">
-                    AI Robotic Mentor, Multimodal Vision QA & STAR Voice Interviewer.
+                    CSE RAG Subject Knowledge Base, AI Video Studio & Spaced Retrieval.
                   </p>
                 </div>
               </div>
 
+              {/* Instant One-Click Role Access Card */}
               <div className="lg:col-span-4">
-                <RoboticBiometricScanner
-                  label="NEURAL BIOMETRIC SCAN"
-                  subLabel="TOUCH FOR INSTANT STUDENT LOGIN"
-                  themeColor="cyan"
-                  onScan={() => {
+                <div
+                  onClick={() => {
                     setStudentAgentId('ASD-Jordan-Smith');
-                    setTimeout(() => handleStudentSubmit(), 500);
+                    setTimeout(() => handleStudentSubmit(), 300);
                   }}
-                />
+                  className="p-4 rounded-2xl bg-slate-900/90 hover:bg-cyan-950/60 border border-cyan-500/50 hover:border-cyan-400 cursor-pointer shadow-lg transition-all transform hover:-translate-y-0.5 space-y-2.5 text-left group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                      Instant One-Click Login
+                    </span>
+                    <span className="text-[10px] bg-cyan-950 border border-cyan-500/40 text-cyan-300 px-2 py-0.5 rounded-full font-mono">
+                      Cadet Pilot
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center font-bold text-white font-mono shadow">
+                      JS
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-white font-mono group-hover:text-cyan-300">
+                        Jordan Smith
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        Roll: CS-2026-101 • B.Tech CSE
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-cyan-300/90 font-mono flex items-center justify-between pt-1 border-t border-slate-800">
+                    <span>Click to Enter as Student</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-cyan-400" />
+                  </div>
+                </div>
               </div>
 
               <div className="lg:col-span-4">
@@ -590,7 +614,7 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
                     type="submit"
                     className="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-slate-950 font-black rounded-xl shadow-[0_0_25px_rgba(6,182,212,0.8)] hover:shadow-[0_0_35px_rgba(6,182,212,1)] flex items-center justify-center gap-2 font-mono text-xs transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
                   >
-                    <span>Activate Student Pilot</span>
+                    <span>Enter Student Portal</span>
                     <ArrowRight className="w-4 h-4 stroke-[3]" />
                   </button>
                 </form>
@@ -609,7 +633,7 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
                 <div className="space-y-1 text-left">
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-pink-950/80 border border-pink-400 text-[10px] font-mono text-pink-300 font-bold">
                     <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-ping" />
-                    MECHA-CORE // NX-TEA-99
+                    FACULTY PORTAL ACCESS
                   </div>
                   <h3 className="text-xl font-black text-pink-400 font-mono tracking-tight">
                     Faculty Command Radar
@@ -620,16 +644,41 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
                 </div>
               </div>
 
+              {/* Instant One-Click Role Access Card */}
               <div className="lg:col-span-4">
-                <RoboticBiometricScanner
-                  label="FACULTY RETINA SCAN"
-                  subLabel="TOUCH FOR INSTANT TEACHER ACCESS"
-                  themeColor="pink"
-                  onScan={() => {
+                <div
+                  onClick={() => {
                     setTeacherAgentId('ASD-Prof-Sharma');
-                    setTimeout(() => handleTeacherSubmit(), 500);
+                    setTimeout(() => handleTeacherSubmit(), 300);
                   }}
-                />
+                  className="p-4 rounded-2xl bg-slate-900/90 hover:bg-pink-950/60 border border-pink-500/50 hover:border-pink-400 cursor-pointer shadow-lg transition-all transform hover:-translate-y-0.5 space-y-2.5 text-left group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold text-pink-400 uppercase tracking-wider">
+                      Instant One-Click Login
+                    </span>
+                    <span className="text-[10px] bg-pink-950 border border-pink-500/40 text-pink-300 px-2 py-0.5 rounded-full font-mono">
+                      Faculty Lead
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-600 to-purple-600 flex items-center justify-center font-bold text-white font-mono shadow">
+                      PS
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-white font-mono group-hover:text-pink-300">
+                        Prof. Sharma
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        Dept: Computer Science & Eng
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-pink-300/90 font-mono flex items-center justify-between pt-1 border-t border-slate-800">
+                    <span>Click to Enter as Teacher</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-pink-400" />
+                  </div>
+                </div>
               </div>
 
               <div className="lg:col-span-4">
@@ -659,7 +708,7 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
                     type="submit"
                     className="w-full py-2.5 bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-400 hover:to-pink-300 text-white font-black rounded-xl shadow-[0_0_25px_rgba(236,72,153,0.8)] hover:shadow-[0_0_35px_rgba(236,72,153,1)] flex items-center justify-center gap-2 font-mono text-xs transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
                   >
-                    <span>Activate Faculty Radar</span>
+                    <span>Enter Faculty Portal</span>
                     <ArrowRight className="w-4 h-4 stroke-[3]" />
                   </button>
                 </form>
@@ -678,27 +727,52 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
                 <div className="space-y-1 text-left">
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-950/80 border border-purple-400 text-[10px] font-mono text-purple-300 font-bold">
                     <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping" />
-                    MECHA-CORE // NX-PAR-SYNC
+                    GUARDIAN PORTAL ACCESS
                   </div>
                   <h3 className="text-xl font-black text-purple-300 font-mono tracking-tight">
                     Guardian Voice Portal
                   </h3>
                   <p className="text-xs text-slate-300 font-sans">
-                    15+ Indian languages audio synthesis, parent-teacher summaries & voice guidance.
+                    Parent-teacher academic summaries, progress tracking & guidance.
                   </p>
                 </div>
               </div>
 
+              {/* Instant One-Click Role Access Card */}
               <div className="lg:col-span-4">
-                <RoboticBiometricScanner
-                  label="GUARDIAN VOICE SCAN"
-                  subLabel="TOUCH FOR INSTANT PARENT ACCESS"
-                  themeColor="purple"
-                  onScan={() => {
+                <div
+                  onClick={() => {
                     setParentAgentId('ASD-Parent');
-                    setTimeout(() => handleParentSubmit(), 500);
+                    setTimeout(() => handleParentSubmit(), 300);
                   }}
-                />
+                  className="p-4 rounded-2xl bg-slate-900/90 hover:bg-purple-950/60 border border-purple-500/50 hover:border-purple-400 cursor-pointer shadow-lg transition-all transform hover:-translate-y-0.5 space-y-2.5 text-left group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold text-purple-400 uppercase tracking-wider">
+                      Instant One-Click Login
+                    </span>
+                    <span className="text-[10px] bg-purple-950 border border-purple-500/40 text-purple-300 px-2 py-0.5 rounded-full font-mono">
+                      Guardian Role
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center font-bold text-white font-mono shadow">
+                      LP
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-white font-mono group-hover:text-purple-300">
+                        Lakshmi Parent
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        Student: Jordan Smith (CS-101)
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-purple-300/90 font-mono flex items-center justify-between pt-1 border-t border-slate-800">
+                    <span>Click to Enter as Parent</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-purple-400" />
+                  </div>
+                </div>
               </div>
 
               <div className="lg:col-span-4">
@@ -728,7 +802,7 @@ export const RoboticMasterConsole: React.FC<RoboticMasterConsoleProps> = ({
                     type="submit"
                     className="w-full py-2.5 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-black rounded-xl shadow-[0_0_25px_rgba(168,85,247,0.8)] hover:shadow-[0_0_35px_rgba(168,85,247,1)] flex items-center justify-center gap-2 font-mono text-xs transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
                   >
-                    <span>Activate Voice Bridge</span>
+                    <span>Enter Guardian Portal</span>
                     <ArrowRight className="w-4 h-4 stroke-[3]" />
                   </button>
                 </form>
