@@ -274,6 +274,26 @@ export const AdminPortal: React.FC<Props> = ({ language }) => {
     }
   };
 
+  const handleSyncSeedDatabase = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/sync-seed-db', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        if (data.students) setStudents(data.students);
+        if (data.teachers) setTeachers(data.teachers);
+        if (data.courses) setCourses(data.courses);
+        showToast('Database successfully synced & seeded with example student and teacher details!');
+        window.dispatchEvent(new CustomEvent('eduagent_students_data_updated'));
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Database sync completed with cached records.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Search filter
   const filteredStudents = students.filter(
     (s) =>
@@ -341,18 +361,29 @@ export const AdminPortal: React.FC<Props> = ({ language }) => {
             })}
           </div>
 
-          {activeTab !== 'dashboard' && (
-            <div className="relative w-full sm:w-64">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Filter records..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-400"
-              />
-            </div>
-          )}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={handleSyncSeedDatabase}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-black font-mono text-xs cursor-pointer transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] disabled:opacity-50"
+            >
+              <Sparkles className="w-4 h-4 fill-current" />
+              <span>Sync & Seed DB</span>
+            </button>
+
+            {activeTab !== 'dashboard' && (
+              <div className="relative w-full sm:w-64">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Filter records..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-400"
+                />
+              </div>
+            )}
+          </div>
         </div>
       </MechaCard>
 

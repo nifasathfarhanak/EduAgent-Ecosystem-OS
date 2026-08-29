@@ -453,10 +453,16 @@ export function retrieveCSEKnowledgeChunks(query: string, subjectCode?: string, 
     })
     .sort((a, b) => b.score - a.score);
 
+  // Filter out chunks with 0 score (no token or keyword match)
+  const matching = scored.filter((item) => item.score > 0);
+  if (matching.length === 0) {
+    return [];
+  }
+
   // Normalize scores to a 0.0 - 1.0 confidence range
-  const maxScore = Math.max(...scored.map((s) => s.score), 1);
-  return scored.slice(0, topK).map((item) => ({
+  const topScore = matching[0].score;
+  return matching.slice(0, topK).map((item) => ({
     chunk: item.chunk,
-    score: Math.min(0.99, Math.max(0.65, Number((item.score / maxScore).toFixed(2))))
+    score: Math.min(0.99, Number((item.score / (topScore * 1.2)).toFixed(2)))
   }));
 }
