@@ -3,11 +3,8 @@ import { LanguageType, FeatureModality, UserProfile } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { VisionQA } from './VisionQA';
 import { VoiceInterview } from './VoiceInterview';
-import { ProjectGrader } from './ProjectGrader';
 import { EngineeringTasks } from './EngineeringTasks';
-import { AITestPlanWorkflow } from './AITestPlanWorkflow';
 import { CSERagGroundStudio } from './CSERagGroundStudio';
-import { AIMentorChat } from './AIMentorChat';
 import { AIVideoLessonStudio } from './AIVideoLessonStudio';
 import { AIAssessmentEngine } from './AIAssessmentEngine';
 import { OnDeviceLLMStudio } from './OnDeviceLLMStudio';
@@ -19,7 +16,7 @@ import {
   StudentProfile,
 } from '../../lib/telemetryStore';
 import { InsideRoboticTelemetryBar, RoboticAIPilotCard } from '../CyberVisuals';
-import { Eye, Mic, Code2, Brain, Terminal, User, ShieldCheck, Cpu, MessageSquare, Video, FileCheck, Sparkles } from 'lucide-react';
+import { Eye, Mic, Brain, Terminal, User, ShieldCheck, Cpu, Video, FileCheck } from 'lucide-react';
 
 interface Props {
   language: LanguageType;
@@ -70,16 +67,13 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
   };
 
   const tabs = [
-    { id: 'localllm', key: 'onDeviceLocalLlm', label: '⚡ On-Device Local LLM (2.5x Points)', icon: Cpu, color: 'text-amber-400 font-black' },
+    { id: 'localllm', key: 'onDeviceLocalLlm', label: '⚡ On-Device Local LLM (Gemma 2B)', icon: Cpu, color: 'text-amber-400 font-black' },
     { id: 'rag', key: 'cseRagGroundStudio', label: 'CSE Curriculum RAG Studio', icon: Brain, color: 'text-cyan-400 font-bold' },
     { id: 'assessment', key: 'aiAssessmentEngine', label: 'AI Subject Assessment & Report', icon: FileCheck, color: 'text-emerald-400 font-bold' },
-    { id: 'video', key: 'aiVideoLessonStudio', label: 'AI Subject Video Studio', icon: Video, color: 'text-pink-400 font-bold' },
-    { id: 'aitestplan', key: 'aiTestPlanWorkflow', label: 'AI Test Plan & Study Workflow', icon: Sparkles, color: 'text-cyan-400 font-bold' },
-    { id: 'chat', key: 'aiMentorChat', label: '24/7 AI Mentor Chat', icon: MessageSquare, color: 'text-purple-400 font-bold' },
-    { id: 'interview', key: 'voiceStarInterview', label: 'Vernacular Voice AI Tutor', icon: Mic, color: 'text-cyan-400' },
+    { id: 'video', key: 'aiVideoLessonStudio', label: 'AI Subject Video Reference Studio', icon: Video, color: 'text-pink-400 font-bold' },
+    { id: 'interview', key: 'voiceStarInterview', label: 'Voice AI Tutor (English)', icon: Mic, color: 'text-cyan-400' },
     { id: 'vision', key: 'visionImageReview', label: 'Vision Image Review', icon: Eye, color: 'text-emerald-400' },
     { id: 'tasks', key: 'engineeringTaskBoard', label: 'Engineering Task Board', icon: Terminal, color: 'text-indigo-400' },
-    { id: 'grader', key: 'projectRepoGrader', label: 'Project Repo Grader', icon: Code2, color: 'text-blue-400' },
   ];
 
   return (
@@ -96,14 +90,13 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
         mentorRole={`Dedicated to ${activeSession.studentName}`}
         statusText={`Active Track: ${activeSession.targetRole} | Attendance: ${activeSession.attendancePct}% | Project Score: ${activeSession.projectScore}/100`}
         neuralSyncPct={99.8}
-        speechBubble={`Cadet ${activeSession.studentName}, your diagnosed gap is: "${activeSession.keyLearningGap}". CSE 3-Subject RAG Knowledge Base and AI Mentor Chat are active.`}
+        speechBubble={`Cadet ${activeSession.studentName}, your diagnosed gap is: "${activeSession.keyLearningGap}". CSE 3-Subject RAG Knowledge Base and Local LLM Studio are active.`}
         themeColor="cyan"
         quickActions={[
-          { label: '⚡ On-Device Local LLM (2.5x)', onClick: () => handleTabChange('localllm', '⚡ On-Device Local LLM (2.5x Points)') },
+          { label: '⚡ On-Device Local LLM', onClick: () => handleTabChange('localllm', '⚡ On-Device Local LLM (Gemma 2B)') },
           { label: 'CSE RAG Ground Studio', onClick: () => handleTabChange('rag', 'CSE Curriculum RAG Studio') },
-          { label: 'AI Mentor Chat', onClick: () => handleTabChange('chat', '24/7 AI Mentor Chat') },
-          { label: 'AI Test Plan & Workflow', onClick: () => handleTabChange('aitestplan', 'AI Test Plan & Study Workflow') },
-          { label: 'Vernacular Voice AI', onClick: () => handleTabChange('interview', 'Vernacular Voice AI Tutor') },
+          { label: 'Voice AI Tutor', onClick: () => handleTabChange('interview', 'Voice AI Tutor (English)') },
+          { label: 'AI Video Reference Studio', onClick: () => handleTabChange('video', 'AI Subject Video Reference Studio') },
         ]}
       />
 
@@ -158,11 +151,8 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
         {activeTab === 'vision' && <VisionQA language={language} onSetModality={onSetModality} />}
         {activeTab === 'assessment' && <AIAssessmentEngine language={language} />}
         {activeTab === 'video' && <AIVideoLessonStudio language={language} />}
-        {activeTab === 'aitestplan' && <AITestPlanWorkflow language={language} />}
-        {activeTab === 'chat' && <AIMentorChat language={language} />}
         {activeTab === 'interview' && <VoiceInterview language={language} onSetModality={onSetModality} />}
         {activeTab === 'tasks' && <EngineeringTasks language={language} />}
-        {activeTab === 'grader' && <ProjectGrader language={language} onSetModality={onSetModality} />}
       </ErrorBoundary>
     </div>
   );

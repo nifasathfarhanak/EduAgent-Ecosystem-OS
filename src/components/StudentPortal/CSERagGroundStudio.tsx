@@ -51,13 +51,10 @@ export const CSERagGroundStudio: React.FC<Props> = ({ studentName = 'Cadet' }) =
       .catch(() => {});
   }, []);
 
-  const handleRunRAGQuery = async (customQuery?: string) => {
-    const q = (customQuery || query).trim();
-    if (!q || loading) return;
-
-    if (customQuery) {
-      setQuery(customQuery);
-    }
+  const handleRunRAGQuery = async (customQuery?: string, targetSubjectCode?: string) => {
+    const q = customQuery || query;
+    if (!q || !q.trim()) return;
+    const subjCode = targetSubjectCode || selectedSubjectCode;
 
     setLoading(true);
     try {
@@ -66,7 +63,7 @@ export const CSERagGroundStudio: React.FC<Props> = ({ studentName = 'Cadet' }) =
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: q,
-          subjectCode: selectedSubjectCode,
+          subjectCode: subjCode,
           studentName,
         }),
       });
@@ -87,6 +84,14 @@ export const CSERagGroundStudio: React.FC<Props> = ({ studentName = 'Cadet' }) =
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSelectSubject = (code: string) => {
+    const subj = CSE_SUBJECTS.find((s) => s.code === code) || CSE_SUBJECTS[0];
+    setSelectedSubjectCode(code as any);
+    const defaultPrompt = subj.sampleQuestions[0];
+    setQuery(defaultPrompt);
+    handleRunRAGQuery(defaultPrompt, code);
   };
 
   const getSubjectIcon = (code: string) => {
@@ -118,10 +123,7 @@ export const CSERagGroundStudio: React.FC<Props> = ({ studentName = 'Cadet' }) =
             return (
               <button
                 key={subj.code}
-                onClick={() => {
-                  setSelectedSubjectCode(subj.code as any);
-                  setResult(null);
-                }}
+                onClick={() => handleSelectSubject(subj.code)}
                 className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
                     ? 'bg-slate-900/95 border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.35)] ring-1 ring-cyan-400/40'

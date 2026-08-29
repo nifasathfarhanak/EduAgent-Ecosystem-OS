@@ -32,6 +32,9 @@ import {
 } from 'lucide-react';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { InsideRoboticTelemetryBar, RoboticEqualizer, RoboticAIPilotCard, RoboticRadarVisualizer, MechaCard } from '../CyberVisuals';
+import { StudentRoster } from './StudentRoster';
+import { AttendanceTracker } from './AttendanceTracker';
+import { AssignmentManager } from './AssignmentManager';
 import { AIMentoringHub } from './AIMentoringHub';
 
 interface Props {
@@ -42,7 +45,7 @@ interface Props {
 
 export const TeacherPortal: React.FC<Props> = ({ language, onSetModality, currentUser }) => {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'radar' | 'mentoring'>('radar');
+  const [activeTab, setActiveTab] = useState<'roster' | 'attendance' | 'assignments' | 'radar' | 'mentoring'>('roster');
   const [selectedTier, setSelectedTier] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [students, setStudents] = useState<StudentProfile[]>(getAllStudentProfiles());
@@ -98,11 +101,11 @@ export const TeacherPortal: React.FC<Props> = ({ language, onSetModality, curren
   // Filter students based on risk tier and search query
   const filteredStudents = students.filter((st) => {
     const matchesTier = selectedTier === 'ALL' || st.riskTier.includes(selectedTier);
-    const matchesQuery =
+    const matchesSearch =
       st.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       st.rollNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      st.targetRole.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTier && matchesQuery;
+      st.keyLearningGap.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesTier && matchesSearch;
   });
 
   // Calculate dynamic Risk Radar counts
@@ -123,17 +126,16 @@ export const TeacherPortal: React.FC<Props> = ({ language, onSetModality, curren
     try {
       const res = await fetch('/api/ai/classroom-risk-intervention', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer eduagent-bearer-token-teacher',
+        },
         body: JSON.stringify({
           studentName: student.studentName,
+          rollNo: student.rollNo,
           riskTier: student.riskTier,
-          metrics: {
-            attendance: `${student.attendancePct}%`,
-            quizScore: `${student.avgQuizScore}%`,
-            projectScore: `${student.projectScore}%`,
-            gap: student.keyLearningGap,
-          },
-          portal: 'Teacher',
+          attendancePct: student.attendancePct,
+          keyLearningGap: student.keyLearningGap,
           language,
         }),
       });
@@ -162,34 +164,69 @@ export const TeacherPortal: React.FC<Props> = ({ language, onSetModality, curren
       />
 
       {/* Top Level Tab Navigation */}
-      <div className="flex items-center gap-3 bg-slate-950 p-2 rounded-2xl border border-slate-800 font-mono text-xs">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none bg-slate-950 p-2 rounded-2xl border border-slate-800 font-mono text-xs">
+        <button
+          onClick={() => setActiveTab('roster')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all cursor-pointer flex-shrink-0 ${
+            activeTab === 'roster'
+              ? 'bg-cyan-950 text-cyan-300 border border-cyan-500/50 shadow-md ring-1 ring-cyan-500/40'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          <span>Student Roster</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('attendance')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all cursor-pointer flex-shrink-0 ${
+            activeTab === 'attendance'
+              ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/50 shadow-md ring-1 ring-emerald-500/40'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Calendar className="w-4 h-4" />
+          <span>Attendance Tracker</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('assignments')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all cursor-pointer flex-shrink-0 ${
+            activeTab === 'assignments'
+              ? 'bg-purple-950 text-purple-300 border border-purple-500/50 shadow-md ring-1 ring-purple-500/40'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <FileCode className="w-4 h-4" />
+          <span>Assignments</span>
+        </button>
         <button
           onClick={() => setActiveTab('radar')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all cursor-pointer flex-shrink-0 ${
             activeTab === 'radar'
               ? 'bg-pink-950 text-pink-300 border border-pink-500/50 shadow-md ring-1 ring-pink-500/40'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <Database className="w-4 h-4" />
-          <span>Classroom Risk Radar ({assignedCourse})</span>
+          <span>Risk Radar</span>
         </button>
         <button
           onClick={() => setActiveTab('mentoring')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all cursor-pointer flex-shrink-0 ${
             activeTab === 'mentoring'
-              ? 'bg-purple-950 text-purple-300 border border-purple-500/50 shadow-md ring-1 ring-purple-500/40'
+              ? 'bg-blue-950 text-blue-300 border border-blue-500/50 shadow-md ring-1 ring-blue-500/40'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <Bot className="w-4 h-4" />
-          <span>AI Mentoring Hub (1:1 Scripts)</span>
+          <span>AI Mentoring Hub</span>
         </button>
       </div>
 
-      {activeTab === 'mentoring' ? (
-        <AIMentoringHub language={language} students={students} teacherName={teacherName} />
-      ) : (
+      {activeTab === 'roster' && <StudentRoster />}
+      {activeTab === 'attendance' && <AttendanceTracker />}
+      {activeTab === 'assignments' && <AssignmentManager />}
+      {activeTab === 'mentoring' && <AIMentoringHub language={language} students={students} teacherName={teacherName} />}
+      {activeTab === 'radar' && (
         <>
           {/* 2. Teacher Robotic AI Co-Pilot & Real-Time Radar HUD */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
