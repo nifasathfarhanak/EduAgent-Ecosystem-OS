@@ -196,30 +196,78 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
     setUserInput('');
     setIsSpeaking(true);
 
+    const question = auditReport?.questions[currentScenarioIndex] || 'Explain your technical approach and system design choice.';
+    const lowerText = userText.toLowerCase();
+
     setTimeout(() => {
-      // Calculate automated STAR feedback scorecard
-      const clarity = Math.min(userText.length > 30 ? 92 : 78, 98);
-      const technical = userText.toLowerCase().includes('sql') || userText.toLowerCase().includes('redis') || userText.toLowerCase().includes('python') || userText.toLowerCase().includes('cache') || userText.toLowerCase().includes('action') ? 95 : 82;
-      const relevance = 90;
-      const impact = 88;
+      // Real-time technical correctness evaluation
+      const words = lowerText.split(/\s+/).filter(w => w.length > 2);
+      const isTooShort = words.length < 6;
+      const isGibberish = !/[a-z]{3,}/i.test(userText) || words.length < 3;
+      
+      const techKeywords = ['sql', 'redis', 'cache', 'python', 'query', 'index', 'lock', 'db', 'api', 'server', 'latency', 'star', 'situation', 'task', 'action', 'result', 'scale', 'load', 'memory', 'cpu', 'concurrency', 'thread', 'process', 'buffer', 'sharding'];
+      const matchedKeywords = techKeywords.filter(kw => lowerText.includes(kw));
+
+      let technical = 0;
+      let clarity = 0;
+      let relevance = 0;
+      let impact = 0;
+      let correctionText = '';
+
+      if (isGibberish || isTooShort) {
+        technical = 15;
+        clarity = 20;
+        relevance = 10;
+        impact = 15;
+        correctionText = `❌ **Incorrect & Incomplete Response**: Answer is too brief or lacks engineering depth.\n\n` +
+          `✅ **Real-Time Correct Answer & Ideal Response**:\n` +
+          `• **Situation & Task**: Clearly state the project context, scale, and specific problem faced.\n` +
+          `• **Technical Action**: Describe exact engineering steps (e.g., indexing DB columns, adding Redis LRU cache, tuning query locks).\n` +
+          `• **Quantifiable Result**: Conclude with metrics (e.g., 'Reduced query latency by 45% under 10k QPS').`;
+      } else if (matchedKeywords.length === 0) {
+        technical = 40;
+        clarity = 55;
+        relevance = 45;
+        impact = 40;
+        correctionText = `⚠️ **Partially Incorrect Answer**: Response lacks specific technical concepts relevant to the question.\n\n` +
+          `✅ **Real-Time Correct Answer & Standard**:\n` +
+          `When asked about "${question.slice(0, 50)}...", you should explicitly mention system primitives (e.g., atomic locks, connection pooling, caching strategies, and load testing).`;
+      } else {
+        technical = Math.min(95, 60 + matchedKeywords.length * 10);
+        clarity = Math.min(96, 70 + words.length * 2);
+        relevance = 88;
+        impact = Math.min(92, 65 + matchedKeywords.length * 8);
+        correctionText = `✅ **Accurate Response**: Good coverage of key technical concepts (${matchedKeywords.join(', ')}).`;
+      }
+
       const overall = Math.round((clarity + technical + relevance + impact) / 4);
 
       const computedScorecard: ScorecardData = {
-        clarity: { score: clarity, feedback: "Clear description of context and execution steps." },
-        technicalAccuracy: { score: technical, feedback: "Good application of system architecture principles." },
-        relevance: { score: relevance, feedback: "Directly addressed the technical scenario." },
-        impact: { score: impact, feedback: "Demonstrated awareness of performance and reliability." },
+        clarity: { score: clarity, feedback: clarity > 70 ? "Clear structure." : "Vague articulation." },
+        technicalAccuracy: { score: technical, feedback: technical > 70 ? "Accurate architecture principles." : "Lacks required technical depth." },
+        relevance: { score: relevance, feedback: relevance > 70 ? "Directly addresses scenario." : "Off-topic response." },
+        impact: { score: impact, feedback: impact > 70 ? "Demonstrates business value." : "No measurable outcomes provided." },
         overallScore: overall,
-        motivationalAdvice: "Solid response! Continue adding specific numbers and metrics for maximum impact."
+        summary: overall < 50 ? "Response failed technical verification." : "Satisfactory interview performance.",
+        motivationalAdvice: overall < 50 
+          ? "Study the correct answer above and practice again with explicit technical metrics."
+          : "Great progress! Incorporate exact performance benchmarks to achieve L6 level."
       };
 
       setLastScorecard(computedScorecard);
 
-      const aiResponse = `### 📊 STAR Method Evaluation L6\n**Overall Score:** ${overall}/100\n\n• **Clarity:** ${clarity}/100\n• **Technical Accuracy:** ${technical}/100\n• **Relevance:** ${relevance}/100\n• **Impact:** ${impact}/100\n\n**Feedback:** ${computedScorecard.motivationalAdvice}`;
+      const aiResponse = `### 📊 Real-Time Interview Evaluation Scorecard\n` +
+        `**Practice Marks:** **${overall}/100** ${overall < 50 ? '❌ (FAILED)' : overall < 75 ? '⚠️ (NEEDS WORK)' : '✅ (PASSED)'}\n\n` +
+        `• **Technical Accuracy:** ${technical}/100\n` +
+        `• **Clarity:** ${clarity}/100\n` +
+        `• **Relevance:** ${relevance}/100\n` +
+        `• **Impact:** ${impact}/100\n\n` +
+        `${correctionText}\n\n` +
+        `💡 **Advice**: ${computedScorecard.motivationalAdvice}`;
 
       setChatHistory(prev => [...prev, { role: 'avatar', text: aiResponse }]);
-      speakText(`Evaluation complete. Overall score ${overall} out of 100. ${computedScorecard.motivationalAdvice}`);
-    }, 1200);
+      speakText(`Evaluation completed. Real-time interview score is ${overall} out of 100.`);
+    }, 1000);
   };
 
   return (
