@@ -8,9 +8,9 @@ interface Props {
   language: LanguageType;
 }
 
-export const RoutingHeaderBanner: React.FC<Props> = ({ portal, feature }) => {
+export const RoutingHeaderBanner: React.FC<Props> = ({ portal, feature, language }) => {
   const displayPortal = portal === 'Landing' ? 'Academic Hub' : portal;
-  const formattedHeader = `[PORTAL: ${displayPortal}] | [Modality: ${feature}] | [RAG: Active]`;
+  const formattedHeader = `[PORTAL: ${displayPortal}] | [Modality: ${feature}] | [Language: ${language}] | [RAG: Active]`;
 
   const getFeatureIcon = () => {
     switch (feature) {
@@ -40,6 +40,10 @@ export const RoutingHeaderBanner: React.FC<Props> = ({ portal, feature }) => {
         <div className="flex items-center gap-1.5 bg-slate-900/80 px-2 sm:px-2.5 py-1 rounded-xl border border-slate-800 shadow-sm">
           {getFeatureIcon()}
           <span className="text-slate-200 font-medium capitalize">{feature}</span>
+        </div>
+        <div className="flex items-center gap-1.5 bg-slate-900/80 px-2 sm:px-2.5 py-1 rounded-xl border border-slate-800 shadow-sm">
+          <Globe className="w-3.5 h-3.5 text-indigo-400" />
+          <span className="text-slate-200 font-medium">{language}</span>
         </div>
         <div className="hidden xs:flex items-center gap-1.5 text-emerald-400 font-semibold bg-emerald-950/40 px-2 sm:px-2.5 py-1 rounded-xl border border-emerald-800/40 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

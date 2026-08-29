@@ -105,9 +105,9 @@ export const VisionQA: React.FC<Props> = ({ language, onSetModality }) => {
       {/* Feature Title Card with Mecha Framing */}
       <MechaCard
         themeColor="emerald"
-        title={t('visionTitle', 'Gemini Multimodal Vision Architecture Review')}
+        title={t('visionTitle', 'Multimodal Vision Architecture Review')}
         subTitle={t('visionSubtitle', 'Upload architecture diagrams, system workflows, or code screenshots to detect structural flaws, memory hazards, and SPOFs.')}
-        badge="GEMINI 3.7 FLASH // VISION COGNITIVE ENGINE"
+        badge="ACADEMIC VISION ENGINE // COGNITIVE SOLVER"
         icon={<Eye className="w-6 h-6" />}
       >
         {/* Preset Sample Architectures */}

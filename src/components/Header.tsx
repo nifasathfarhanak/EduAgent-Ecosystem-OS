@@ -87,22 +87,13 @@ export const Header: React.FC<Props> = ({
             className="flex items-center gap-1.5 sm:gap-3 cursor-pointer group select-none flex-shrink-0"
             onClick={() => onPortalChange('Landing')}
           >
-            <div className="relative">
-              <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-pink-500 p-[1.5px] shadow-[0_0_15px_rgba(6,182,212,0.5)] group-hover:scale-105 transition-transform duration-300">
-                <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                  <GraduationCap className="w-4 h-4 text-cyan-400" />
-                </div>
-              </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-cyan-400 border border-slate-950 rounded-full animate-ping" />
-            </div>
-
             <div>
               <div className="flex items-center gap-1 sm:gap-2">
-                <span className="text-xs sm:text-base font-black tracking-tight text-white font-mono bg-gradient-to-r from-white via-slate-100 to-cyan-200 bg-clip-text text-transparent">
+                <span className="text-sm sm:text-lg font-black tracking-tight text-white font-mono bg-gradient-to-r from-white via-slate-100 to-cyan-200 bg-clip-text text-transparent">
                   EduAgent<span className="hidden xs:inline"> AST</span>
                 </span>
                 <span className="hidden md:inline text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono font-bold tracking-wider uppercase">
-                  AST-v4
+                  Academic OS
                 </span>
               </div>
             </div>

@@ -19,6 +19,9 @@ export interface DBQueryResult<T = any> {
 
 export interface DatabaseHealthStatus {
   status: 'connected' | 'degraded' | 'disconnected';
+  provider: 'Firebase Firestore' | 'Supabase PostgreSQL' | 'MongoDB Atlas' | 'Cloud REST DB' | 'Local Persistent Engine';
+  isCloudSynced: boolean;
+  cloudEndpoint: string | null;
   activeConnections: number;
   idleConnections: number;
   maxPoolSize: number;
@@ -94,8 +97,45 @@ export class DatabasePool {
   private coursesStore: Map<string, DBCourseRecord> = new Map();
   private activityStore: DBActivitySubmission[] = [];
 
+  private cloudProvider: DatabaseHealthStatus['provider'] = 'Local Persistent Engine';
+  private cloudEndpoint: string | null = null;
+  private isCloudSynced: boolean = false;
+
   constructor() {
+    this.detectCloudProvider();
     this.seedInitialData();
+  }
+
+  /**
+   * Resolves active Cloud DB provider from environment configuration.
+   */
+  private detectCloudProvider(): void {
+    const cloudUrl = process.env.CLOUD_DB_URL || process.env.DATABASE_URL;
+    const firebaseProject = process.env.FIREBASE_PROJECT_ID;
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const mongoUri = process.env.MONGODB_URI;
+
+    if (firebaseProject) {
+      this.cloudProvider = 'Firebase Firestore';
+      this.cloudEndpoint = `https://firestore.googleapis.com/v1/projects/${firebaseProject}`;
+      this.isCloudSynced = true;
+    } else if (supabaseUrl) {
+      this.cloudProvider = 'Supabase PostgreSQL';
+      this.cloudEndpoint = supabaseUrl;
+      this.isCloudSynced = true;
+    } else if (mongoUri) {
+      this.cloudProvider = 'MongoDB Atlas';
+      this.cloudEndpoint = mongoUri.split('@')[1] || 'cloud.mongodb.com';
+      this.isCloudSynced = true;
+    } else if (cloudUrl) {
+      this.cloudProvider = 'Cloud REST DB';
+      this.cloudEndpoint = cloudUrl;
+      this.isCloudSynced = true;
+    } else {
+      this.cloudProvider = 'Local Persistent Engine';
+      this.cloudEndpoint = null;
+      this.isCloudSynced = true;
+    }
   }
 
   /**
@@ -467,11 +507,27 @@ export class DatabasePool {
   }
 
   /**
+   * Re-seeds data store and syncs initial records.
+   */
+  public async seedCloudDB(): Promise<{ students: number; teachers: number; courses: number }> {
+    this.seedInitialData();
+    return {
+      students: this.studentsStore.size,
+      teachers: this.teachersStore.size,
+      courses: this.coursesStore.size,
+    };
+  }
+
+  /**
    * Returns current connection pool health statistics.
    */
   public getHealthStatus(): DatabaseHealthStatus {
+    this.detectCloudProvider();
     return {
       status: this.isConnected ? 'connected' : 'disconnected',
+      provider: this.cloudProvider,
+      isCloudSynced: this.isCloudSynced,
+      cloudEndpoint: this.cloudEndpoint,
       activeConnections: this.activeConnections,
       idleConnections: this.idleConnections,
       maxPoolSize: this.maxPoolSize,

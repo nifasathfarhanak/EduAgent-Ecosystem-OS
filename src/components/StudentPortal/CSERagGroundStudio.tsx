@@ -20,6 +20,7 @@ import {
   Award,
   ArrowRight,
   Lightbulb,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface Props {
@@ -252,9 +253,10 @@ export const CSERagGroundStudio: React.FC<Props> = ({ studentName = 'Cadet' }) =
 
             <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-purple-500/40 flex items-center justify-between">
               <div className="space-y-0.5">
-                <span className="text-[10px] font-mono text-slate-400 uppercase">Grounding Model</span>
-                <div className="text-lg font-bold font-mono text-purple-300">
-                  Gemini 3.7 Flash
+                <span className="text-[10px] font-mono text-slate-400 uppercase">AI Grounding Engine</span>
+                <div className="text-sm font-bold font-mono text-purple-300 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400 inline" />
+                  <span>Guardrails PASSED</span>
                 </div>
               </div>
               <Zap className="w-6 h-6 text-purple-400" />

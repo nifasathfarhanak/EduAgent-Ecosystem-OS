@@ -4,16 +4,9 @@ import { useLanguage } from '../../context/LanguageContext';
 import { VisionQA } from './VisionQA';
 import { VoiceInterview } from './VoiceInterview';
 import { ProjectGrader } from './ProjectGrader';
-import { SpacedRetrieval } from './SpacedRetrieval';
-import { DisengagementStudio } from './DisengagementStudio';
-import { SkillGapMatrix } from './SkillGapMatrix';
 import { EngineeringTasks } from './EngineeringTasks';
 import { AITestPlanWorkflow } from './AITestPlanWorkflow';
 import { CSERagGroundStudio } from './CSERagGroundStudio';
-import { P2PArena } from './P2PArena';
-import { VerifiedCredentials } from './VerifiedCredentials';
-import { MentorSwarm } from './MentorSwarm';
-import { MicroInternshipSimulator } from './MicroInternshipSimulator';
 import { AIMentorChat } from './AIMentorChat';
 import { AIVideoLessonStudio } from './AIVideoLessonStudio';
 import { AIAssessmentEngine } from './AIAssessmentEngine';
@@ -25,8 +18,8 @@ import {
   getAllStudentProfiles,
   StudentProfile,
 } from '../../lib/telemetryStore';
-import { InsideRoboticTelemetryBar, RoboticEqualizer, RoboticAIPilotCard } from '../CyberVisuals';
-import { Eye, Mic, Code2, Brain, Flame, Target, Terminal, User, ShieldCheck, CheckCircle2, Activity, Cpu, Bot, Zap, Sparkles, HeartPulse, Swords, Briefcase, MessageSquare, Video, FileCheck } from 'lucide-react';
+import { InsideRoboticTelemetryBar, RoboticAIPilotCard } from '../CyberVisuals';
+import { Eye, Mic, Code2, Brain, Terminal, User, ShieldCheck, Cpu, MessageSquare, Video, FileCheck, Sparkles } from 'lucide-react';
 
 interface Props {
   language: LanguageType;
@@ -83,17 +76,10 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
     { id: 'video', key: 'aiVideoLessonStudio', label: 'AI Subject Video Studio', icon: Video, color: 'text-pink-400 font-bold' },
     { id: 'aitestplan', key: 'aiTestPlanWorkflow', label: 'AI Test Plan & Study Workflow', icon: Sparkles, color: 'text-cyan-400 font-bold' },
     { id: 'chat', key: 'aiMentorChat', label: '24/7 AI Mentor Chat', icon: MessageSquare, color: 'text-purple-400 font-bold' },
-    { id: 'internship', key: 'microInternshipSimulator', label: 'AI Micro-Internship Simulator', icon: Briefcase, color: 'text-amber-400 font-bold' },
     { id: 'interview', key: 'voiceStarInterview', label: 'Vernacular Voice AI Tutor', icon: Mic, color: 'text-cyan-400' },
     { id: 'vision', key: 'visionImageReview', label: 'Vision Image Review', icon: Eye, color: 'text-emerald-400' },
-    { id: 'p2p', key: 'p2pArena', label: '1v1 Mobile P2P Arena', icon: Swords, color: 'text-red-400 font-bold' },
-    { id: 'credentials', key: 'verifiedCredentials', label: 'AST Verified Credentials', icon: ShieldCheck, color: 'text-emerald-400 font-bold' },
-    { id: 'mentors', key: 'mentorSwarm', label: 'AI Mentor Swarm Panel', icon: Bot, color: 'text-purple-400 font-bold' },
     { id: 'tasks', key: 'engineeringTaskBoard', label: 'Engineering Task Board', icon: Terminal, color: 'text-indigo-400' },
     { id: 'grader', key: 'projectRepoGrader', label: 'Project Repo Grader', icon: Code2, color: 'text-blue-400' },
-    { id: 'spaced', key: 'spacedRetrievalQueue', label: 'Spaced Retrieval Queue', icon: Brain, color: 'text-amber-400' },
-    { id: 'analogy', key: 'disengagementAnalogy', label: 'Disengagement Analogy', icon: Flame, color: 'text-orange-400' },
-    { id: 'skillgap', key: 'skillGapMatrix', label: 'Skill-Gap Career Matrix', icon: Target, color: 'text-purple-400' },
   ];
 
   return (
@@ -107,10 +93,10 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
 
       <RoboticAIPilotCard
         mentorName="Astro-X Autonomous AI Mentor"
-        mentorRole={`Gemini 2.5 & Vertex AI • Dedicated to ${activeSession.studentName}`}
+        mentorRole={`Dedicated to ${activeSession.studentName}`}
         statusText={`Active Track: ${activeSession.targetRole} | Attendance: ${activeSession.attendancePct}% | Project Score: ${activeSession.projectScore}/100`}
         neuralSyncPct={99.8}
-        speechBubble={`Cadet ${activeSession.studentName}, your diagnosed gap is: "${activeSession.keyLearningGap}". CSE 3-Subject RAG Knowledge Base, AI Mentor Chat, 1v1 Battle Arena, and AST Verified Credentials are live!`}
+        speechBubble={`Cadet ${activeSession.studentName}, your diagnosed gap is: "${activeSession.keyLearningGap}". CSE 3-Subject RAG Knowledge Base and AI Mentor Chat are active.`}
         themeColor="cyan"
         quickActions={[
           { label: '⚡ On-Device Local LLM (2.5x)', onClick: () => handleTabChange('localllm', '⚡ On-Device Local LLM (2.5x Points)') },
@@ -118,8 +104,6 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
           { label: 'AI Mentor Chat', onClick: () => handleTabChange('chat', '24/7 AI Mentor Chat') },
           { label: 'AI Test Plan & Workflow', onClick: () => handleTabChange('aitestplan', 'AI Test Plan & Study Workflow') },
           { label: 'Vernacular Voice AI', onClick: () => handleTabChange('interview', 'Vernacular Voice AI Tutor') },
-          { label: '1v1 P2P Battle Arena', onClick: () => handleTabChange('p2p', '1v1 Mobile P2P Arena') },
-          { label: 'AST Verified Credentials', onClick: () => handleTabChange('credentials', 'AST Verified Credentials') },
         ]}
       />
 
@@ -176,16 +160,9 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
         {activeTab === 'video' && <AIVideoLessonStudio language={language} />}
         {activeTab === 'aitestplan' && <AITestPlanWorkflow language={language} />}
         {activeTab === 'chat' && <AIMentorChat language={language} />}
-        {activeTab === 'internship' && <MicroInternshipSimulator language={language} />}
         {activeTab === 'interview' && <VoiceInterview language={language} onSetModality={onSetModality} />}
-        {activeTab === 'p2p' && <P2PArena language={language} />}
-        {activeTab === 'credentials' && <VerifiedCredentials language={language} />}
-        {activeTab === 'mentors' && <MentorSwarm language={language} />}
         {activeTab === 'tasks' && <EngineeringTasks language={language} />}
         {activeTab === 'grader' && <ProjectGrader language={language} onSetModality={onSetModality} />}
-        {activeTab === 'spaced' && <SpacedRetrieval language={language} />}
-        {activeTab === 'analogy' && <DisengagementStudio language={language} onSetModality={onSetModality} />}
-        {activeTab === 'skillgap' && <SkillGapMatrix language={language} onSetModality={onSetModality} />}
       </ErrorBoundary>
     </div>
   );

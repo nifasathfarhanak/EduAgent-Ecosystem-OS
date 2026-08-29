@@ -71,7 +71,7 @@ export const AIMentorChat: React.FC<Props> = ({ language }) => {
         themeColor="cyan"
         title="24/7 Persistent AI Mentor Chat"
         subTitle="Contextual AI guidance personalized to your active project score, telemetry logs, and key learning gaps."
-        badge="GEMINI 2.5 FLASH // ASTRO-X CO-PILOT"
+        badge="ACADEMIC TUTOR // ASTRO-X CO-PILOT"
         icon={<Bot className="w-6 h-6" />}
       >
         <div className="pt-2 flex flex-col h-[480px] bg-slate-950/90 rounded-2xl border border-cyan-500/30 p-4 justify-between">

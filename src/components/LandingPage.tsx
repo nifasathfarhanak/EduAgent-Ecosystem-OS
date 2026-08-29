@@ -117,7 +117,7 @@ export const LandingPage: React.FC<Props> = ({
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
           <span className="font-bold tracking-wider uppercase">Nexus Autonomous AI Galaxy</span>
           <span className="text-slate-500">|</span>
-          <span className="text-slate-400">Gemini 3.7 Continuous Orbit</span>
+          <span className="text-slate-400">Academic AI Orbit</span>
         </div>
 
         {/* Main Title with Cyber Circuit Wings */}
@@ -134,7 +134,7 @@ export const LandingPage: React.FC<Props> = ({
         </div>
 
         <p className="text-xs sm:text-sm text-slate-300 font-sans max-w-2xl mx-auto leading-relaxed opacity-95">
-          Enter the unified Robotic Command Space. Activate your Gemini 3.7 AI mentor, test the AI Galaxy Matrix, or launch BigQuery telemetry radar.
+          Enter the unified Academic Command Space. Activate your Academic AI mentor, test the AI Knowledge Matrix, or view learning telemetry.
         </p>
 
         {/* AI Background Theme Switcher Bar */}
@@ -472,7 +472,7 @@ export const LandingPage: React.FC<Props> = ({
         <div className="flex items-center gap-2">
           <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
           <span className="text-slate-200 font-bold">NEXUS AUTONOMOUS STREAM:</span>
-          <span>Core Mesh Active • Model: Gemini 3.7 Flash & Trending Robotics AI</span>
+          <span>Core Mesh Active • Academic AI Platform & Adaptive Analytics</span>
         </div>
         <div className="flex items-center gap-4 text-[10px]">
           <span className="text-emerald-400 flex items-center gap-1">
