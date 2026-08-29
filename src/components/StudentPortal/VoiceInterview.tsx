@@ -55,7 +55,7 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
   const [analyzing, setAnalyzing] = useState(false);
   const [reportReady, setReportReady] = useState(false);
   const [activeTab, setActiveTab] = useState<'audit' | 'chat'>('audit');
-  const [activeDialect, setActiveDialect] = useState<LanguageType>('Hinglish');
+  const [activeDialect, setActiveDialect] = useState<LanguageType>('English');
 
   // Audit Report State
   const [auditReport, setAuditReport] = useState<AuditReportData | null>(null);

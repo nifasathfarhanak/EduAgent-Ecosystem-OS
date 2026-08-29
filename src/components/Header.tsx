@@ -99,16 +99,8 @@ export const Header: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Right Section: AI Theme Switcher, Active Portal Badge, Language Pill & User Profile */}
+          {/* Right Section: Active Portal Badge, Language Pill & User Profile */}
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-
-            {/* Next-Gen AI Background Theme Customizer */}
-            {onSelectTheme && (
-              <BackgroundThemeSelector
-                currentTheme={currentTheme}
-                onSelectTheme={onSelectTheme}
-              />
-            )}
 
             {/* Post-Login Role Badge */}
             {isPostLogin && (

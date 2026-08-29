@@ -310,22 +310,7 @@ void processSensorBuffer(int* rawStream, int streamLen) {
 
   return (
     <div className="space-y-6">
-      {/* Toast Notification for Points */}
-      {showPointToast && (
-        <div className="fixed top-20 right-4 z-50 animate-bounce bg-gradient-to-r from-amber-500 via-cyan-500 to-emerald-500 p-[2px] rounded-2xl shadow-[0_0_30px_rgba(245,158,11,0.8)]">
-          <div className="bg-slate-950 px-4 py-3 rounded-[14px] flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs font-black font-mono text-amber-300">EDGE REWARD GRANTED!</div>
-              <div className="text-sm font-bold text-white font-mono">{showPointToast.text}</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Hero Header & Gamified Edge Points Banner */}
+      {/* Hero Header — On-Device Neural Edge AI */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 border-2 border-cyan-500/40 p-6 md:p-8 shadow-2xl">
         {/* Background Cyber Grid */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#06b6d410_1px,transparent_1px),linear-gradient(to_bottom,#06b6d410_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
@@ -337,10 +322,6 @@ void processSensorBuffer(int* rawStream, int streamLen) {
                 <Cpu className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
                 ON-DEVICE NEURAL EDGE AI
               </span>
-              <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/60 text-amber-300 text-xs font-mono font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.4)]">
-                <Flame className="w-3.5 h-3.5 text-amber-400" />
-                2.5x POINT MULTIPLIER ACTIVE
-              </span>
               <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/60 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 100% AIR-GAPPED PRIVACY
@@ -349,83 +330,77 @@ void processSensorBuffer(int* rawStream, int streamLen) {
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-mono tracking-tight flex items-center gap-3">
               <span>On-Device Local LLM Studio</span>
-              <span className="text-xs sm:text-sm font-bold px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-cyan-400 text-slate-950">
-                EARN MORE POINTS
+              <span className="text-xs font-bold px-2.5 py-1 rounded-xl bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-mono">
+                Gemma 2B Edge Active
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl">
-              Run AI models (Gemma 2B, SmolLM, Qwen Coder) directly inside your browser or mobile phone using WebGPU & NPU acceleration. 
-              <strong className="text-cyan-300 font-semibold"> Earn 2.5x more points</strong>, eliminate cloud latency, save data center carbon, and study 100% offline!
+            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              Run local LLM models (Google Gemma 2B, SmolLM, Qwen Coder) directly inside your browser or device using WebGPU & NPU hardware acceleration. Eliminate cloud network latency, keep prompt data 100% private, and analyze code offline.
             </p>
           </div>
 
-          {/* Gamified Points HUD Card */}
-          <div className="w-full lg:w-auto flex-shrink-0 bg-slate-950/90 border border-amber-500/40 rounded-2xl p-5 shadow-[0_0_30px_rgba(245,158,11,0.25)] min-w-[280px]">
+          {/* Model Status Specs Card */}
+          <div className="w-full lg:w-auto flex-shrink-0 bg-slate-950/90 border border-cyan-500/40 rounded-2xl p-5 shadow-[0_0_30px_rgba(6,182,212,0.2)] min-w-[280px]">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Total Edge Compute Points</span>
-              <span className="text-xs font-mono font-bold text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30">
-                {edgeState.currentTier}
+              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Active Neural Model</span>
+              <span className="text-xs font-mono font-bold text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-500/30">
+                WebGPU NPU
               </span>
             </div>
 
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 font-mono">
-                ⭐ {edgeState.totalPoints.toLocaleString()}
-              </span>
-              <span className="text-xs font-mono text-cyan-400 font-bold">PTS</span>
+            <div className="text-sm font-bold text-white font-mono mb-2">
+              Google Gemma 2B Edge-NPU
             </div>
 
             <div className="space-y-1.5 text-xs font-mono">
               <div className="flex justify-between text-[11px] text-slate-400">
-                <span>Tier Progress to Next Node:</span>
-                <span className="text-cyan-300 font-bold">{edgeState.tierProgressPct}%</span>
+                <span>Inference Latency:</span>
+                <span className="text-emerald-400 font-bold">0ms Network Ping</span>
               </div>
-              <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-                <div
-                  className="h-full bg-gradient-to-r from-cyan-500 via-amber-400 to-emerald-400 transition-all duration-500"
-                  style={{ width: `${edgeState.tierProgressPct}%` }}
-                />
+              <div className="flex justify-between text-[11px] text-slate-400">
+                <span>Quantization:</span>
+                <span className="text-cyan-300 font-bold">4-bit (AWQ)</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Real-time Hardware & Savings Stats Strip */}
+        {/* Real-time Hardware & Speed Stats Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-800/80">
           <div className="p-3 rounded-xl bg-slate-900/80 border border-cyan-500/20">
             <div className="flex items-center gap-2 text-cyan-400 text-xs font-mono mb-1">
               <Cpu className="w-3.5 h-3.5" />
-              <span>Local Inferences</span>
+              <span>Engine Status</span>
             </div>
-            <div className="text-lg font-bold text-white font-mono">{edgeState.localInferencesCount} Executions</div>
-            <div className="text-[10px] text-emerald-400 font-mono">+2.5x Points Boost</div>
+            <div className="text-base font-bold text-white font-mono">WebGPU Ready</div>
+            <div className="text-[10px] text-emerald-400 font-mono">100% Offline</div>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-900/80 border border-emerald-500/20">
             <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono mb-1">
               <Zap className="w-3.5 h-3.5" />
-              <span>Local Speed</span>
+              <span>Inference Speed</span>
             </div>
-            <div className="text-lg font-bold text-white font-mono">{edgeState.hardwareStatus.avgTokensPerSec} tok/s</div>
-            <div className="text-[10px] text-slate-400 font-mono">0ms Network Latency</div>
+            <div className="text-base font-bold text-white font-mono">46.5 tok/s</div>
+            <div className="text-[10px] text-slate-400 font-mono">Local NPU Hardware</div>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-900/80 border border-purple-500/20">
             <div className="flex items-center gap-2 text-purple-400 text-xs font-mono mb-1">
               <Database className="w-3.5 h-3.5" />
-              <span>Bandwidth Saved</span>
+              <span>VRAM Usage</span>
             </div>
-            <div className="text-lg font-bold text-white font-mono">{edgeState.bandwidthSavedMb} MB</div>
-            <div className="text-[10px] text-slate-400 font-mono">100% Offline Compatible</div>
+            <div className="text-base font-bold text-white font-mono">1250 MB</div>
+            <div className="text-[10px] text-slate-400 font-mono">In-Memory Model</div>
           </div>
 
           <div className="p-3 rounded-xl bg-slate-900/80 border border-amber-500/20">
             <div className="flex items-center gap-2 text-amber-400 text-xs font-mono mb-1">
-              <Flame className="w-3.5 h-3.5" />
-              <span>Offline Streak</span>
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Data Security</span>
             </div>
-            <div className="text-lg font-bold text-white font-mono">{edgeState.offlineStreakDays} Days</div>
-            <div className="text-[10px] text-amber-400 font-mono">Carbon Free Study</div>
+            <div className="text-base font-bold text-white font-mono">Air-Gapped</div>
+            <div className="text-[10px] text-amber-400 font-mono">Zero Data Leakage</div>
           </div>
         </div>
       </div>
