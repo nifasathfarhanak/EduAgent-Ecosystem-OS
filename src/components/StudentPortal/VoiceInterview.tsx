@@ -235,7 +235,7 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
     },
   };
 
-  const handleSendResponse = () => {
+  const handleSendResponse = async () => {
     if (!userInput.trim()) return;
 
     const userText = userInput.trim();
@@ -243,18 +243,79 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
     setUserInput('');
     setIsSpeaking(true);
 
+    const lowerText = userText.toLowerCase();
+
+    // 1. Conversational Casual Greetings & Questions
+    const isGreeting = /^(hi|hello|hey|greetings|hola|namaste|who are you|what is this|ready|start|yes|ok|okay)\b/i.test(lowerText) && userText.split(' ').length < 5;
+    
+    if (isGreeting) {
+      setTimeout(() => {
+        const question = auditReport?.questions[currentScenarioIndex] || 'How did you optimize database query isolation in your PHP fraud detection system under concurrent loads?';
+        const greetingResponse = `Hello! Great to connect with you. I'm Dr. Alex Vance, your Lead AI Technical Interviewer.\n\nWhenever you're ready, please answer Question #${currentScenarioIndex + 1}:\n"${question}"\n\nYou can type your answer or click the **Voice Input** button to speak directly into your microphone!`;
+        
+        setChatHistory(prev => [...prev, { role: 'avatar', text: greetingResponse }]);
+        speakText(`Hello! Great to connect. Please answer Question ${currentScenarioIndex + 1}: ${question}`);
+      }, 600);
+      return;
+    }
+
+    // 2. Real-Time AI Technical Evaluation
     const questionIndex = currentScenarioIndex;
     const question = auditReport?.questions[questionIndex] || 'Explain your technical approach and system design choice.';
     const specificAnswer = QUESTION_SPECIFIC_ANSWERS[questionIndex] || QUESTION_SPECIFIC_ANSWERS[0];
-    const lowerText = userText.toLowerCase();
 
+    try {
+      // Call Gemini AI evaluation API
+      const res = await fetch('/api/evaluate-star-answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eduagent-bearer-token-student',
+        },
+        body: JSON.stringify({
+          transcript: userText,
+          question,
+          resumeText: resumeText || 'Full-Stack & Systems Engineering profile',
+          language,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.scorecard) {
+          const sc = data.scorecard;
+          const overall = sc.overallScore || Math.round((sc.situation?.score * 10 + sc.task?.score * 10 + sc.action?.score * 10 + sc.result?.score * 10) / 4) || 85;
+
+          const aiEvalMarkdown = `### 📊 Real-Time AI Technical Evaluation\n` +
+            `**Practice Marks:** **${overall}/100** ${overall < 50 ? '❌ (REVISE)' : overall < 75 ? '⚠️ (GOOD PROGRESS)' : '✅ (EXCELLENT)'}\n\n` +
+            `• **Situation & Task:** ${sc.situation?.feedback || 'Context established.'}\n` +
+            `• **Technical Action:** ${sc.action?.feedback || 'Technical execution analyzed.'}\n` +
+            `• **Result & Impact:** ${sc.result?.feedback || 'Outcomes measured.'}\n\n` +
+            `✅ **Model Answer for "${specificAnswer.topic}"**:\n` +
+            `"${specificAnswer.idealAnswer}"\n\n` +
+            `💡 **Dr. Alex Vance Feedback**: ${sc.summary || 'Solid effort. Continuously quantify your system latency and throughput improvements!'}`;
+
+          setChatHistory(prev => [...prev, { role: 'avatar', text: aiEvalMarkdown }]);
+          
+          const speakOut = overall < 50
+            ? `Evaluation complete. Marks: ${overall} out of 100. Correct technical answer: ${specificAnswer.idealAnswer}`
+            : `Evaluation complete. Score: ${overall} out of 100. Excellent technical response!`;
+          speakText(speakOut);
+          return;
+        }
+      }
+    } catch {
+      // Fallback to local intelligent evaluation if offline
+    }
+
+    // Fallback Evaluation
     setTimeout(() => {
-      // Real-time technical correctness evaluation
       const words = lowerText.split(/\s+/).filter(w => w.length > 2);
       const isTooShort = words.length < 6;
       const isGibberish = !/[a-z]{3,}/i.test(userText) || words.length < 3;
+      const isDonKnow = lowerText.includes("don't know") || lowerText.includes("dont know") || lowerText.includes("don know");
       
-      const techKeywords = ['sql', 'redis', 'cache', 'python', 'query', 'index', 'lock', 'db', 'api', 'server', 'latency', 'star', 'situation', 'task', 'action', 'result', 'scale', 'load', 'memory', 'cpu', 'concurrency', 'thread', 'process', 'buffer', 'sharding', 'innodb', 'read committed', 'onnx', 'tensorrt'];
+      const techKeywords = ['sql', 'redis', 'cache', 'python', 'query', 'index', 'lock', 'db', 'api', 'server', 'latency', 'star', 'scale', 'concurrency', 'thread', 'innodb', 'read committed', 'onnx'];
       const matchedKeywords = techKeywords.filter(kw => lowerText.includes(kw));
 
       let technical = 0;
@@ -263,20 +324,12 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
       let impact = 0;
       let correctionText = '';
 
-      if (isGibberish || isTooShort || lowerText.includes("don't know") || lowerText.includes("dont know") || lowerText.includes("don know")) {
+      if (isGibberish || isTooShort || isDonKnow) {
         technical = 15;
         clarity = 20;
         relevance = 10;
         impact = 15;
-        correctionText = `❌ **Incorrect Response**: Answer is missing or lacks technical substance.\n\n` +
-          `✅ **Real-Time Specific Technical Answer & Ideal Response**:\n` +
-          `"${specificAnswer.idealAnswer}"`;
-      } else if (matchedKeywords.length === 0) {
-        technical = 40;
-        clarity = 55;
-        relevance = 45;
-        impact = 40;
-        correctionText = `⚠️ **Partially Incorrect Answer**: Lacks specific engineering primitives for ${specificAnswer.topic}.\n\n` +
+        correctionText = `❌ **Incomplete Technical Answer**\n\n` +
           `✅ **Real-Time Specific Technical Answer**:\n` +
           `"${specificAnswer.idealAnswer}"`;
       } else {
@@ -284,43 +337,26 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
         clarity = Math.min(96, 75 + words.length * 2);
         relevance = 90;
         impact = Math.min(92, 70 + matchedKeywords.length * 8);
-        correctionText = `✅ **Accurate Technical Answer**: Covered key mechanisms (${matchedKeywords.join(', ')}).\n\n` +
-          `💡 **Reference Answer**: "${specificAnswer.idealAnswer}"`;
+        correctionText = `✅ **Accurate Technical Answer** (${matchedKeywords.join(', ')})\n\n` +
+          `💡 **Reference Standard**: "${specificAnswer.idealAnswer}"`;
       }
 
       const overall = Math.round((clarity + technical + relevance + impact) / 4);
 
-      const computedScorecard: ScorecardData = {
-        clarity: { score: clarity, feedback: clarity > 70 ? "Clear structure." : "Vague response." },
-        technicalAccuracy: { score: technical, feedback: technical > 70 ? "Accurate architecture principles." : "Lacks required technical depth." },
-        relevance: { score: relevance, feedback: relevance > 70 ? "Directly addresses scenario." : "Off-topic response." },
-        impact: { score: impact, feedback: impact > 70 ? "Demonstrates business value." : "No measurable outcomes provided." },
-        overallScore: overall,
-        summary: overall < 50 ? "Response failed technical verification." : "Satisfactory interview performance.",
-        motivationalAdvice: overall < 50 
-          ? "Listen to the correct technical answer spoken by the AI tutor and practice again!"
-          : "Great job! Keep practicing with quantifiable performance metrics."
-      };
-
-      setLastScorecard(computedScorecard);
-
       const aiResponse = `### 📊 Real-Time Interview Evaluation Scorecard\n` +
-        `**Practice Marks:** **${overall}/100** ${overall < 50 ? '❌ (FAILED)' : overall < 75 ? '⚠️ (NEEDS WORK)' : '✅ (PASSED)'}\n\n` +
-        `• **Technical Accuracy:** ${technical}/100\n` +
+        `**Practice Marks:** **${overall}/100** ${overall < 50 ? '❌ (REVISE)' : '✅ (PASSED)'}\n\n` +
+        `• **Technical Depth:** ${technical}/100\n` +
         `• **Clarity:** ${clarity}/100\n` +
-        `• **Relevance:** ${relevance}/100\n` +
         `• **Impact:** ${impact}/100\n\n` +
-        `${correctionText}\n\n` +
-        `💡 **Advice**: ${computedScorecard.motivationalAdvice}`;
+        `${correctionText}`;
 
       setChatHistory(prev => [...prev, { role: 'avatar', text: aiResponse }]);
 
-      // Voice Output — speak evaluation and the correct technical answer out loud!
       const speechOut = overall < 50
-        ? `Interview Evaluation: Marks are ${overall} out of 100. Incorrect answer. Here is the correct technical answer: ${specificAnswer.idealAnswer}`
-        : `Interview Evaluation: Marks are ${overall} out of 100. Good technical explanation!`;
+        ? `Evaluation complete. Marks: ${overall} out of 100. Here is the correct technical answer: ${specificAnswer.idealAnswer}`
+        : `Evaluation complete. Marks: ${overall} out of 100. Great job!`;
       speakText(speechOut);
-    }, 1000);
+    }, 800);
   };
 
   return (
