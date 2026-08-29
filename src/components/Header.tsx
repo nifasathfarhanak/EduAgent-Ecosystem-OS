@@ -99,54 +99,8 @@ export const Header: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Center: Top Nav Tech Icons */}
-          <div className="hidden lg:flex items-center gap-4 text-[11px] font-mono">
-            <div className="flex items-center gap-1.5 text-cyan-300 hover:text-cyan-200 transition-colors cursor-default">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Adaptive AI</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-blue-300 hover:text-blue-200 transition-colors cursor-default">
-              <Brain className="w-3.5 h-3.5 text-blue-400" />
-              <span>Smart Mentor</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-purple-300 hover:text-purple-200 transition-colors cursor-default">
-              <Activity className="w-3.5 h-3.5 text-purple-400" />
-              <span>Classroom Radar</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-emerald-300 hover:text-emerald-200 transition-colors cursor-default">
-              <GraduationCap className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Learning Hub</span>
-            </div>
-          </div>
-
           {/* Right Section: AI Theme Switcher, Active Portal Badge, Language Pill & User Profile */}
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-            {/* On-Device Edge Points & Local LLM Status Pill */}
-            <button
-              onClick={() => onPortalChange('Student')}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-slate-900 to-cyan-500/20 border border-amber-500/40 hover:border-amber-400 text-amber-300 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:scale-105 cursor-pointer"
-              title="On-Device Local LLM Active • 2.5x Points Multiplier"
-            >
-              <Cpu className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-              <span className="text-white">⭐ {edgePointsState.totalPoints.toLocaleString()}</span>
-              <span className="hidden xs:inline px-1 py-0.2 rounded bg-amber-500/30 text-amber-200 text-[9px] border border-amber-500/40">
-                2.5x
-              </span>
-            </button>
-
-            {/* Developer Spec & Architecture Portal Button */}
-            <button
-              onClick={() => onPortalChange(activePortal === 'Developer' ? 'Landing' : 'Developer')}
-              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl border font-mono text-xs font-bold transition-all cursor-pointer shadow-sm ${
-                activePortal === 'Developer'
-                  ? 'bg-cyan-500 text-slate-950 border-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.8)] scale-105'
-                  : 'bg-slate-900/90 text-cyan-300 hover:text-cyan-100 hover:bg-slate-800 border-cyan-500/40 hover:border-cyan-300'
-              }`}
-              title="View Architecture Specs"
-            >
-              <Layers className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
-              <span className="hidden sm:inline">Overview</span>
-            </button>
 
             {/* Next-Gen AI Background Theme Customizer */}
             {onSelectTheme && (
