@@ -257,7 +257,7 @@ export function CompleteEnterpriseCopilot({ language = 'English', onSetModality 
           )}
           <span className="px-3.5 py-1 bg-purple-500/10 text-purple-300 text-xs rounded-full border border-purple-500/30 font-semibold flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-purple-400" />
-            Gemini 1.5 Pro Neural
+            Academic Voice Evaluator
           </span>
         </div>
       </div>

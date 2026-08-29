@@ -8,11 +8,67 @@ describe('DatabasePool Mock Persistence Layer', () => {
     db = new DatabasePool();
   });
 
-  it('should return initial health status metrics', () => {
+  it('should return initial health status metrics with Cloud DB provider info', () => {
     const health = db.getHealthStatus();
     expect(health.status).toBe('connected');
     expect(health.maxPoolSize).toBe(20);
     expect(health.activeConnections).toBeGreaterThanOrEqual(1);
+    expect(health).toHaveProperty('provider');
+    expect(health).toHaveProperty('isCloudSynced', true);
+  });
+
+  it('should support seedCloudDB and re-initialize record stores', async () => {
+    const seedResult = await db.seedCloudDB();
+    expect(seedResult).toHaveProperty('students');
+    expect(seedResult.students).toBeGreaterThan(0);
+    expect(seedResult.teachers).toBeGreaterThan(0);
+    expect(seedResult.courses).toBeGreaterThan(0);
+  });
+
+  it('should perform full Teacher and Course CRUD operations', async () => {
+    // Create Teacher
+    const newTeacher = await db.upsertTeacher({
+      id: 'tc-test-1',
+      name: 'Test Professor',
+      email: 'testprof@eng.edu',
+      department: 'AI Research',
+    });
+    expect(newTeacher.name).toBe('Test Professor');
+
+    // Retrieve Teachers
+    const teachers = await db.getTeachers();
+    expect(teachers.some((t) => t.id === 'tc-test-1')).toBe(true);
+
+    // Delete Teacher
+    const deletedTeacher = await db.deleteTeacher('tc-test-1');
+    expect(deletedTeacher).toBe(true);
+
+    // Create Course
+    const newCourse = await db.upsertCourse({
+      id: 'crs-test-1',
+      code: 'CS999',
+      name: 'Advanced Cloud Architectures',
+    });
+    expect(newCourse.code).toBe('CS999');
+
+    // Retrieve Courses
+    const courses = await db.getCourses();
+    expect(courses.some((c) => c.id === 'crs-test-1')).toBe(true);
+
+    // Delete Course
+    const deletedCourse = await db.deleteCourse('crs-test-1');
+    expect(deletedCourse).toBe(true);
+  });
+
+  it('should log query execution metrics', async () => {
+    const result = await db.query('SELECT * FROM telemetry_students WHERE risk_tier = $1', [
+      '[CRITICAL INTERVENTION]',
+    ]);
+    expect(result.rowCount).toBeGreaterThanOrEqual(0);
+    expect(result.executionTimeMs).toBeGreaterThanOrEqual(0);
+
+    const health = db.getHealthStatus();
+    expect(health.totalQueriesExecuted).toBeGreaterThan(0);
   });
 
   it('should retrieve student profiles from mock store', async () => {

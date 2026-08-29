@@ -47,6 +47,58 @@ function createTestApp() {
     res.json({ success: true, submission, updatedStudents });
   });
 
+  app.post('/api/cloud-db/seed', async (req, res) => {
+    const counts = await db.seedCloudDB();
+    const dbStatus = db.getHealthStatus();
+    res.json({ success: true, message: 'Seeded', provider: dbStatus.provider, records: counts });
+  });
+
+  app.get('/api/admin/students', async (req, res) => {
+    const students = await db.getStudents();
+    res.json({ success: true, students });
+  });
+
+  app.post('/api/admin/students', async (req, res) => {
+    const data = req.body;
+    const newStudent = await db.upsertStudent({ id: data.id || `st-${Date.now()}`, ...data });
+    res.json({ success: true, student: newStudent });
+  });
+
+  app.delete('/api/admin/students/:id', async (req, res) => {
+    const deleted = await db.deleteStudent(req.params.id);
+    res.json({ success: deleted });
+  });
+
+  app.get('/api/admin/teachers', async (req, res) => {
+    const teachers = await db.getTeachers();
+    res.json({ success: true, teachers });
+  });
+
+  app.post('/api/admin/teachers', async (req, res) => {
+    const newTeacher = await db.upsertTeacher({ id: req.body.id || `tc-${Date.now()}`, ...req.body });
+    res.json({ success: true, teacher: newTeacher });
+  });
+
+  app.delete('/api/admin/teachers/:id', async (req, res) => {
+    const deleted = await db.deleteTeacher(req.params.id);
+    res.json({ success: deleted });
+  });
+
+  app.get('/api/admin/courses', async (req, res) => {
+    const courses = await db.getCourses();
+    res.json({ success: true, courses });
+  });
+
+  app.post('/api/admin/courses', async (req, res) => {
+    const newCourse = await db.upsertCourse({ id: req.body.id || `crs-${Date.now()}`, ...req.body });
+    res.json({ success: true, course: newCourse });
+  });
+
+  app.delete('/api/admin/courses/:id', async (req, res) => {
+    const deleted = await db.deleteCourse(req.params.id);
+    res.json({ success: deleted });
+  });
+
   return app;
 }
 
@@ -116,25 +168,66 @@ describe('API Endpoints & Integration Tests', () => {
     expect(res.body.student.id).toBe('st-101');
   });
 
-  it('POST /api/telemetry/activity should record activity submission and update store', async () => {
+  it('POST /api/cloud-db/seed should trigger Cloud DB seeding and return provider metrics', async () => {
     const res = await request(app)
-      .post('/api/telemetry/activity')
-      .set('Authorization', `Bearer ${studentToken}`)
-      .send({
-        studentId: 'st-101',
-        studentName: 'Jordan Smith',
-        rollNo: '2022-CS-041',
-        module: 'Voice STAR Interview',
-        actionType: 'Practice Test',
-        title: 'Microservices Communication',
-        score: '92/100',
-        summary: 'Excellent explanation of gRPC and proto files.',
-        diagnosedGap: 'Mastered gRPC Protocol Buffers',
-      });
+      .post('/api/cloud-db/seed')
+      .set('Authorization', `Bearer ${teacherToken}`);
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body).toHaveProperty('submission');
-    expect(res.body.submission.studentId).toBe('st-101');
+    expect(res.body).toHaveProperty('provider');
+    expect(res.body).toHaveProperty('records');
+  });
+
+  it('GET and POST /api/admin/students should manage student records correctly', async () => {
+    const createRes = await request(app)
+      .post('/api/admin/students')
+      .set('Authorization', `Bearer ${teacherToken}`)
+      .send({
+        studentName: 'Alex Cloud',
+        rollNo: 'AST-2026-999',
+        email: 'alex.cloud@eng.edu',
+        targetRole: 'Cloud Native Developer',
+      });
+
+    expect(createRes.status).toBe(200);
+    expect(createRes.body.success).toBe(true);
+    expect(createRes.body.student.studentName).toBe('Alex Cloud');
+
+    const getRes = await request(app)
+      .get('/api/admin/students')
+      .set('Authorization', `Bearer ${teacherToken}`);
+
+    expect(getRes.status).toBe(200);
+    expect(getRes.body.students.some((s: any) => s.studentName === 'Alex Cloud')).toBe(true);
+  });
+
+  it('GET and POST /api/admin/teachers should manage teacher records correctly', async () => {
+    const createRes = await request(app)
+      .post('/api/admin/teachers')
+      .set('Authorization', `Bearer ${teacherToken}`)
+      .send({
+        name: 'Dr. Alan Turing',
+        email: 'turing@eng.edu',
+        department: 'Theoretical CS',
+      });
+
+    expect(createRes.status).toBe(200);
+    expect(createRes.body.success).toBe(true);
+    expect(createRes.body.teacher.name).toBe('Dr. Alan Turing');
+  });
+
+  it('GET and POST /api/admin/courses should manage course records correctly', async () => {
+    const createRes = await request(app)
+      .post('/api/admin/courses')
+      .set('Authorization', `Bearer ${teacherToken}`)
+      .send({
+        code: 'CS808',
+        name: 'Cloud DB Architectures',
+      });
+
+    expect(createRes.status).toBe(200);
+    expect(createRes.body.success).toBe(true);
+    expect(createRes.body.course.code).toBe('CS808');
   });
 });

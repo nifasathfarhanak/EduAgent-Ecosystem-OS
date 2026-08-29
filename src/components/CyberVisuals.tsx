@@ -516,7 +516,7 @@ export const RoboticEqualizer: React.FC<{
   );
 };
 
-// 7. Interactive Robotic Biometric / Neural Link Scanner Pad (For Login & Auth)
+// 7. Interactive Secure Academic Authentication Button (For Role Verification)
 export const RoboticBiometricScanner: React.FC<{
   label?: string;
   subLabel?: string;
@@ -524,8 +524,8 @@ export const RoboticBiometricScanner: React.FC<{
   scanning?: boolean;
   onScan?: () => void;
 }> = ({
-  label = 'BIOMETRIC SCAN',
-  subLabel = 'TOUCH TO ACTIVATE',
+  label = 'AUTHENTICATE ROLE',
+  subLabel = 'CLICK TO SIGN IN',
   themeColor = 'cyan',
   scanning = false,
   onScan,
@@ -536,26 +536,20 @@ export const RoboticBiometricScanner: React.FC<{
     cyan: {
       border: 'border-cyan-400',
       text: 'text-cyan-300',
-      laser: 'bg-cyan-400 shadow-[0_0_12px_#22d3ee]',
-      glow: 'shadow-[0_0_25px_rgba(6,182,212,0.6)]',
+      glow: 'shadow-[0_0_20px_rgba(6,182,212,0.4)]',
       bg: 'bg-cyan-950/40 hover:bg-cyan-900/50',
-      ring: 'stroke-cyan-400',
     },
     pink: {
       border: 'border-pink-500',
       text: 'text-pink-300',
-      laser: 'bg-pink-400 shadow-[0_0_12px_#f472b6]',
-      glow: 'shadow-[0_0_25px_rgba(236,72,153,0.6)]',
+      glow: 'shadow-[0_0_20px_rgba(236,72,153,0.4)]',
       bg: 'bg-pink-950/40 hover:bg-pink-900/50',
-      ring: 'stroke-pink-400',
     },
     purple: {
       border: 'border-purple-500',
       text: 'text-purple-300',
-      laser: 'bg-purple-400 shadow-[0_0_12px_#c084fc]',
-      glow: 'shadow-[0_0_25px_rgba(168,85,247,0.6)]',
+      glow: 'shadow-[0_0_20px_rgba(168,85,247,0.4)]',
       bg: 'bg-purple-950/40 hover:bg-purple-900/50',
-      ring: 'stroke-purple-400',
     },
   }[themeColor];
 
@@ -564,28 +558,16 @@ export const RoboticBiometricScanner: React.FC<{
     if (onScan) onScan();
     setTimeout(() => {
       setActiveScan(false);
-    }, 1200);
+    }, 600);
   };
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      className={`relative w-full p-2.5 rounded-2xl border-2 ${colors.border} ${colors.bg} ${colors.glow} backdrop-blur-xl flex items-center justify-between gap-3 font-mono transition-all duration-300 group cursor-pointer overflow-hidden active:scale-95`}
+      className={`relative w-full p-2.5 rounded-2xl border ${colors.border} ${colors.bg} ${colors.glow} backdrop-blur-xl flex items-center justify-between gap-3 font-mono transition-all duration-300 group cursor-pointer overflow-hidden active:scale-95`}
     >
-      {/* Laser Scan Sweep Animation */}
-      {activeScan && (
-        <div className={`absolute inset-x-0 h-1 ${colors.laser} animate-[pulse_0.4s_ease-in-out_infinite]`} style={{ top: '50%', transform: 'translateY(-50%)' }} />
-      )}
-
-      {/* Cyber Corner Markers */}
-      <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-white/60" />
-      <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-white/60" />
-      <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-white/60" />
-      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/60" />
-
       <div className="flex items-center gap-2.5">
-        {/* Biometric Thumbprint / Retina Sensor */}
         <div className="relative w-8 h-8 rounded-xl bg-slate-950 border border-slate-700 flex items-center justify-center flex-shrink-0 group-hover:border-white transition-colors">
           <svg viewBox="0 0 24 24" className={`w-5 h-5 ${colors.text}`} fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
@@ -700,7 +682,7 @@ export const InsideRoboticTelemetryBar: React.FC<{
           </div>
           <span>•</span>
           <div>
-            CORE: <strong className="text-cyan-300">GEMINI 3.7 FLASH</strong>
+            CORE: <strong className="text-cyan-300">EDUAGENT CO-PILOT</strong>
           </div>
         </div>
 
