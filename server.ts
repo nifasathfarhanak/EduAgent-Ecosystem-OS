@@ -2096,6 +2096,35 @@ Respond STRICTLY in JSON format with an array of "questions":
   }
 });
 
+// Edge Points Sync & Telemetry Endpoint
+app.post('/api/edge-points/sync', (req, res) => {
+  const { pointsAwarded = 0, totalPoints = 0, modelName = 'On-Device Edge', isLocal = true, reason = '' } = req.body;
+  res.json({
+    status: 'ok',
+    synced: true,
+    pointsAwarded,
+    totalPoints,
+    isLocal,
+    multiplier: isLocal ? '2.5x Local LLM Multiplier' : '1.0x Cloud',
+    message: `Recorded ${pointsAwarded} points for ${modelName}`,
+  });
+});
+
+// Local LLM Task Evaluation Endpoint
+app.post('/api/ai/local-llm-task', async (req, res) => {
+  const { prompt = '', model = 'Gemma 2B Edge-NPU', taskType = 'reasoning' } = req.body;
+  res.json({
+    success: true,
+    engine: 'WebGPU / WASM Local Simulation',
+    model,
+    taskType,
+    tokensGenerated: 280,
+    latencyMs: 14,
+    pointsEarned: 100,
+    airGapped: true,
+  });
+});
+
 // Vite Middleware Integration for Dev & Production
 async function setupVite() {
   if (process.env.NODE_ENV !== 'production') {

@@ -201,6 +201,39 @@ export const LandingPage: React.FC<Props> = ({
           </div>
         </div>
 
+        {/* On-Device LLM Edge Boost Spotlight Banner */}
+        <div
+          onClick={() => handleStudentLogin()}
+          className="group relative overflow-hidden bg-gradient-to-r from-amber-950/60 via-slate-950/90 to-cyan-950/60 border-2 border-amber-500/50 hover:border-amber-400 rounded-2xl p-4 sm:p-5 cursor-pointer shadow-[0_0_25px_rgba(245,158,11,0.25)] hover:shadow-[0_0_35px_rgba(245,158,11,0.4)] transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/60 flex items-center justify-center text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] flex-shrink-0 group-hover:scale-110 transition-transform">
+              <Cpu className="w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/30 text-amber-300 border border-amber-500/50 text-[10px] font-mono font-black uppercase tracking-wider">
+                  ⚡ NEW: 2.5x Points Multiplier
+                </span>
+                <span className="text-xs text-slate-400 font-mono">WebGPU • Gemma 2B • SmolLM</span>
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-white font-mono group-hover:text-amber-300 transition-colors">
+                On-Device Local LLM Studio & Mobile Offline AI
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">
+                Run zero-cloud latency models directly on your device CPU/NPU/WebGPU. Earn 2.5x points per inference, unlock Quantum Edge Master badge, and solve quizzes offline!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 self-end md:self-center flex-shrink-0">
+            <span className="px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-mono font-black text-xs flex items-center gap-1.5 shadow-lg group-hover:scale-105 transition-transform">
+              <span>Launch Local LLM</span>
+              <ArrowRight className="w-4 h-4" />
+            </span>
+          </div>
+        </div>
+
         {/* 4 Quick Launch Interactive Feature Pods */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
           {/* Pod 1: Robotic Mock Interview */}

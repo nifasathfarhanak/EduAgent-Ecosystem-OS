@@ -42,8 +42,8 @@ export const SystemBootSequence: React.FC<SystemBootSequenceProps> = ({
 
   const steps = [
     {
-      label: 'BIOMETRIC SIGNATURE VERIFIED',
-      sub: `Cadet Auth Key: 0x${Math.random().toString(16).substring(2, 8).toUpperCase()} // Clearance L6`,
+      label: 'ACADEMIC PROFILE AUTHENTICATED',
+      sub: `Cadet Auth Key: 0x${Math.random().toString(16).substring(2, 8).toUpperCase()} // University Verified`,
       color: 'text-cyan-400',
       badge: 'AUTH OK',
     },

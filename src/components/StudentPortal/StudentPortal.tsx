@@ -17,6 +17,7 @@ import { MicroInternshipSimulator } from './MicroInternshipSimulator';
 import { AIMentorChat } from './AIMentorChat';
 import { AIVideoLessonStudio } from './AIVideoLessonStudio';
 import { AIAssessmentEngine } from './AIAssessmentEngine';
+import { OnDeviceLLMStudio } from './OnDeviceLLMStudio';
 import { ErrorBoundary } from '../ErrorBoundary';
 import {
   getActiveStudentSession,
@@ -76,6 +77,7 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
   };
 
   const tabs = [
+    { id: 'localllm', key: 'onDeviceLocalLlm', label: '⚡ On-Device Local LLM (2.5x Points)', icon: Cpu, color: 'text-amber-400 font-black' },
     { id: 'rag', key: 'cseRagGroundStudio', label: 'CSE Curriculum RAG Studio', icon: Brain, color: 'text-cyan-400 font-bold' },
     { id: 'assessment', key: 'aiAssessmentEngine', label: 'AI Subject Assessment & Report', icon: FileCheck, color: 'text-emerald-400 font-bold' },
     { id: 'video', key: 'aiVideoLessonStudio', label: 'AI Subject Video Studio', icon: Video, color: 'text-pink-400 font-bold' },
@@ -111,6 +113,7 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
         speechBubble={`Cadet ${activeSession.studentName}, your diagnosed gap is: "${activeSession.keyLearningGap}". CSE 3-Subject RAG Knowledge Base, AI Mentor Chat, 1v1 Battle Arena, and AST Verified Credentials are live!`}
         themeColor="cyan"
         quickActions={[
+          { label: '⚡ On-Device Local LLM (2.5x)', onClick: () => handleTabChange('localllm', '⚡ On-Device Local LLM (2.5x Points)') },
           { label: 'CSE RAG Ground Studio', onClick: () => handleTabChange('rag', 'CSE Curriculum RAG Studio') },
           { label: 'AI Mentor Chat', onClick: () => handleTabChange('chat', '24/7 AI Mentor Chat') },
           { label: 'AI Test Plan & Workflow', onClick: () => handleTabChange('aitestplan', 'AI Test Plan & Study Workflow') },
@@ -166,6 +169,7 @@ export const StudentPortal: React.FC<Props> = ({ language, onSetModality, curren
       </div>
 
       <ErrorBoundary resetKey={activeTab} fallbackTitle={`${activeTab.toUpperCase()} Module Error`}>
+        {activeTab === 'localllm' && <OnDeviceLLMStudio language={language} />}
         {activeTab === 'rag' && <CSERagGroundStudio studentName={activeSession.studentName} />}
         {activeTab === 'vision' && <VisionQA language={language} onSetModality={onSetModality} />}
         {activeTab === 'assessment' && <AIAssessmentEngine language={language} />}
